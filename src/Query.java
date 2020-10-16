@@ -1,7 +1,5 @@
 import java.sql.*;
 
-//This is the query class
-
 public class Query {
 
 	// This method is currently being tested, and should be adjusted to verify username and password eventually

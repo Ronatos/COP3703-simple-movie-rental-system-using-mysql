@@ -22,7 +22,7 @@ public class Main {
 		
 		displayUserLoginMenu(db.connection, scanner);
 	}
-	//git is confusing and hard....
+
 	public static void displayUserLoginMenu(Connection connection, Scanner scanner) {
 		do {
 			String username = null;
