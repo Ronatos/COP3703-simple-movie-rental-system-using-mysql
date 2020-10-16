@@ -53,16 +53,17 @@ public class Main {
 					try {
 						if (Query.isExistingCustomer(connection, username, password)) {
 							// also need to check if user is an employee
-							// return displayUserDashboard();
+							// displayUserDashboard();
 							System.out.println("Welcome, " + username + "!");
 							System.out.println("Your dashboard is coming soon. For now, we must bid you farewell!");
 							exit(scanner, connection, 0);
 						}
 						else {
-							System.out.println("The password you entered was incorrect."); // Vagueness is on purpose (security)
+							System.out.println("Incorrect username or password."); // Vagueness is on purpose (security)
 						}
 					}
 					catch (SQLException error) {
+						System.out.println("Critical failure encountered during database operation. Aborting application...");
 						exit(scanner, connection, 0);
 					}
 					break;
