@@ -20,9 +20,17 @@ public class Main {
 			System.exit(0);
 		}
 		
+		// Display UI root
 		displayUserLoginMenu(db.connection, scanner);
 	}
 
+	/**
+	 * Complete, but untested awaiting database updates.
+	 * displayUserLoginMenu is the root of the UI. This provides options such as Log In (for both customers and employees),
+	 * Sign Up (for customers only), and Quit - the only way the application should end.
+	 * @param connection The connection object
+	 * @param scanner The scanner object
+	 */
 	public static void displayUserLoginMenu(Connection connection, Scanner scanner) {
 		do {
 			String username = null;
@@ -34,15 +42,7 @@ public class Main {
 			System.out.println("2. Sign up");
 			System.out.println("3. Quit");
 			
-			do {
-				try {
-					selection = Integer.parseInt(scanner.nextLine());
-					break;
-				}
-				catch (NumberFormatException error) {
-					System.out.println("Please select one of the options provided.");
-				}
-			} while (true);
+			selection = getUserSelection(scanner);
 			
 			switch (selection) {
 				case 1:
@@ -52,11 +52,10 @@ public class Main {
 					password = scanner.nextLine();
 					try {
 						if (Query.isExistingCustomer(connection, username, password)) {
-							// also need to check if user is an employee
-							// displayUserDashboard();
-							System.out.println("Welcome, " + username + "!");
-							System.out.println("Your dashboard is coming soon. For now, we must bid you farewell!");
-							exit(scanner, connection, 0);
+							displayCustomerDashboard(connection, scanner);
+						}
+						else if (Query.isExistingEmployee(connection, username, password)) {
+							displayEmployeeDashboard(connection, scanner);
 						}
 						else {
 							System.out.println("Incorrect username or password."); // Vagueness is on purpose (security)
@@ -68,10 +67,86 @@ public class Main {
 					}
 					break;
 				case 2:
-					System.out.println("This function is not yet supported.");
+					String firstName = null;
+					String lastName = null;
+					String referenced = null;
+					String referencedBy = "";
+					
+					System.out.print("Username: ");
+					username = scanner.nextLine();
+					System.out.print("Password: ");
+					password = scanner.nextLine();
+					System.out.print("First name: ");
+					firstName = scanner.nextLine();
+					System.out.print("Last name: ");
+					lastName = scanner.nextLine();
+					System.out.print("Were you referenced by an existing customer? (y/n): ");
+					referenced = scanner.nextLine();
+					if (referenced.equals("y")) {
+						System.out.println("Existing customer username: ");
+						referencedBy = scanner.nextLine();
+					}
+					
+					try {
+						Query.createNewCustomer(connection, username, password, firstName, lastName, referencedBy);
+					}
+					catch (SQLException error) {
+						System.out.println("Critical failure encountered during database operation. Aborting application...");
+						exit(scanner, connection, 0);
+					}
+					catch (LogicException error) {
+						System.out.println(error.getMessage());
+					}
 					break;
 				case 3:
 					exit(scanner, connection, 0);
+			}
+		} while (true);
+	}
+	
+	// Incomplete
+	public static void displayCustomerDashboard(Connection connection, Scanner scanner) {
+		do {
+			int selection = 0;
+			
+			System.out.println("1. Find a movie");
+			System.out.println("2. Rental return");
+			System.out.println("3. Account Management");
+			System.out.println("4. Log out");
+			
+			selection = getUserSelection(scanner);
+			System.out.println("Menu has not yet been implemented. Check back later.");
+		} while (true);
+	}
+	
+	// Incomplete
+	public static void displayEmployeeDashboard(Connection connection, Scanner scanner) {
+		do {
+			int selection = 0;
+			
+			System.out.println("1. Locate a movie");
+			System.out.println("2. Update inventory");
+			System.out.println("3. Customer Management");
+			System.out.println("4. Reports");
+			System.out.println("5. Log out");
+			
+			selection = getUserSelection(scanner);
+			System.out.println("Menu has not yet been implemented. Check back later.");
+		} while (true);
+	}
+	
+	/**
+	 * Forces the user to enter an integer.
+	 * @param scanner The scanner object
+	 * @return A user-selected integer
+	 */
+	public static int getUserSelection(Scanner scanner) {
+		do {
+			try {
+				return Integer.parseInt(scanner.nextLine());
+			}
+			catch (NumberFormatException error) {
+				System.out.println("Please select one of the options provided.");
 			}
 		} while (true);
 	}
