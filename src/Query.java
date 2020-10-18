@@ -112,7 +112,7 @@ public class Query {
 	}
 	
 	/**
-	 * getMovieByTitle prints out the details of the movie with relevant Title
+	 * getMovieByTitle prints out the details of the movie with relevant Title.
 	 * @param connection The connection object
 	 * @param movieTitle The movie to search for
 	 * @throws SQLException
