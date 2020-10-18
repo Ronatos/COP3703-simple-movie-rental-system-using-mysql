@@ -115,7 +115,6 @@ public class Main {
 			System.out.println("4. Log out");
 			
 			selection = getUserSelection(scanner);
-			System.out.println("Menu has not yet been implemented. Check back later.");
 		} while (true);
 	}
 	
@@ -131,6 +130,51 @@ public class Main {
 			System.out.println("5. Log out");
 			
 			selection = getUserSelection(scanner);
+			switch (selection) {
+			case 1:
+				System.out.println("Select a movie property to search by.");
+				System.out.println("1. Movie ID");
+				System.out.println("2. Movie Title");
+				selection = getUserSelection(scanner);
+				
+				switch (selection) {
+					case 1:
+						int movieID = 0;
+						
+						System.out.print("Movie ID: ");
+						movieID = getUserSelection(scanner);
+						try {
+							Query.getMovieByID(connection, movieID);
+						}
+						catch (SQLException error) {
+							System.out.println("Critical failure encountered during database operation. Aborting application...");
+							exit(scanner, connection, 0);
+						}
+						break;
+					case 2:
+						String movieTitle = null;
+						
+						System.out.print("Movie Title: ");
+						movieTitle = scanner.nextLine();
+						try {
+							Query.getMovieByTitle(connection, movieTitle);
+						}
+						catch (SQLException error) {
+							System.out.println("Critical failure encountered during database operation. Aborting application...");
+							exit(scanner, connection, 0);
+						}
+						break;
+				}
+				break;
+			case 2:
+				System.out.println("Menu has not yet been implemented. Check back later.");
+				break;
+			case 3:
+				System.out.println("Menu has not yet been implemented. Check back later.");
+				break;
+			case 4:
+				return;
+			}
 			System.out.println("Menu has not yet been implemented. Check back later.");
 		} while (true);
 	}

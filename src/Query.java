@@ -96,6 +96,78 @@ public class Query {
 	}
 	
 	/**
+	 * getMovieByID prints out the details of the movie with relevant ID
+	 * @param connection The connection object
+	 * @param movieID The movie to search for
+	 * @throws SQLException
+	 */
+	public static void getMovieByID(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE MovieID = " + movieID;
+		try {
+			getMovie(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * getMovieByTitle prints out the details of the movie with relevant Title
+	 * @param connection The connection object
+	 * @param movieTitle The movie to search for
+	 * @throws SQLException
+	 */
+	public static void getMovieByTitle(Connection connection, String movieTitle) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE MovieTitle = " + movieTitle;
+		try {
+			getMovie(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * A helper function to be used by various getMovieByX() functions which accepts a query to search for a
+	 * movie by a particular value, and prints out ALL details of the relevant movie.
+	 * Note: The customer should never see all these details.
+	 * @param connection The connection object
+	 * @param query Must be of the form SELECT * FROM Movies BY {value}
+	 * @throws SQLException
+	 */
+	private static void getMovie(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("{");
+				System.out.println("    MovieID: " + result.getInt("MovieID") + ",");
+				System.out.println("    MovieTitle: " + result.getString("MovieTitle") + ",");
+				System.out.println("    MovieYear: " + result.getString("MovieYear") + ",");
+				System.out.println("    CertificateRating: " + result.getString("CertificateRating") + ",");
+				System.out.println("    RentPrice: " + result.getDouble("RentPrice") + ",");
+				System.out.println("    BuyPrice: " + result.getDouble("BuyPrice") + ",");
+				System.out.println("    MovieValue: " + result.getDouble("MovieValue") + ",");
+				System.out.println("    Stock: " + result.getInt("Stock") + ",");
+				System.out.println("    ReleaseDate: " + result.getString("ReleaseDate") + ",");
+				System.out.println("    OverallReviewRating: " + result.getDouble("OverallReviewRating"));
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * In need of FirstName > Username & LastName > Password adjustments following database updates.
 	 * isExistingUser is a utility function to be used in
 	 * conjunction with isExistingEmployee() & isExistingCustomer()
