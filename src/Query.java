@@ -12,7 +12,7 @@ public class Query {
 	 */
 	public static boolean isExistingCustomer(Connection connection, String username, String password) throws SQLException {
 		try {
-			return isExistingUser("SELECT CustomerUsername, CustomerPassword FROM Customers", username, password, connection);
+			return isExistingUser("SELECT Username, Password FROM Customers", username, password, connection);
 		}
 		catch (SQLException error) {
 			throw error;
@@ -29,7 +29,7 @@ public class Query {
 	 */
 	public static boolean isExistingEmployee(Connection connection, String username, String password) throws SQLException {
 		try {
-			return isExistingUser("SELECT CustomerUsername, CustomerPassword FROM Employees", username, password, connection);
+			return isExistingUser("SELECT Username, Password FROM Employees", username, password, connection);
 		}
 		catch (SQLException error) {
 			throw error;
@@ -53,13 +53,13 @@ public class Query {
 		// Set up query environment
 		Statement statement = null;
 		ResultSet result = null;
-		String verificationQuery = "SELECT CustomerUsername FROM Customers";
+		String verificationQuery = "SELECT Username FROM Customers";
 		String addNewUser = null;
 		if (referredBy.equals("")) {
-			addNewUser = "INSERT INTO Customers (FirstName, LastName, CustomerUsername, CustomerPassword) VALUES (\"" + firstName + "\", \"" + lastName + "\", \"" + username + "\", \"" + password + "\")";
+			addNewUser = "INSERT INTO Customers (FirstName, LastName, Username, Password) VALUES (\"" + firstName + "\", \"" + lastName + "\", \"" + username + "\", \"" + password + "\")";
 		}
 		else {
-			addNewUser = "INSERT INTO Customers (FirstName, LastName, CustomerUsername, CustomerPassword, ReferredBy) VALUES (\"" + firstName + "\", \"" + lastName + "\", \"" + username + "\", \"" + password + "\", \"" + referredBy + "\")";
+			addNewUser = "INSERT INTO Customers (FirstName, LastName, Username, Password, ReferredBy) VALUES (\"" + firstName + "\", \"" + lastName + "\", \"" + username + "\", \"" + password + "\", \"" + referredBy + "\")";
 		}
 		String currentUser = null;
 		boolean referringCustomerExists = false;
@@ -71,7 +71,7 @@ public class Query {
 			statement = connection.createStatement();
 			result = statement.executeQuery(verificationQuery);
 			while (result.next()) {
-				currentUser = result.getString("CustomerUsername");
+				currentUser = result.getString("Username");
 				if (currentUser.equals(username)) {
 					throw new LogicException("Username already in use. Please try again.");
 				}
@@ -190,8 +190,8 @@ public class Query {
 			statement = connection.createStatement();
 			result = statement.executeQuery(query);
 			while (result.next()) {
-				if (result.getString("CustomerUsername").equals(username) &&
-					result.getString("CustomerPassword").equals(password)) {
+				if (result.getString("Username").equals(username) &&
+					result.getString("Password").equals(password)) {
 					matchFound = true;
 					break;
 				}

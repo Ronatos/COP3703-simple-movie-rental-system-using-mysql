@@ -51,10 +51,25 @@ public class Main {
 					System.out.print("Password: ");
 					password = scanner.nextLine();
 					try {
-						if (Query.isExistingCustomer(connection, username, password)) {
+						boolean userIsCustomer = Query.isExistingCustomer(connection, username, password);
+						boolean userIsEmployee = Query.isExistingEmployee(connection, username, password);
+						if (userIsCustomer && userIsEmployee) {
+							System.out.println("1. Employee login");
+							System.out.println("2. Customer login");
+							selection = getUserSelection(scanner);
+							switch (selection) {
+								case 1:
+									displayEmployeeDashboard(connection, scanner);
+									break;
+								case 2:
+									displayCustomerDashboard(connection, scanner);
+									break;
+							}
+						}
+						else if (userIsCustomer) {
 							displayCustomerDashboard(connection, scanner);
 						}
-						else if (Query.isExistingEmployee(connection, username, password)) {
+						else if (userIsEmployee) {
 							displayEmployeeDashboard(connection, scanner);
 						}
 						else {
@@ -92,7 +107,6 @@ public class Main {
 					}
 					catch (SQLException error) {
 						System.out.println("Critical failure encountered during database operation. Aborting application...");
-						error.printStackTrace();
 						exit(scanner, connection, 0);
 					}
 					catch (LogicException error) {
