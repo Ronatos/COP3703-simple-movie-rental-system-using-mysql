@@ -3,7 +3,6 @@ import java.sql.*;
 public class Query {
 
 	/**
-	 * In need of FirstName > Username & LastName > Password adjustments following database updates.
 	 * isExistingCustomer determines whether the provided username and password reference an existing Customer in the database.
 	 * @param connection The connection to the database
 	 * @param username
@@ -13,7 +12,7 @@ public class Query {
 	 */
 	public static boolean isExistingCustomer(Connection connection, String username, String password) throws SQLException {
 		try {
-			return isExistingUser("SELECT FirstName, LastName FROM Customers", username, password, connection);
+			return isExistingUser("SELECT CustomerUsername, CustomerPassword FROM Customers", username, password, connection);
 		}
 		catch (SQLException error) {
 			throw error;
@@ -21,7 +20,6 @@ public class Query {
 	}
 	
 	/**
-	 * In need of FirstName > Username & LastName > Password adjustments following database updates.
 	 * isExistingEmployee determines whether the provided username and password reference an existing Employee in the database.
 	 * @param connection
 	 * @param username
@@ -31,7 +29,7 @@ public class Query {
 	 */
 	public static boolean isExistingEmployee(Connection connection, String username, String password) throws SQLException {
 		try {
-			return isExistingUser("SELECT FirstName, LastName FROM Employees", username, password, connection);
+			return isExistingUser("SELECT CustomerUsername, CustomerPassword FROM Employees", username, password, connection);
 		}
 		catch (SQLException error) {
 			throw error;
@@ -39,7 +37,6 @@ public class Query {
 	}
 	
 	/**
-	 * In need of testing following database updates.
 	 * Attempts to add a new customer to the database with provided customer information
 	 * only after verifying that the provided username is unique, and that the provided
 	 * referencedBy user exists. 
@@ -174,7 +171,6 @@ public class Query {
 	}
 	
 	/**
-	 * In need of FirstName > Username & LastName > Password adjustments following database updates.
 	 * isExistingUser is a utility function to be used in
 	 * conjunction with isExistingEmployee() & isExistingCustomer()
 	 * @param query A SQL query of the form SELECT Username, Password FROM Table, where Table is either Employees or Customers
@@ -194,8 +190,8 @@ public class Query {
 			statement = connection.createStatement();
 			result = statement.executeQuery(query);
 			while (result.next()) {
-				if (result.getString("FirstName").equals(username) &&
-					result.getString("LastName").equals(password)) {
+				if (result.getString("CustomerUsername").equals(username) &&
+					result.getString("CustomerPassword").equals(password)) {
 					matchFound = true;
 					break;
 				}
