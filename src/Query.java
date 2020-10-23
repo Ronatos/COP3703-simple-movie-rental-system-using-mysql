@@ -52,36 +52,43 @@ public class Query {
 	 * @throws SQLException A fatal error encountered while communicating with the database
 	 * @throws LogicException A logical error encountered that can be corrected - such as a username already being taken.
 	 */
-	public static void createNewCustomer(Connection connection, String username, String password, String firstName, String lastName, String referencedBy) throws SQLException, LogicException {
+	public static void createNewCustomer(Connection connection, String username, String password, String firstName, String lastName, String referredBy) throws SQLException, LogicException {
 		// Set up query environment
 		Statement statement = null;
 		ResultSet result = null;
-		String verificationQuery = "SELECT Username FROM Customers";
-		String addNewUser = "INSERT INTO Customers (Username, Password, FirstName, LastName, ReferencedBy) VALUES (" + username + ", " + password + ", " + firstName + ", " + ", " + lastName + ", " + referencedBy;
+		String verificationQuery = "SELECT CustomerUsername FROM Customers";
+		String addNewUser = null;
+		if (referredBy.equals("")) {
+			addNewUser = "INSERT INTO Customers (FirstName, LastName, CustomerUsername, CustomerPassword) VALUES (\"" + firstName + "\", \"" + lastName + "\", \"" + username + "\", \"" + password + "\")";
+		}
+		else {
+			addNewUser = "INSERT INTO Customers (FirstName, LastName, CustomerUsername, CustomerPassword, ReferredBy) VALUES (\"" + firstName + "\", \"" + lastName + "\", \"" + username + "\", \"" + password + "\", \"" + referredBy + "\")";
+		}
 		String currentUser = null;
-		boolean referencedCustomerExists = false;
+		boolean referringCustomerExists = false;
 		
 		// Make sure user can be created as specified, and do so if possible
 		// 1. Usernames must be unique
-		// 2. Referenced customer must exist
+		// 2. Referring customer must exist
 		try {
 			statement = connection.createStatement();
 			result = statement.executeQuery(verificationQuery);
 			while (result.next()) {
-				currentUser = result.getString("Username");
+				currentUser = result.getString("CustomerUsername");
 				if (currentUser.equals(username)) {
 					throw new LogicException("Username already in use. Please try again.");
 				}
-				if (currentUser.equals(referencedBy)) {
-					referencedCustomerExists = true;
+				if (currentUser.equals(referredBy)) {
+					referringCustomerExists = true;
 				}
 			}
-			if (referencedCustomerExists == false) {
+			if (referringCustomerExists == false && !referredBy.equals("")) {
 				throw new LogicException("Referenced customer does not exist. Please try again.");
 			}
 			result.close();
 			
-			result = statement.executeQuery(addNewUser);
+			statement.executeUpdate(addNewUser);
+			result.close();
 		}
 		catch (SQLException error) {
 			throw error;
@@ -90,7 +97,6 @@ public class Query {
 			throw error;
 		}
 		finally {
-			result.close();
 			statement.close();
 		}
 	}

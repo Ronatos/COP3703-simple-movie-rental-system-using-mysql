@@ -70,7 +70,7 @@ public class Main {
 					String firstName = null;
 					String lastName = null;
 					String referenced = null;
-					String referencedBy = "";
+					String referredBy = "";
 					
 					System.out.print("Username: ");
 					username = scanner.nextLine();
@@ -84,14 +84,15 @@ public class Main {
 					referenced = scanner.nextLine();
 					if (referenced.equals("y")) {
 						System.out.println("Existing customer username: ");
-						referencedBy = scanner.nextLine();
+						referredBy = scanner.nextLine();
 					}
 					
 					try {
-						Query.createNewCustomer(connection, username, password, firstName, lastName, referencedBy);
+						Query.createNewCustomer(connection, username, password, firstName, lastName, referredBy);
 					}
 					catch (SQLException error) {
 						System.out.println("Critical failure encountered during database operation. Aborting application...");
+						error.printStackTrace();
 						exit(scanner, connection, 0);
 					}
 					catch (LogicException error) {
