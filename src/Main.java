@@ -3,219 +3,369 @@ import java.util.Scanner;
 
 public class Main {
 	
+	static Scanner scanner = new Scanner(System.in);
+	static Connection dbConnection = null;
+	
 	public static void main(String[] args) {
-		// Set up UI environment
-		Scanner scanner = new Scanner(System.in);
 		
-		// Set up database environment
-		DatabaseBridge db = null;
+		// Get database connection
+		String dbURL = "jdbc:mysql://cisvm-winsrv-mysql1.unfcsd.unf.edu:3308/group2";
 		
-		// Establish database connection
-		try {
-			db = new DatabaseBridge(scanner);
-		}
-		catch (SQLException error) {
-			System.out.println("Goodbye!");
-			scanner.close();
-			System.exit(0);
-		}
+		do {
+			// Acquire administrator credentials to establish initial database connection
+			System.out.println("Establishing database connection...");
+			
+	        System.out.print("Admin Username: ");
+	        String username = scanner.nextLine();
+	        
+	        System.out.print("Admin Password: ");
+	        String password = scanner.nextLine();
+	        
+	        // Attempt to establish initial database connection with provided administrator
+	        // credentials
+	        try {
+	        	dbConnection = DriverManager.getConnection(dbURL, username, password);
+	            System.out.println("Database connection established.");
+	        }
+	        catch (SQLException error) {
+	        	System.out.println("Unable to establish database connection. " +
+	        		"Please try again or contact your system administrator.");
+	            System.out.print("Try again? (y/n): ");
+	            
+	            String response = scanner.nextLine();
+	            if (!response.equals("y")) {
+	            	error.printStackTrace();
+	    			System.out.println("Goodbye!");
+	    			scanner.close();
+	    			System.exit(0);
+	            }
+	        }
+		} while (dbConnection == null);
 		
 		// Display UI root
-		displayUserLoginMenu(db.connection, scanner);
+		displayUserLoginMenu();
 	}
 
 	/**
-	 * Complete, but untested awaiting database updates.
-	 * displayUserLoginMenu is the root of the UI. This provides options such as Log In (for both customers and employees),
-	 * Sign Up (for customers only), and Quit - the only way the application should end.
-	 * @param connection The connection object
-	 * @param scanner The scanner object
+	 * Complete, but untested.
+	 * displayUserLoginMenu is the root of the UI. This menu provides options to log in,
+	 * create a new account, or exit the application gracefully.
+	 * 
+	 * Log in: Used by both employees and customers, group membership is handled,
+	 * and the appropriate dashboard is displayed.
+	 * Create New Account: Used to create a new account, this gathers relevant account info,
+	 * and passes it to the database.
+	 * Quit: The only way the application should end.
 	 */
-	public static void displayUserLoginMenu(Connection connection, Scanner scanner) {
+	public static void displayUserLoginMenu() {
 		do {
-			int selection = 0;
+			String username;
+			String password;
 			
 			System.out.println("Greetings, and welcome to UNFMovies!");
-			System.out.println("1. Log in");
-			System.out.println("2. Sign up");
-			System.out.println("3. Quit");
+			System.out.println("1. Log in"); // Takes you to a sub-menu
+			System.out.println("2. Create new account"); // Performs a function
+			System.out.println("3. Quit"); // Ends the application
 			
-			selection = getUserSelection(scanner);
-			
+			int selection = getUserSelection();
 			switch (selection) {
-				case 1:
+				case 1: // 1. Log in
+					boolean userIsCustomer = false;
+					boolean userIsEmployee = false;
+					
+					System.out.print("Username: ");
+					username = scanner.nextLine();
+					
+					System.out.print("Password: ");
+					password = scanner.nextLine();
+					
 					try {
-						userLogin(connection, scanner);
+						userIsCustomer = Query.isExistingCustomer(
+							dbConnection, username, password);
+						userIsEmployee = Query.isExistingEmployee(
+							dbConnection, username, password);
 					}
 					catch (SQLException error) {
-						exit(scanner, connection, 1);
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the login menu
 					}
-					break;
-				case 2:
+						
+					if (userIsCustomer && userIsEmployee) {	
+						System.out.println("1. Employee dashboard");
+						System.out.println("2. Customer dashboard");
+						
+						selection = getUserSelection();
+						switch (selection) {
+							case 1:
+								displayEmployeeDashboard();
+								break; // take me back to the login menu
+							case 2:
+								displayCustomerDashboard();
+								break; // take me back to the login menu
+						}
+					}
+					else if (userIsCustomer) {
+						displayCustomerDashboard();
+					}
+					else if (userIsEmployee) {
+						displayEmployeeDashboard();
+					}
+					else {
+						System.out.println("Incorrect username or password.");
+					}
+					
+					break; // take me back to the login menu
+				case 2: // 2. Create new account
+					String referredBy = "";
+					
+					System.out.print("Username: ");
+					username = scanner.nextLine();
+					
+					System.out.print("Password: ");
+					password = scanner.nextLine();
+					
+					System.out.print("First name: ");
+					String firstName = scanner.nextLine();
+					
+					System.out.print("Last name: ");
+					String lastName = scanner.nextLine();
+					
+					System.out.print("Were you referenced by an existing customer? (y/n): ");
+					String referenced = scanner.nextLine();
+					
+					if (referenced.equals("y")) {
+						System.out.println("Existing customer username: ");
+						referredBy = scanner.nextLine();
+					}
+					
 					try {
-						customerSignUp(connection, scanner);
+						Query.createNewCustomer(
+							dbConnection, username, password, firstName, lastName, referredBy);
 					}
 					catch (SQLException error) {
-						exit(scanner, connection, 1);
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the login menu
 					}
-					break;
-				case 3:
-					exit(scanner, connection, 0);
+					catch (LogicException error) {
+						System.out.println(error.getMessage());
+					}
+					
+					break; // take me back to the login menu
+				case 3: // 3. Quit
+					scanner.close();
+					try {
+						dbConnection.close();
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+					}
+					System.exit(0);
 			}
 		} while (true);
 	}
 	
-	public static void userLogin(Connection connection, Scanner scanner) throws SQLException {
-		int selection = 0;
-		
-		System.out.print("Username: ");
-		String username = scanner.nextLine();
-		
-		System.out.print("Password: ");
-		String password = scanner.nextLine();
-		
-		try {
-			boolean userIsCustomer = Query.isExistingCustomer(connection, username, password);
-			boolean userIsEmployee = Query.isExistingEmployee(connection, username, password);
-			
-			if (userIsCustomer && userIsEmployee) {	
-				System.out.println("1. Employee login");
-				System.out.println("2. Customer login");
-				
-				selection = getUserSelection(scanner);
-				switch (selection) {
-					case 1:
-						displayEmployeeDashboard(connection, scanner);
-						break;
-					case 2:
-						displayCustomerDashboard(connection, scanner);
-						break;
-				}
-			}
-			else if (userIsCustomer) {
-				displayCustomerDashboard(connection, scanner);
-			}
-			else if (userIsEmployee) {
-				displayEmployeeDashboard(connection, scanner);
-			}
-			else {
-				System.out.println("Incorrect username or password.");
-			}
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		return;
-	}
-	
-	public static void customerSignUp(Connection connection, Scanner scanner) throws SQLException {
-		String referredBy = "";
-		
-		System.out.print("Username: ");
-		String username = scanner.nextLine();
-		
-		System.out.print("Password: ");
-		String password = scanner.nextLine();
-		
-		System.out.print("First name: ");
-		String firstName = scanner.nextLine();
-		
-		System.out.print("Last name: ");
-		String lastName = scanner.nextLine();
-		
-		System.out.print("Were you referenced by an existing customer? (y/n): ");
-		String referenced = scanner.nextLine();
-		
-		if (referenced.equals("y")) {
-			System.out.println("Existing customer username: ");
-			referredBy = scanner.nextLine();
-		}
-		
-		try {
-			Query.createNewCustomer(connection, username, password, firstName, lastName, referredBy);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		catch (LogicException error) {
-			System.out.println(error.getMessage());
-		}
-		return;
-	}
-	
 	// Incomplete
-	public static void displayCustomerDashboard(Connection connection, Scanner scanner) {
+	public static void displayCustomerDashboard() {
 		do {
-			int selection = 0;
-			
 			System.out.println("1. Find a movie");
 			System.out.println("2. Rental return");
 			System.out.println("3. Account Management");
 			System.out.println("4. Log out");
 			
-			selection = getUserSelection(scanner);
+			int selection = getUserSelection();
 		} while (true);
 	}
 	
-	// Incomplete
-	public static void displayEmployeeDashboard(Connection connection, Scanner scanner) {
+	/**
+	 * Incomplete and untested.
+	 * displayEmployeeDashboard is a sub-menu of displayUserLoginMenu.
+	 * This menu provides options to locate a movie, update existing inventory,
+	 * manage a customer's account, generate a report, or log out of the application.
+	 * 
+	 * Locate a movie: This allows the employee to search for a movie by its MovieTitle or
+	 * its MovieID properties.
+	 * Update Inventory: Displays the update inventory menu.
+	 * Customer Management: Incomplete
+	 * Reports: Incomplete
+	 * Log out: Log out and return to the login menu.
+	 */
+	public static void displayEmployeeDashboard() {
 		do {
-			int selection = 0;
-			
-			System.out.println("1. Locate a movie");
-			System.out.println("2. Update inventory");
+			System.out.println("1. Locate a movie"); // Performs a function
+			System.out.println("2. Update inventory"); // Takes you to a sub-menu
 			System.out.println("3. Customer Management");
 			System.out.println("4. Reports");
 			System.out.println("5. Log out");
 			
-			selection = getUserSelection(scanner);
+			int selection = getUserSelection();
 			switch (selection) {
 				case 1: // 1. Locate a movie
 					System.out.println("Select a movie property to search by.");
 					System.out.println("1. Movie ID");
 					System.out.println("2. Movie Title");
-					selection = getUserSelection(scanner);
 					
+					selection = getUserSelection();
 					switch (selection) {
-						case 1:
-							int movieID = 0;
-							
+						case 1: // 1. Movie ID
 							System.out.print("Movie ID: ");
-							movieID = getUserSelection(scanner);
-							try {
-								Query.getMovieByID(connection, movieID);
-							}
-							catch (SQLException error) {
-								System.out.println("Critical failure encountered during database operation. Aborting application...");
-								exit(scanner, connection, 0);
-							}
-							break;
-						case 2:
-							String movieTitle = null;
 							
-							System.out.print("Movie Title: ");
-							movieTitle = scanner.nextLine();
+							int movieID = getUserSelection();
 							try {
-								Query.getMovieByTitle(connection, movieTitle);
+								Query.getMovieByID(dbConnection, movieID);
 							}
 							catch (SQLException error) {
-								System.out.println("Critical failure encountered during database operation. Aborting application...");
-								exit(scanner, connection, 0);
+								error.printStackTrace();
+								System.out.println("A database error was encountered. " +
+									"Please try again or contact your system administrator.");
+								break; // take me back to the employee dashboard
 							}
-							break;
+							
+							break; // take me back to the employee dashboard
+						case 2: // 2. Movie Title
+							System.out.print("Movie Title: ");
+							
+							String movieTitle = scanner.nextLine();
+							try {
+								Query.getMovieByTitle(dbConnection, movieTitle);
+							}
+							catch (SQLException error) {
+								error.printStackTrace();
+								System.out.println("A database error was encountered. " +
+									"Please try again or contact your system administrator.");
+								break; // take me back to the employee dashboard
+							}
+							
+							break; // take me back to the employee dashboard
 					}
-					break;
-				case 2: // 2. Update inventory
-					System.out.println("Menu has not yet been implemented. Check back later.");
-					break;
+					
+					break; // take me back to the employee dashboard
+				case 2:
+					displayUpdateInventoryMenu();
+					break; // take me back to the employee dashboard
 				case 3:
-					System.out.println("Menu has not yet been implemented. Check back later.");
+					System.out.println("Menu option has not yet been implemented. Check back later.");
 					break;
 				case 4:
-					System.out.println("Menu has not yet been implemented. Check back later.");
+					System.out.println("Menu option has not yet been implemented. Check back later.");
 					break;
 				case 5:
-					return;
+					return; // Take me back to the log in menu
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Incomplete and untested.
+	 * displayUpdateInventoryMenu is a sub-menu of displayEmployeeDashboard.
+	 * This menu provides options to add a new item, update an existing item,
+	 * delete an item, or return to the employee dashboard.
+	 * 
+	 * Add a new item: Takes you to the add new item sub-menu.
+	 * Update existing item: Incomplete
+	 * Delete item: Incomplete
+	 * Back: Returns you to the employee dashboard.
+	 */
+	public static void displayUpdateInventoryMenu() {
+		do {
+			System.out.println("1. Add new item"); // Takes you to a sub-menu
+			System.out.println("2. Update existing item");
+			System.out.println("3. Delete item");
+			System.out.println("4. Back");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1:
+					displayAddNewItemMenu();
+					break; // take me back to the update inventory menu
+				case 2:
+					System.out.println("Menu option has not yet been implemented. Check back later.");
+					break; // take me back to the update inventory menu
+				case 3:
+					System.out.println("Menu option has not yet been implemented. Check back later.");
+					break; // take me back to the update inventory menu
+				case 4:
+					return; // take me back to the employee dashboard
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Incomplete and untested.
+	 * displayAddNewItemMenu is a sub-menu of displayUpdateInventoryMenu.
+	 * This menu provides options to add a movie, add an actor, add a genre,
+	 * add a director, add an employee, or return to the update inventory menu.
+	 * 
+	 * Add Movie: Gathers relevant movie data and passes it to the database to attempt to add it.
+	 * Add Actor: Incomplete
+	 * Add Genre: Incomplete
+	 * Add Director: Incomplete
+	 * Add Employee Incomplete
+	 * Back: Returns you to the update inventory menu.
+	 */
+	public static void displayAddNewItemMenu() {
+		do {
+			System.out.println("1. Add Movie"); // Performs a function
+			System.out.println("2. Add Actor");
+			System.out.println("3. Add Genre");
+			System.out.println("4. Add Director");
+			System.out.println("5. Add Employee");
+			System.out.println("6. Back");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. Add Movie
+					System.out.print("Movie title: ");
+					String movieTitle = scanner.nextLine();
+					
+					System.out.print("Movie release date (yyyy-mm-dd): ");
+					String movieReleaseDate = scanner.nextLine();
+					
+					System.out.print("Movie certificate rating: ");
+					String movieCertificateRating = scanner.nextLine();
+					
+					System.out.print("Movie business cost per item: ");
+					double movieBusinessCost = scanner.nextDouble();
+					
+					System.out.print("Movie customer purchase cost: ");
+					double movieCustomerPurchaseCost = scanner.nextDouble();
+					
+					System.out.print("Movie customer rent cost: ");
+					double movieCustomerRentCost = scanner.nextDouble();
+					
+					try {
+						Query.insertMovie(
+								movieTitle,
+								movieReleaseDate,
+								movieCertificateRating,
+								movieBusinessCost,
+								movieCustomerPurchaseCost,
+								movieCustomerRentCost);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the add new item menu
+					}
+					catch (LogicException error) {
+						System.out.println(error.getMessage());
+					}
+					
+					break; // take me back to the add new item menu
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				case 6:
+					return; // take me back to the update inventory menu
 			}
 		} while (true);
 	}
@@ -225,7 +375,7 @@ public class Main {
 	 * @param scanner The scanner object
 	 * @return A user-selected integer
 	 */
-	public static int getUserSelection(Scanner scanner) {
+	public static int getUserSelection() {
 		do {
 			try {
 				return Integer.parseInt(scanner.nextLine());
@@ -234,30 +384,5 @@ public class Main {
 				System.out.println("Please select one of the options provided.");
 			}
 		} while (true);
-	}
-	
-	/**
-	 * Exits the program gracefully.
-	 * @param scanner The scanner used to collect user input.
-	 * @param connection The connection to the database.
-	 * @param status The exit status code.
-	 */
-	public static void exit(Scanner scanner, Connection connection, int status) {
-		switch (status) {
-			case 0:
-				System.out.println("Goodbye!");
-				break;
-			case 1:
-				System.out.println("Critical failure encountered during database operation. Aborting application...");
-				break;
-		}
-		scanner.close();
-		try {
-			connection.close();
-		}
-		catch (SQLException error) {
-			error.printStackTrace();
-		}
-		System.exit(status);
 	}
 }
