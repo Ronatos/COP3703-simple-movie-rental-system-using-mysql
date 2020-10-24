@@ -33,8 +33,6 @@ public class Main {
 	 */
 	public static void displayUserLoginMenu(Connection connection, Scanner scanner) {
 		do {
-			String username = null;
-			String password = null;
 			int selection = 0;
 			
 			System.out.println("Greetings, and welcome to UNFMovies!");
@@ -46,77 +44,103 @@ public class Main {
 			
 			switch (selection) {
 				case 1:
-					System.out.print("Username: ");
-					username = scanner.nextLine();
-					System.out.print("Password: ");
-					password = scanner.nextLine();
 					try {
-						boolean userIsCustomer = Query.isExistingCustomer(connection, username, password);
-						boolean userIsEmployee = Query.isExistingEmployee(connection, username, password);
-						if (userIsCustomer && userIsEmployee) {
-							System.out.println("1. Employee login");
-							System.out.println("2. Customer login");
-							selection = getUserSelection(scanner);
-							switch (selection) {
-								case 1:
-									displayEmployeeDashboard(connection, scanner);
-									break;
-								case 2:
-									displayCustomerDashboard(connection, scanner);
-									break;
-							}
-						}
-						else if (userIsCustomer) {
-							displayCustomerDashboard(connection, scanner);
-						}
-						else if (userIsEmployee) {
-							displayEmployeeDashboard(connection, scanner);
-						}
-						else {
-							System.out.println("Incorrect username or password."); // Vagueness is on purpose (security)
-						}
+						userLogin(connection, scanner);
 					}
 					catch (SQLException error) {
-						System.out.println("Critical failure encountered during database operation. Aborting application...");
-						exit(scanner, connection, 0);
+						exit(scanner, connection, 1);
 					}
 					break;
 				case 2:
-					String firstName = null;
-					String lastName = null;
-					String referenced = null;
-					String referredBy = "";
-					
-					System.out.print("Username: ");
-					username = scanner.nextLine();
-					System.out.print("Password: ");
-					password = scanner.nextLine();
-					System.out.print("First name: ");
-					firstName = scanner.nextLine();
-					System.out.print("Last name: ");
-					lastName = scanner.nextLine();
-					System.out.print("Were you referenced by an existing customer? (y/n): ");
-					referenced = scanner.nextLine();
-					if (referenced.equals("y")) {
-						System.out.println("Existing customer username: ");
-						referredBy = scanner.nextLine();
-					}
-					
 					try {
-						Query.createNewCustomer(connection, username, password, firstName, lastName, referredBy);
+						customerSignUp(connection, scanner);
 					}
 					catch (SQLException error) {
-						System.out.println("Critical failure encountered during database operation. Aborting application...");
-						exit(scanner, connection, 0);
-					}
-					catch (LogicException error) {
-						System.out.println(error.getMessage());
+						exit(scanner, connection, 1);
 					}
 					break;
 				case 3:
 					exit(scanner, connection, 0);
 			}
 		} while (true);
+	}
+	
+	public static void userLogin(Connection connection, Scanner scanner) throws SQLException {
+		int selection = 0;
+		
+		System.out.print("Username: ");
+		String username = scanner.nextLine();
+		
+		System.out.print("Password: ");
+		String password = scanner.nextLine();
+		
+		try {
+			boolean userIsCustomer = Query.isExistingCustomer(connection, username, password);
+			boolean userIsEmployee = Query.isExistingEmployee(connection, username, password);
+			
+			if (userIsCustomer && userIsEmployee) {	
+				System.out.println("1. Employee login");
+				System.out.println("2. Customer login");
+				
+				selection = getUserSelection(scanner);
+				switch (selection) {
+					case 1:
+						displayEmployeeDashboard(connection, scanner);
+						break;
+					case 2:
+						displayCustomerDashboard(connection, scanner);
+						break;
+				}
+			}
+			else if (userIsCustomer) {
+				displayCustomerDashboard(connection, scanner);
+			}
+			else if (userIsEmployee) {
+				displayEmployeeDashboard(connection, scanner);
+			}
+			else {
+				System.out.println("Incorrect username or password.");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		return;
+	}
+	
+	public static void customerSignUp(Connection connection, Scanner scanner) throws SQLException {
+		String referredBy = "";
+		
+		System.out.print("Username: ");
+		String username = scanner.nextLine();
+		
+		System.out.print("Password: ");
+		String password = scanner.nextLine();
+		
+		System.out.print("First name: ");
+		String firstName = scanner.nextLine();
+		
+		System.out.print("Last name: ");
+		String lastName = scanner.nextLine();
+		
+		System.out.print("Were you referenced by an existing customer? (y/n): ");
+		String referenced = scanner.nextLine();
+		
+		if (referenced.equals("y")) {
+			System.out.println("Existing customer username: ");
+			referredBy = scanner.nextLine();
+		}
+		
+		try {
+			Query.createNewCustomer(connection, username, password, firstName, lastName, referredBy);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		catch (LogicException error) {
+			System.out.println(error.getMessage());
+		}
+		return;
 	}
 	
 	// Incomplete
@@ -146,51 +170,53 @@ public class Main {
 			
 			selection = getUserSelection(scanner);
 			switch (selection) {
-			case 1:
-				System.out.println("Select a movie property to search by.");
-				System.out.println("1. Movie ID");
-				System.out.println("2. Movie Title");
-				selection = getUserSelection(scanner);
-				
-				switch (selection) {
-					case 1:
-						int movieID = 0;
-						
-						System.out.print("Movie ID: ");
-						movieID = getUserSelection(scanner);
-						try {
-							Query.getMovieByID(connection, movieID);
-						}
-						catch (SQLException error) {
-							System.out.println("Critical failure encountered during database operation. Aborting application...");
-							exit(scanner, connection, 0);
-						}
-						break;
-					case 2:
-						String movieTitle = null;
-						
-						System.out.print("Movie Title: ");
-						movieTitle = scanner.nextLine();
-						try {
-							Query.getMovieByTitle(connection, movieTitle);
-						}
-						catch (SQLException error) {
-							System.out.println("Critical failure encountered during database operation. Aborting application...");
-							exit(scanner, connection, 0);
-						}
-						break;
-				}
-				break;
-			case 2:
-				System.out.println("Menu has not yet been implemented. Check back later.");
-				break;
-			case 3:
-				System.out.println("Menu has not yet been implemented. Check back later.");
-				break;
-			case 4:
-				return;
+				case 1: // 1. Locate a movie
+					System.out.println("Select a movie property to search by.");
+					System.out.println("1. Movie ID");
+					System.out.println("2. Movie Title");
+					selection = getUserSelection(scanner);
+					
+					switch (selection) {
+						case 1:
+							int movieID = 0;
+							
+							System.out.print("Movie ID: ");
+							movieID = getUserSelection(scanner);
+							try {
+								Query.getMovieByID(connection, movieID);
+							}
+							catch (SQLException error) {
+								System.out.println("Critical failure encountered during database operation. Aborting application...");
+								exit(scanner, connection, 0);
+							}
+							break;
+						case 2:
+							String movieTitle = null;
+							
+							System.out.print("Movie Title: ");
+							movieTitle = scanner.nextLine();
+							try {
+								Query.getMovieByTitle(connection, movieTitle);
+							}
+							catch (SQLException error) {
+								System.out.println("Critical failure encountered during database operation. Aborting application...");
+								exit(scanner, connection, 0);
+							}
+							break;
+					}
+					break;
+				case 2: // 2. Update inventory
+					System.out.println("Menu has not yet been implemented. Check back later.");
+					break;
+				case 3:
+					System.out.println("Menu has not yet been implemented. Check back later.");
+					break;
+				case 4:
+					System.out.println("Menu has not yet been implemented. Check back later.");
+					break;
+				case 5:
+					return;
 			}
-			System.out.println("Menu has not yet been implemented. Check back later.");
 		} while (true);
 	}
 	
@@ -217,7 +243,14 @@ public class Main {
 	 * @param status The exit status code.
 	 */
 	public static void exit(Scanner scanner, Connection connection, int status) {
-		System.out.println("Goodbye!");
+		switch (status) {
+			case 0:
+				System.out.println("Goodbye!");
+				break;
+			case 1:
+				System.out.println("Critical failure encountered during database operation. Aborting application...");
+				break;
+		}
 		scanner.close();
 		try {
 			connection.close();
