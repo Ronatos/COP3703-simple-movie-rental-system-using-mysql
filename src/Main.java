@@ -247,10 +247,12 @@ public class Main {
 					displayUpdateInventoryMenu();
 					break; // take me back to the employee dashboard
 				case 3:
-					System.out.println("Menu option has not yet been implemented. Check back later.");
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break;
 				case 4:
-					System.out.println("Menu option has not yet been implemented. Check back later.");
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break;
 				case 5:
 					return; // Take me back to the log in menu
@@ -282,10 +284,12 @@ public class Main {
 					displayAddNewItemMenu();
 					break; // take me back to the update inventory menu
 				case 2:
-					System.out.println("Menu option has not yet been implemented. Check back later.");
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break; // take me back to the update inventory menu
 				case 3:
-					System.out.println("Menu option has not yet been implemented. Check back later.");
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break; // take me back to the update inventory menu
 				case 4:
 					return; // take me back to the employee dashboard
@@ -357,12 +361,20 @@ public class Main {
 					
 					break; // take me back to the add new item menu
 				case 2:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break;
 				case 3:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break;
 				case 4:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break;
 				case 5:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
 					break;
 				case 6:
 					return; // take me back to the update inventory menu
