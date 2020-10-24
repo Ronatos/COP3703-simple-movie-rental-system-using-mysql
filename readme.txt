@@ -52,6 +52,9 @@
                     II. Determine which value to update
                         - First name
                         - Last name
+                e. Add actor to movie
+                f. Add director to movie
+                g. Add genre to movie
             3. Delete an item
                 a. Delete Movie
                     I. Search for movie

@@ -1,6 +1,12 @@
 import java.sql.*;
 import java.util.Scanner;
 
+/*
+ * To do
+ * 1. Remove all error.printStackTrace() calls after application is fully tested.
+ *    The user doesn't need to see these.
+ */
+
 public class Main {
 	
 	static Scanner scanner = new Scanner(System.in);
@@ -274,18 +280,17 @@ public class Main {
 	public static void displayUpdateInventoryMenu() {
 		do {
 			System.out.println("1. Add new item"); // Takes you to a sub-menu
-			System.out.println("2. Update existing item");
+			System.out.println("2. Update existing item"); // Takes you to a sub-menu
 			System.out.println("3. Delete item");
 			System.out.println("4. Back");
 			
 			int selection = getUserSelection();
 			switch (selection) {
-				case 1:
+				case 1: // 1. Add new item
 					displayAddNewItemMenu();
 					break; // take me back to the update inventory menu
-				case 2:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
+				case 2: // 2. Update existing item
+					displayUpdateItemMenu();
 					break; // take me back to the update inventory menu
 				case 3:
 					System.out.println("Menu option has not yet been implemented. " +
@@ -297,27 +302,33 @@ public class Main {
 		} while (true);
 	}
 	
+	public static void displayUpdateItemMenu() {
+		
+	}
+	
 	/**
-	 * Incomplete and untested.
+	 * Incomplete awaiting required query functions, and is accordingly untested.
 	 * displayAddNewItemMenu is a sub-menu of displayUpdateInventoryMenu.
 	 * This menu provides options to add a movie, add an actor, add a genre,
-	 * add a director, add an employee, or return to the update inventory menu.
+	 * add a director, or return to the update inventory menu.
 	 * 
 	 * Add Movie: Gathers relevant movie data and passes it to the database to attempt to add it.
-	 * Add Actor: Incomplete
-	 * Add Genre: Incomplete
-	 * Add Director: Incomplete
-	 * Add Employee Incomplete
+	 * Add Actor: Gathers actor information and passes it to the database to attempt to add it.
+	 * Add Genre: Gathers genre information and passes it to the database to attempt to add it.
+	 * Add Director: Gathers director information and passes it to the database to attempt to add
+	 * it.
 	 * Back: Returns you to the update inventory menu.
 	 */
 	public static void displayAddNewItemMenu() {
 		do {
+			String firstName;
+			String lastName;
+			
 			System.out.println("1. Add Movie"); // Performs a function
-			System.out.println("2. Add Actor");
+			System.out.println("2. Add Actor"); // Performs a function
 			System.out.println("3. Add Genre");
-			System.out.println("4. Add Director");
-			System.out.println("5. Add Employee");
-			System.out.println("6. Back");
+			System.out.println("4. Add Director"); // Performs a function
+			System.out.println("5. Back");
 			
 			int selection = getUserSelection();
 			switch (selection) {
@@ -342,6 +353,7 @@ public class Main {
 					
 					try {
 						Query.insertMovie(
+								dbConnection,
 								movieTitle,
 								movieReleaseDate,
 								movieCertificateRating,
@@ -360,23 +372,61 @@ public class Main {
 					}
 					
 					break; // take me back to the add new item menu
-				case 2:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break;
-				case 3:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break;
-				case 4:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break;
-				case 5:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break;
-				case 6:
+				case 2: // 2. Add Actor
+					System.out.print("Actor first name: ");
+					firstName = scanner.nextLine();
+					
+					System.out.print("Actor last name: ");
+					lastName = scanner.nextLine();
+					
+					try {
+						Query.insertActor(
+								dbConnection, firstName, lastName);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the add new item menu
+					}
+					
+					break; // take me back to the add new item menu
+				case 3: // 3. Add Genre
+					System.out.print("Genre: ");
+					String genre = scanner.nextLine();
+					
+					try {
+						Query.insertGenre(
+								dbConnection, genre);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the add new item menu
+					}
+					
+					break; // take me back to the add new item menu
+				case 4: // 4. Add Director
+					System.out.print("Director first name: ");
+					firstName = scanner.nextLine();
+					
+					System.out.print("Director last name: ");
+					lastName = scanner.nextLine();
+					
+					try {
+						Query.insertDirector(
+								dbConnection, firstName, lastName);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the add new item menu
+					}
+					
+					break; // take me back to the add new item menu
+				case 5: // 5. Back
 					return; // take me back to the update inventory menu
 			}
 		} while (true);
