@@ -206,4 +206,68 @@ public class Query {
 		}
 		return matchFound;
 	}
+
+
+/**
+ * Attempts to add a new customer to the database with provided customer information
+ * only after verifying that the provided username is unique, and that the provided
+ * referencedBy user exists. 
+ * @param connection The database connection object
+ * @param username The new customer's chosen username
+ * @param password The new customer's chosen password
+ * @param firstName The new customer's first name
+ * @param lastName The new customer's last name
+ * @param referencedBy The customer's username that referenced this new customer.
+ * @throws SQLException A fatal error encountered while communicating with the database
+ * @throws LogicException A logical error encountered that can be corrected - such as a username already being taken.
+ */
+public static void insertMovie(Connection connection, String movieTitle, String movieReleaseDate, String movieCertificateRating, double movieBusinessCost, double movieCustomerPurchaseCost, double movieCustomerRentCost) throws SQLException, LogicException {
+	// Set up query environment
+
+	Statement statement = null;
+	ResultSet result = null;
+	String verificationQuery = "SELECT MovieTitle FROM Movies";
+	String addNewMovie = "INSERT INTO Movies (MovieTitle, MovieYear, CertficateRating, MovieValue, BuyPrice, RentPrice) VALUE (\"" + movieTitle + "\", \"" + movieReleaseDate + "\", \"" + movieCertificateRating + "\", \"" + movieBusinessCost + "\", \"" + movieCustomerPurchaseCost + "\", \"" + movieCustomerRentCost + "\")";
+	
+	String exsistingMovie = null;
+	
+	try {
+		statement = connection.createStatement();
+		result = statement.executeQuery(verificationQuery);
+		while (result.next()) {
+			exsistingMovie = result.getString("MovieTite");
+			if (exsistingMovie.equals(movieTitle)) {
+				throw new LogicException("Movie already in use. Please try again.");
+			}
+		}
+		result.close();
+		
+		statement.executeUpdate(addNewMovie);
+		result.close();
+	}
+	catch (SQLException error) {
+		throw error;
+	}
+	catch (LogicException error) {
+		throw error;
+	}
+	finally {
+		statement.close();
+	}
+  }
+
+public static void insertActor(Connection dbConnection, String firstName, String lastName) {
+	// TODO Auto-generated method stub
+	
+}
+
+public static void insertGenre(Connection dbConnection, String genre) {
+	// TODO Auto-generated method stub
+	
+}
+
+public static void insertDirector(Connection dbConnection, String firstName, String lastName) {
+	// TODO Auto-generated method stub
+	
+}
 }
