@@ -303,7 +303,35 @@ public class Main {
 	}
 	
 	public static void displayUpdateItemMenu() {
-		
+		do {
+			System.out.println("1. Update movie");
+			System.out.println("2. Update actor");
+			System.out.println("3. Update director");
+			System.out.println("4. Update genre");
+			System.out.println("5. Back");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
+					break; // take me back to the displayUpdateItemMenu
+				case 2:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
+					break; // take me back to the displayUpdateItemMenu
+				case 3:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
+					break; // take me back to the displayUpdateItemMenu
+				case 4:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
+					break; // take me back to the displayUpdateItemMenu
+				case 5:
+					return;
+			}
+		} while (true);
 	}
 	
 	/**
