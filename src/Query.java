@@ -113,6 +113,116 @@ public class Query {
 	}
 	
 	/**
+	 * Sets new CertificateRating value for the specified MovieID
+	 * @param connection The database connection object
+	 * @param newMovieCertificateRating The new CertificateRating value
+	 * @param movieID The movie to update
+	 * @throws SQLException
+	 */
+	public static void setMovieCertificateRating(Connection connection, String newMovieCertificateRating, int movieID) throws SQLException {
+		Statement statement = null;
+
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate("UPDATE Movies SET CertificateRating = \"" + newMovieCertificateRating + "\" WHERE MovieID = " + movieID);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	/**
+	 * Sets new MovieValue value for the specified MovieID
+	 * @param connection The database connection object
+	 * @param newMovieBusinessCost The new price the business pays for this item
+	 * @param movieID The movie to update
+	 * @throws SQLException
+	 */
+	public static void setMovieBusinessCost(Connection connection, Double newMovieBusinessCost, int movieID) throws SQLException {
+		Statement statement = null;
+
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate("UPDATE Movies SET MovieValue = \"" + newMovieBusinessCost + "\" WHERE MovieID = " + movieID);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	/**
+	 * Sets new RentPrice value for the specified MovieID
+	 * @param connection The database connection object
+	 * @param newMovieRentalCost The new price the customer pays to rent this item
+	 * @param movieID The movie to update
+	 * @throws SQLException
+	 */
+	public static void setMovieRentalCost(Connection connection, Double newMovieRentalCost, int movieID) throws SQLException {
+		Statement statement = null;
+
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate("UPDATE Movies SET RentPrice = \"" + newMovieRentalCost + "\" WHERE MovieID = " + movieID);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	/**
+	 * Sets new BuyPrice value for the specified MovieID
+	 * @param connection The database connection object
+	 * @param newMoviePurchaseCost The new price the customer pays to buy this item
+	 * @param movieID The movie to update
+	 * @throws SQLException
+	 */
+	public static void setMoviePurchaseCost(Connection connection, Double newMoviePurchaseCost, int movieID) throws SQLException {
+		Statement statement = null;
+
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate("UPDATE Movies SET BuyPrice = \"" + newMoviePurchaseCost + "\" WHERE MovieID = " + movieID);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	/**
+	 * Sets new Stock value for the specified MovieID
+	 * @param connection The database connection object
+	 * @param newMovieStock The new number of this item the business as in stock
+	 * @param movieID The movie to update
+	 * @throws SQLException
+	 */
+	public static void setMovieStock(Connection connection, int newMovieStock, int movieID) throws SQLException {
+		Statement statement = null;
+
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate("UPDATE Movies SET Stock = \"" + newMovieStock + "\" WHERE MovieID = " + movieID);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	/**
 	 * Attempts to add a new customer to the database with provided customer information
 	 * only after verifying that the provided username is unique, and that the provided
 	 * referencedBy user exists. 

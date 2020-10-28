@@ -324,7 +324,7 @@ public class Main {
 	 */
 	public static void displayUpdateItemMenu() {
 		do {
-			System.out.println("1. Update movie"); // Performs a function, but might be better as a sub-menu
+			System.out.println("1. Update movie"); // Would be better as a sub-menu
 			System.out.println("2. Update actor");
 			System.out.println("3. Update director");
 			System.out.println("4. Update genre");
@@ -334,12 +334,11 @@ public class Main {
 			switch (selection) {
 				case 1: // 1. Update movie
 					System.out.println("Movie ID: ");
-
 					int movieID = getUserSelection();
 					
 					try {
 						if (Query.isExistingMovie(dbConnection, movieID)) {
-							Query.getMovieByID(dbConnection, movieID);
+							displayUpdateMovieMenu(movieID);
 						}
 						else {
 							System.out.println("Movie with ID " + movieID + " not found. Please try again.");
@@ -351,60 +350,6 @@ public class Main {
 						System.out.println("A database error was encountered. " +
 							"Please try again or contact your system administrator.");
 						break; // take me back to the displayUpdateItemMenu
-					}
-					
-					System.out.println("What would you like to update?");
-					System.out.println("1. Title");
-					System.out.println("2. Release date");
-					System.out.println("3. Certificate Rating");
-					System.out.println("4. Business cost per item");
-					System.out.println("5. Customer rental cost");
-					System.out.println("6. Customer purchase cost");
-					System.out.println("7. Stock");
-					System.out.println("8. Cancel update");
-					
-					selection = getUserSelection();
-					switch (selection) {
-						case 1: // 1. Title
-							System.out.print("New Title: ");
-							
-							String newMovieTitle = scanner.nextLine();
-							try {
-								Query.setMovieTitle(dbConnection, newMovieTitle, movieID);
-							}
-							catch (SQLException error) {
-								error.printStackTrace();
-								System.out.println("A database error was encountered. " +
-									"Please try again or contact your system administrator.");
-								break; // take me back to the displayUpdateItemMenu
-							}
-							break; // take me back to the displayUpdateItemMenu
-						case 2: // 2. Release date
-							System.out.print("New Release Date (yyyy-mm-dd): ");
-							
-							String newReleaseDate = scanner.nextLine();
-							try {
-								Query.setMovieReleaseDate(dbConnection, newReleaseDate, movieID);
-							}
-							catch (SQLException error) {
-								error.printStackTrace();
-								System.out.println("A database error was encountered. " +
-									"Please try again or contact your system administrator.");
-								break; // take me back to the displayUpdateItemMenu
-							}
-							break; // take me back to the displayUpdateItemMenu
-						case 3:
-							break; // take me back to the displayUpdateItemMenu
-						case 4:
-							break; // take me back to the displayUpdateItemMenu
-						case 5:
-							break; // take me back to the displayUpdateItemMenu
-						case 6:
-							break; // take me back to the displayUpdateItemMenu
-						case 7:
-							break; // take me back to the displayUpdateItemMenu
-						case 8:
-							break; // take me back to the displayUpdateItemMenu
 					}
 					
 					break; // take me back to the displayUpdateItemMenu
@@ -422,6 +367,140 @@ public class Main {
 					break; // take me back to the displayUpdateItemMenu
 				case 5:
 					return;
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Finished and tested.
+	 * displayUpdateMovieMenu is a sub-menu of displayUpdateItemMenu which handles
+	 * updating a movie of specific movieID.
+	 * @param movieID The movie to update
+	 */
+	public static void displayUpdateMovieMenu(int movieID) {
+		do {
+			try {
+				Query.getMovieByID(dbConnection, movieID);
+			}
+			catch (SQLException error) {
+				error.printStackTrace();
+				System.out.println("A database error was encountered. " +
+					"Please try again or contact your system administrator.");
+				return; // take me back to the displayUpdateItemMenu
+			}
+			
+			System.out.println("What would you like to update about this movie?");
+			System.out.println("1. Title");
+			System.out.println("2. Release date");
+			System.out.println("3. Certificate Rating");
+			System.out.println("4. Business cost per item");
+			System.out.println("5. Customer rental cost");
+			System.out.println("6. Customer purchase cost");
+			System.out.println("7. Stock");
+			System.out.println("8. Finish updating this movie");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. Title (untested)
+					System.out.print("New Title: ");
+					
+					String newMovieTitle = scanner.nextLine();
+					try {
+						Query.setMovieTitle(dbConnection, newMovieTitle, movieID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateMovieMenu
+					}
+					break; // take me back to the displayUpdateMovieMenu
+				case 2: // 2. Release date (untested)
+					System.out.print("New Release Date (yyyy-mm-dd): ");
+					
+					String newReleaseDate = scanner.nextLine();
+					try {
+						Query.setMovieReleaseDate(dbConnection, newReleaseDate, movieID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateMovieMenu
+					}
+					break; // take me back to the displayUpdateMovieMenu
+				case 3: // 3. Certificate Rating (untested)
+					System.out.print("New Certificate Rating: ");
+					
+					String newCertificateRating = scanner.nextLine();
+					try {
+						Query.setMovieCertificateRating(dbConnection, newCertificateRating, movieID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateMovieMenu
+					}
+					break; // take me back to the displayUpdateMovieMenu
+				case 4: // 4. Business cost per item (untested)
+					System.out.print("New Business Cost per Item: ");
+					
+					Double newBusinessCost = scanner.nextDouble();
+					try {
+						Query.setMovieBusinessCost(dbConnection, newBusinessCost, movieID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateMovieMenu
+					}
+					break; // take me back to the displayUpdateMovieMenu
+				case 5: // 5. Customer rental cost (untested)
+					System.out.print("New Customer Rental Cost: ");
+					
+					Double newRentalCost = scanner.nextDouble();
+					try {
+						Query.setMovieRentalCost(dbConnection, newRentalCost, movieID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateMovieMenu
+					}
+					break; // take me back to the displayUpdateMovieMenu
+				case 6: // 6. Customer purchase cost (untested)
+					System.out.print("New Customer Purchase Cost: ");
+					
+					Double newPurchaseCost = scanner.nextDouble();
+					try {
+						Query.setMoviePurchaseCost(dbConnection, newPurchaseCost, movieID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateMovieMenu
+					}
+					break; // take me back to the displayUpdateMovieMenu
+				case 7: // 7. Stock (untested)
+					System.out.print("New Stock: ");
+					
+					int newStock = getUserSelection();
+					try {
+						Query.setMovieStock(dbConnection, newStock, movieID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateMovieMenu
+					}
+					break; // take me back to the displayUpdateMovieMenu
+				case 8: // 8. Finish updating this movie
+					return; // take me back to the displayUpdateItemMenu
 			}
 		} while (true);
 	}
@@ -558,7 +637,7 @@ public class Main {
 				return Integer.parseInt(scanner.nextLine());
 			}
 			catch (NumberFormatException error) {
-				System.out.println("Please select one of the options provided.");
+				System.out.println("Please enter an integer.");
 			}
 		} while (true);
 	}
