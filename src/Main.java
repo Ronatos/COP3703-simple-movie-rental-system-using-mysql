@@ -53,7 +53,7 @@ public class Main {
 	}
 
 	/**
-	 * Complete, but untested.
+	 * Complete and tested.
 	 * displayUserLoginMenu is the root of the UI. This menu provides options to log in,
 	 * create a new account, or exit the application gracefully.
 	 * 
@@ -162,6 +162,7 @@ public class Main {
 					
 					break; // take me back to the login menu
 				case 3: // 3. Quit
+					Sysmte.out.println("Goodbye!");
 					scanner.close();
 					try {
 						dbConnection.close();
@@ -188,6 +189,7 @@ public class Main {
 	
 	/**
 	 * Incomplete and untested.
+	 * - Locate a movie is complete and has been tested
 	 * displayEmployeeDashboard is a sub-menu of displayUserLoginMenu.
 	 * This menu provides options to locate a movie, update existing inventory,
 	 * manage a customer's account, generate a report, or log out of the application.
@@ -336,6 +338,7 @@ public class Main {
 	
 	/**
 	 * Incomplete awaiting required query functions, and is accordingly untested.
+	 * - Add Movie is complete and tested.
 	 * displayAddNewItemMenu is a sub-menu of displayUpdateInventoryMenu.
 	 * This menu provides options to add a movie, add an actor, add a genre,
 	 * add a director, or return to the update inventory menu.
@@ -395,12 +398,11 @@ public class Main {
 							"Please try again or contact your system administrator.");
 						break; // take me back to the add new item menu
 					}
-					catch (LogicException error) {
-						System.out.println(error.getMessage());
-					}
-					
+
 					break; // take me back to the add new item menu
 				case 2: // 2. Add Actor
+					System.out.println("Menu option not implemented.");
+					/*
 					System.out.print("Actor first name: ");
 					firstName = scanner.nextLine();
 					
@@ -433,9 +435,11 @@ public class Main {
 							"Please try again or contact your system administrator.");
 						break; // take me back to the add new item menu
 					}
-					
+					*/
 					break; // take me back to the add new item menu
 				case 4: // 4. Add Director
+					System.out.println("Menu option not implemented.");
+					/*
 					System.out.print("Director first name: ");
 					firstName = scanner.nextLine();
 					
@@ -452,7 +456,7 @@ public class Main {
 							"Please try again or contact your system administrator.");
 						break; // take me back to the add new item menu
 					}
-					
+					*/
 					break; // take me back to the add new item menu
 				case 5: // 5. Back
 					return; // take me back to the update inventory menu
