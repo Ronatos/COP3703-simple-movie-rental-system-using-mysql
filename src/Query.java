@@ -2,6 +2,8 @@ import java.sql.*;
 
 public class Query {
 
+	// isExisting ---------------------------------------------------------------------------------
+	
 	/**
 	 * isExistingCustomer determines whether the provided username and password reference an existing Customer in the database.
 	 * @param connection The connection to the database
@@ -67,6 +69,237 @@ public class Query {
 	}
 	
 	/**
+	 * isExistingActor determines whether the provided actorID references an existing actor in the database.
+	 * @param connection The database connection object
+	 * @param actorID The actor to search for
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean isExistingActor(Connection connection, int actorID) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery("SELECT * FROM Actors WHERE ActorID = " + actorID);
+			if (!result.next()) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
+	 * isExistingUser is a utility function to be used in
+	 * conjunction with isExistingEmployee() & isExistingCustomer()
+	 * @param query A SQL query of the form SELECT Username, Password FROM Table, where Table is either Employees or Customers
+	 * @param username The username of the user to find
+	 * @param password The password of the user to find
+	 * @param connection The database connection object
+	 * @return
+	 * @throws SQLException
+	 */
+	private static boolean isExistingUser(String query, String username, String password, Connection connection) throws SQLException {
+		// Set up query environment
+		Statement statement = null;
+		ResultSet result = null;
+		boolean matchFound = false;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			while (result.next()) {
+				if (result.getString("Username").equals(username) &&
+					result.getString("Password").equals(password)) {
+					matchFound = true;
+					break;
+				}
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+		return matchFound;
+	}
+	
+	// --------------------------------------------------------------------------------------------
+	
+	// Getters ------------------------------------------------------------------------------------
+	
+	/**
+	 * getMovieByID prints out the details of the movie with relevant ID
+	 * @param connection The connection object
+	 * @param movieID The movie to search for
+	 * @throws SQLException
+	 */
+	public static void getMovieByID(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE MovieID = " + movieID;
+		try {
+			getMovie(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * getMovieByTitle prints out the details of the movie with relevant Title.
+	 * @param connection The connection object
+	 * @param movieTitle The movie to search for
+	 * @throws SQLException
+	 */
+	public static void getMovieByTitle(Connection connection, String movieTitle) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE MovieTitle = \"" + movieTitle + "\"";
+		try {
+			getMovie(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * getActorByID prints out the details of the actor with relevant ID.
+	 * @param connection The database connection object
+	 * @param actorID The actor to search for
+	 * @throws SQLException
+	 */
+	public static void getActorByID(Connection connection, int actorID) throws SQLException {
+		String query = "SELECT * FROM Actors WHERE ActorID = " + actorID;
+		try {
+			getActor(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * A helper function to be used by various getActorByX() functions which accepts a query to search for an
+	 * actor by a particular value, and prints out ALL details of the relevant actor.
+	 * @param connection The database connection object
+	 * @param query Must be of the form SELECT * FROM Actors BY {value}
+	 * @throws SQLException
+	 */
+	private static void getActor(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("{");
+				System.out.println("    ActorID: " + result.getInt("ActorID") + ",");
+				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
+				System.out.println("    LastName: " + result.getString("LastName") + ",");
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
+	 * A helper function to be used by various getMovieByX() functions which accepts a query to search for a
+	 * movie by a particular value, and prints out ALL details of the relevant movie.
+	 * Note: The customer should never see all these details.
+	 * @param connection The connection object
+	 * @param query Must be of the form SELECT * FROM Movies BY {value}
+	 * @throws SQLException
+	 */
+	private static void getMovie(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("{");
+				System.out.println("    MovieID: " + result.getInt("MovieID") + ",");
+				System.out.println("    MovieTitle: " + result.getString("MovieTitle") + ",");
+				System.out.println("    MovieYear: " + result.getString("MovieYear") + ",");
+				System.out.println("    CertificateRating: " + result.getString("CertificateRating") + ",");
+				System.out.println("    RentPrice: " + result.getDouble("RentPrice") + ",");
+				System.out.println("    BuyPrice: " + result.getDouble("BuyPrice") + ",");
+				System.out.println("    MovieValue: " + result.getDouble("MovieValue") + ",");
+				System.out.println("    Stock: " + result.getInt("Stock") + ",");
+				System.out.println("    ReleaseDate: " + result.getString("ReleaseDate") + ",");
+				System.out.println("    OverallReviewRating: " + result.getDouble("OverallReviewRating"));
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	// --------------------------------------------------------------------------------------------
+	
+	// Setters ------------------------------------------------------------------------------------
+	
+	/**
+	 * Sets a new FirstName value for the specified ActorID
+	 * @param connection The database connection object
+	 * @param newActorFirstName The actor's new first name
+	 * @param actorID The actor to update
+	 * @throws SQLException
+	 */
+	public static void setActorFirstName(Connection connection, String newActorFirstName, int actorID) throws SQLException {
+		String query = "UPDATE Actors SET FirstName = \"" + newActorFirstName + "\" WHERE ActorID = " + actorID;
+		
+		try {
+			updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * Sets a new LastName value for the specified ActorID
+	 * @param connection The database connection object
+	 * @param newActorLastName The actor's new first name
+	 * @param actorID The actor to update
+	 * @throws SQLException
+	 */
+	public static void setActorLastName(Connection connection, String newActorLastName, int actorID) throws SQLException {
+		String query = "UPDATE Actors SET LastName = \"" + newActorLastName + "\" WHERE ActorID = " + actorID;
+		
+		try {
+			updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
 	 * Sets a new MovieTitle value for the specified MovieID
 	 * @param connection The database connection object
 	 * @param newMovieTitle The new MovieTitle value
@@ -74,17 +307,13 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setMovieTitle(Connection connection, String newMovieTitle, int movieID) throws SQLException {
-		Statement statement = null;
+		String query = "UPDATE Movies SET MovieTitle = \"" + newMovieTitle + "\" WHERE MovieID = " + movieID;
 		
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate("UPDATE Movies SET MovieTitle = \"" + newMovieTitle + "\" WHERE MovieID = " + movieID);
+			updateTable(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
-		}
-		finally {
-			statement.close();
 		}
 	}
 	
@@ -96,19 +325,14 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setMovieReleaseDate(Connection connection, String newMovieReleaseDate, int movieID) throws SQLException {
-		Statement statement = null;
-		
 		String newMovieYear = newMovieReleaseDate.split("-")[0];
+		String query = "UPDATE Movies SET ReleaseDate = \"" + newMovieReleaseDate + "\", MovieYear = \"" + newMovieYear + "\" WHERE MovieID = " + movieID;
 		
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate("UPDATE Movies SET ReleaseDate = \"" + newMovieReleaseDate + "\", MovieYear = \"" + newMovieYear + "\" WHERE MovieID = " + movieID);
+			updateTable(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
-		}
-		finally {
-			statement.close();
 		}
 	}
 	
@@ -120,17 +344,12 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setMovieCertificateRating(Connection connection, String newMovieCertificateRating, int movieID) throws SQLException {
-		Statement statement = null;
-
+		String query = "UPDATE Movies SET CertificateRating = \"" + newMovieCertificateRating + "\" WHERE MovieID = " + movieID;
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate("UPDATE Movies SET CertificateRating = \"" + newMovieCertificateRating + "\" WHERE MovieID = " + movieID);
+			updateTable(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
-		}
-		finally {
-			statement.close();
 		}
 	}
 	
@@ -142,17 +361,12 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setMovieBusinessCost(Connection connection, Double newMovieBusinessCost, int movieID) throws SQLException {
-		Statement statement = null;
-
+		String query = "UPDATE Movies SET MovieValue = \"" + newMovieBusinessCost + "\" WHERE MovieID = " + movieID;
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate("UPDATE Movies SET MovieValue = \"" + newMovieBusinessCost + "\" WHERE MovieID = " + movieID);
+			updateTable(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
-		}
-		finally {
-			statement.close();
 		}
 	}
 	
@@ -164,17 +378,12 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setMovieRentalCost(Connection connection, Double newMovieRentalCost, int movieID) throws SQLException {
-		Statement statement = null;
-
+		String query = "UPDATE Movies SET RentPrice = \"" + newMovieRentalCost + "\" WHERE MovieID = " + movieID;
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate("UPDATE Movies SET RentPrice = \"" + newMovieRentalCost + "\" WHERE MovieID = " + movieID);
+			updateTable(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
-		}
-		finally {
-			statement.close();
 		}
 	}
 	
@@ -186,17 +395,12 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setMoviePurchaseCost(Connection connection, Double newMoviePurchaseCost, int movieID) throws SQLException {
-		Statement statement = null;
-
+		String query = "UPDATE Movies SET BuyPrice = \"" + newMoviePurchaseCost + "\" WHERE MovieID = " + movieID;
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate("UPDATE Movies SET BuyPrice = \"" + newMoviePurchaseCost + "\" WHERE MovieID = " + movieID);
+			updateTable(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
-		}
-		finally {
-			statement.close();
 		}
 	}
 	
@@ -208,19 +412,16 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setMovieStock(Connection connection, int newMovieStock, int movieID) throws SQLException {
-		Statement statement = null;
-
+		String query = "UPDATE Movies SET Stock = \"" + newMovieStock + "\" WHERE MovieID = " + movieID;
 		try {
-			statement = connection.createStatement();
-			statement.executeUpdate("UPDATE Movies SET Stock = \"" + newMovieStock + "\" WHERE MovieID = " + movieID);
+			updateTable(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
 		}
-		finally {
-			statement.close();
-		}
 	}
+	
+	// --------------------------------------------------------------------------------------------
 	
 	/**
 	 * Attempts to add a new customer to the database with provided customer information
@@ -282,115 +483,6 @@ public class Query {
 		finally {
 			statement.close();
 		}
-	}
-	
-	/**
-	 * getMovieByID prints out the details of the movie with relevant ID
-	 * @param connection The connection object
-	 * @param movieID The movie to search for
-	 * @throws SQLException
-	 */
-	public static void getMovieByID(Connection connection, int movieID) throws SQLException {
-		String query = "SELECT * FROM Movies WHERE MovieID = " + movieID;
-		try {
-			getMovie(connection, query);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-	}
-	
-	/**
-	 * getMovieByTitle prints out the details of the movie with relevant Title.
-	 * @param connection The connection object
-	 * @param movieTitle The movie to search for
-	 * @throws SQLException
-	 */
-	public static void getMovieByTitle(Connection connection, String movieTitle) throws SQLException {
-		String query = "SELECT * FROM Movies WHERE MovieTitle = \"" + movieTitle + "\"";
-		try {
-			getMovie(connection, query);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-	}
-	
-	/**
-	 * A helper function to be used by various getMovieByX() functions which accepts a query to search for a
-	 * movie by a particular value, and prints out ALL details of the relevant movie.
-	 * Note: The customer should never see all these details.
-	 * @param connection The connection object
-	 * @param query Must be of the form SELECT * FROM Movies BY {value}
-	 * @throws SQLException
-	 */
-	private static void getMovie(Connection connection, String query) throws SQLException {
-		Statement statement = null;
-		ResultSet result = null;
-		
-		try {
-			statement = connection.createStatement();
-			result = statement.executeQuery(query);
-			
-			while (result.next()) {
-				System.out.println("{");
-				System.out.println("    MovieID: " + result.getInt("MovieID") + ",");
-				System.out.println("    MovieTitle: " + result.getString("MovieTitle") + ",");
-				System.out.println("    MovieYear: " + result.getString("MovieYear") + ",");
-				System.out.println("    CertificateRating: " + result.getString("CertificateRating") + ",");
-				System.out.println("    RentPrice: " + result.getDouble("RentPrice") + ",");
-				System.out.println("    BuyPrice: " + result.getDouble("BuyPrice") + ",");
-				System.out.println("    MovieValue: " + result.getDouble("MovieValue") + ",");
-				System.out.println("    Stock: " + result.getInt("Stock") + ",");
-				System.out.println("    ReleaseDate: " + result.getString("ReleaseDate") + ",");
-				System.out.println("    OverallReviewRating: " + result.getDouble("OverallReviewRating"));
-				System.out.println("}");
-			}
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		finally {
-			result.close();
-			statement.close();
-		}
-	}
-	
-	/**
-	 * isExistingUser is a utility function to be used in
-	 * conjunction with isExistingEmployee() & isExistingCustomer()
-	 * @param query A SQL query of the form SELECT Username, Password FROM Table, where Table is either Employees or Customers
-	 * @param username The username of the user to find
-	 * @param password The password of the user to find
-	 * @param connection The database connection object
-	 * @return
-	 * @throws SQLException
-	 */
-	private static boolean isExistingUser(String query, String username, String password, Connection connection) throws SQLException {
-		// Set up query environment
-		Statement statement = null;
-		ResultSet result = null;
-		boolean matchFound = false;
-		
-		try {
-			statement = connection.createStatement();
-			result = statement.executeQuery(query);
-			while (result.next()) {
-				if (result.getString("Username").equals(username) &&
-					result.getString("Password").equals(password)) {
-					matchFound = true;
-					break;
-				}
-			}
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		finally {
-			result.close();
-			statement.close();
-		}
-		return matchFound;
 	}
 
 	/**
@@ -485,6 +577,21 @@ public class Query {
 		try {
 			statement = connection.createStatement();
 			statement.executeUpdate(addNewActor);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	private static void updateTable(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate(query);
 		}
 		catch (SQLException error) {
 			throw error;

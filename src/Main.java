@@ -316,7 +316,7 @@ public class Main {
 	 * displayUpdateItemMenu is a sub-menu of displayUpdateInventoryMenu.
 	 * This menu provides options to update a movie, actor, director, genre.
 	 * 
-	 * Update movie: Incomplete
+	 * Update movie: C
 	 * Update actor: Incomplete
 	 * Update director: Incomplete
 	 * Update genre: Incomplete
@@ -324,7 +324,7 @@ public class Main {
 	 */
 	public static void displayUpdateItemMenu() {
 		do {
-			System.out.println("1. Update movie"); // Would be better as a sub-menu
+			System.out.println("1. Update movie"); // Takes you to a sub-menu
 			System.out.println("2. Update actor");
 			System.out.println("3. Update director");
 			System.out.println("4. Update genre");
@@ -333,7 +333,7 @@ public class Main {
 			int selection = getUserSelection();
 			switch (selection) {
 				case 1: // 1. Update movie
-					System.out.println("Movie ID: ");
+					System.out.print("Movie ID: ");
 					int movieID = getUserSelection();
 					
 					try {
@@ -353,9 +353,26 @@ public class Main {
 					}
 					
 					break; // take me back to the displayUpdateItemMenu
-				case 2:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
+				case 2: // 2. Update Actor
+					System.out.print("Actor ID: ");
+					int actorID = getUserSelection();
+					
+					try {
+						if (Query.isExistingActor(dbConnection, actorID)) {
+							displayUpdateActorMenu(actorID);
+						}
+						else {
+							System.out.println("Actor with ID " + actorID + " not found. Please try again.");
+							break; // take me back to the displayUpdateItemMenu
+						}
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateItemMenu
+					}
+					
 					break; // take me back to the displayUpdateItemMenu
 				case 3:
 					System.out.println("Menu option has not yet been implemented. " +
@@ -367,6 +384,65 @@ public class Main {
 					break; // take me back to the displayUpdateItemMenu
 				case 5:
 					return;
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Finished and tested.
+	 * displayUpdateActorMenu is a sub-menu of displayUpdateItemMenu which handles
+	 * updating an actor of specific actorID.
+	 * @param actorID The actor to update
+	 */
+	public static void displayUpdateActorMenu(int actorID) {
+		do {
+			try {
+				Query.getActorByID(dbConnection, actorID);
+			}
+			catch (SQLException error) {
+				error.printStackTrace();
+				System.out.println("A database error was encountered. " +
+					"Please try again or contact your system administrator.");
+				return; // take me back to the displayUpdateItemMenu
+			}
+			
+			System.out.println("What would you like to update about this actor?");
+			System.out.println("1. First name");
+			System.out.println("2. Last name");
+			System.out.println("3. Finish updating this actor");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. First Name
+					System.out.print("New First Name: ");
+					
+					String newActorFirstName = scanner.nextLine();
+					try {
+						Query.setActorFirstName(dbConnection, newActorFirstName, actorID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateActorMenu
+					}
+					break; // take me back to the displayUpdateActorMenu
+				case 2: // 2. Last Name
+					System.out.print("New Last Name: ");
+					
+					String newActorLastName = scanner.nextLine();
+					try {
+						Query.setActorLastName(dbConnection, newActorLastName, actorID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateActorMenu
+					}
+					break; // take me back to the displayUpdateActorMenu
+				case 3: // 3. Finish updating this actor
+					return; // take me back to the displayUpdateItemMenu
 			}
 		} while (true);
 	}
@@ -401,7 +477,7 @@ public class Main {
 			
 			int selection = getUserSelection();
 			switch (selection) {
-				case 1: // 1. Title (untested)
+				case 1: // 1. Title
 					System.out.print("New Title: ");
 					
 					String newMovieTitle = scanner.nextLine();
@@ -415,7 +491,7 @@ public class Main {
 						break; // take me back to the displayUpdateMovieMenu
 					}
 					break; // take me back to the displayUpdateMovieMenu
-				case 2: // 2. Release date (untested)
+				case 2: // 2. Release date
 					System.out.print("New Release Date (yyyy-mm-dd): ");
 					
 					String newReleaseDate = scanner.nextLine();
@@ -429,7 +505,7 @@ public class Main {
 						break; // take me back to the displayUpdateMovieMenu
 					}
 					break; // take me back to the displayUpdateMovieMenu
-				case 3: // 3. Certificate Rating (untested)
+				case 3: // 3. Certificate Rating
 					System.out.print("New Certificate Rating: ");
 					
 					String newCertificateRating = scanner.nextLine();
@@ -443,7 +519,7 @@ public class Main {
 						break; // take me back to the displayUpdateMovieMenu
 					}
 					break; // take me back to the displayUpdateMovieMenu
-				case 4: // 4. Business cost per item (untested)
+				case 4: // 4. Business cost per item
 					System.out.print("New Business Cost per Item: ");
 					
 					Double newBusinessCost = scanner.nextDouble();
@@ -457,7 +533,7 @@ public class Main {
 						break; // take me back to the displayUpdateMovieMenu
 					}
 					break; // take me back to the displayUpdateMovieMenu
-				case 5: // 5. Customer rental cost (untested)
+				case 5: // 5. Customer rental cost
 					System.out.print("New Customer Rental Cost: ");
 					
 					Double newRentalCost = scanner.nextDouble();
@@ -471,7 +547,7 @@ public class Main {
 						break; // take me back to the displayUpdateMovieMenu
 					}
 					break; // take me back to the displayUpdateMovieMenu
-				case 6: // 6. Customer purchase cost (untested)
+				case 6: // 6. Customer purchase cost
 					System.out.print("New Customer Purchase Cost: ");
 					
 					Double newPurchaseCost = scanner.nextDouble();
@@ -485,7 +561,7 @@ public class Main {
 						break; // take me back to the displayUpdateMovieMenu
 					}
 					break; // take me back to the displayUpdateMovieMenu
-				case 7: // 7. Stock (untested)
+				case 7: // 7. Stock
 					System.out.print("New Stock: ");
 					
 					int newStock = getUserSelection();
