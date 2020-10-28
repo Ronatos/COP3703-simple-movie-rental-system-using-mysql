@@ -237,18 +237,74 @@ public class Query {
 		}
 	}
 
-public static void insertActor(Connection dbConnection, String firstName, String lastName) {
-	// TODO Auto-generated method stub
-	
-}
+	/**
+	 * Adds a new actor to the database with relevant information
+	 * @param dbConnection The database connection object
+	 * @param firstName The first name of the actor
+	 * @param lastName The last name of the actor
+	 * @throws SQLException
+	 */
+	public static void insertActor(Connection connection, String firstName, String lastName) throws SQLException {
+		Statement statement = null;
+		
+		String addNewActor = "INSERT INTO Actors (FirstName, LastName) VALUES (\"" + firstName + "\", \"" + lastName + "\")";
+		
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate(addNewActor);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
 
-public static void insertGenre(Connection dbConnection, String genre) {
-	// TODO Auto-generated method stub
-	
-}
+	/**
+	 * Adds a new genre to the database with relevant information
+	 * @param dbConnection The database connection object
+	 * @param genre The genre to add
+	 * @throws SQLException
+	 */
+	public static void insertGenre(Connection connection, String genre) throws SQLException {
+		Statement statement = null;
+		
+		String addNewGenre = "INSERT INTO Genres (GenreType) VALUES (\"" + genre + "\")";
+		
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate(addNewGenre);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
 
-public static void insertDirector(Connection dbConnection, String firstName, String lastName) {
-	// TODO Auto-generated method stub
-	
-}
+	/**
+	 * Adds a new director to the database with relevant information
+	 * @param dbConnection The database connection object
+	 * @param firstName The first name of the director
+	 * @param lastName The last name of the director
+	 * @throws SQLException
+	 */
+	public static void insertDirector(Connection connection, String firstName, String lastName) throws SQLException {
+		Statement statement = null;
+		
+		String addNewActor = "INSERT INTO Directors (FirstName, LastName) VALUES (\"" + firstName + "\", \"" + lastName + "\")";
+		
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate(addNewActor);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
 }
