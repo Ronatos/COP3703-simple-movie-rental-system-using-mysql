@@ -1,5 +1,27 @@
 import java.sql.*;
 
+/*
+ * isExistingGenre()
+ * isExistingDirector()
+ * getActorByFirstName()
+ * getActorByLastName()
+ * getGenreByID()
+ * getGenreByType()
+ * getGenre() <-- helper function?
+ * getDirectorByID()
+ * getDirectorByFirstName()
+ * getDirectorByLastName()
+ * getDirector() <-- helper function?
+ * setGenreType()
+ * setDirectorFirstName()
+ * setDirectorLastName()
+ * deleteMovieByID()
+ * deleteActorByID()
+ * deleteGenreByID()
+ * deleteDirectorByID()
+ * deleteItem() <-- helper function?
+ */
+
 public class Query {
 
 	// isExisting ---------------------------------------------------------------------------------
@@ -46,25 +68,12 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static boolean isExistingMovie(Connection connection, int movieID) throws SQLException {
-		Statement statement = null;
-		ResultSet result = null;
-		
+		String query = "SELECT * FROM Movies WHERE MovieID = " + movieID;
 		try {
-			statement = connection.createStatement();
-			result = statement.executeQuery("SELECT * FROM Movies WHERE MovieID = " + movieID);
-			if (!result.next()) {
-				return false;
-			}
-			else {
-				return true;
-			}
+			return isExisting(connection, query);
 		}
 		catch (SQLException error) {
 			throw error;
-		}
-		finally {
-			result.close();
-			statement.close();
 		}
 	}
 	
@@ -76,17 +85,36 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static boolean isExistingActor(Connection connection, int actorID) throws SQLException {
+		String query = "SELECT * FROM Actors WHERE ActorID = " + actorID;
+		try {
+			return isExisting(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * isExisting is a utility function to be used in
+	 * conjuction with isExisting functions to determine
+	 * if a given query returned any results.
+	 * @param connection The database connection object
+	 * @param query Query should be of the form SELECT {values} FROM {tables}
+	 * @return
+	 * @throws SQLException
+	 */
+	private static boolean isExisting(Connection connection, String query) throws SQLException {
 		Statement statement = null;
 		ResultSet result = null;
 		
 		try {
 			statement = connection.createStatement();
-			result = statement.executeQuery("SELECT * FROM Actors WHERE ActorID = " + actorID);
-			if (!result.next()) {
-				return false;
+			result = statement.executeQuery(query);
+			if (result.next()) {
+				return true;
 			}
 			else {
-				return true;
+				return false;
 			}
 		}
 		catch (SQLException error) {
@@ -422,6 +450,8 @@ public class Query {
 	}
 	
 	// --------------------------------------------------------------------------------------------
+	
+	// Miscellaneous (for now) --------------------------------------------------------------------
 	
 	/**
 	 * Attempts to add a new customer to the database with provided customer information

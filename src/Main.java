@@ -5,6 +5,8 @@ import java.util.Scanner;
  * To do
  * 1. Remove all error.printStackTrace() calls after application is fully tested.
  *    The user doesn't need to see these.
+ * 2. Add a way for the employees who have just searched for a movie to update that movie right there instead of needing to
+ * 	  navigate through the tree.
  */
 
 public class Main {
