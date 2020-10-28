@@ -270,12 +270,14 @@ public class Main {
 	
 	/**
 	 * Incomplete and untested.
+	 * - Add new item is complete and tested
 	 * displayUpdateInventoryMenu is a sub-menu of displayEmployeeDashboard.
 	 * This menu provides options to add a new item, update an existing item,
-	 * delete an item, or return to the employee dashboard.
+	 * link existing items, delete an item, or return to the employee dashboard.
 	 * 
 	 * Add a new item: Takes you to the add new item sub-menu.
 	 * Update existing item: Incomplete
+	 * Link existing items: Incomplete
 	 * Delete item: Incomplete
 	 * Back: Returns you to the employee dashboard.
 	 */
@@ -283,8 +285,9 @@ public class Main {
 		do {
 			System.out.println("1. Add new item"); // Takes you to a sub-menu
 			System.out.println("2. Update existing item"); // Takes you to a sub-menu
-			System.out.println("3. Delete item");
-			System.out.println("4. Back");
+			System.out.println("3. Link existing items"); // Performs a function
+			System.out.println("4. Delete item");
+			System.out.println("5. Back");
 			
 			int selection = getUserSelection();
 			switch (selection) {
@@ -299,14 +302,29 @@ public class Main {
 						"Check back later.");
 					break; // take me back to the update inventory menu
 				case 4:
+					System.out.println("Menu option has not yet been implemented. " +
+						"Check back later.");
+					break; // take me back to the update inventory menu
+				case 5:
 					return; // take me back to the employee dashboard
 			}
 		} while (true);
 	}
 	
+	/**
+	 * Incomplete and untested.
+	 * displayUpdateItemMenu is a sub-menu of displayUpdateInventoryMenu.
+	 * This menu provides options to update a movie, actor, director, genre.
+	 * 
+	 * Update movie: Incomplete
+	 * Update actor: Incomplete
+	 * Update director: Incomplete
+	 * Update genre: Incomplete
+	 * Back: Returns you to the update inventory menu.
+	 */
 	public static void displayUpdateItemMenu() {
 		do {
-			System.out.println("1. Update movie");
+			System.out.println("1. Update movie"); // Performs a function, but might be better as a sub-menu
 			System.out.println("2. Update actor");
 			System.out.println("3. Update director");
 			System.out.println("4. Update genre");
@@ -314,9 +332,81 @@ public class Main {
 			
 			int selection = getUserSelection();
 			switch (selection) {
-				case 1:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
+				case 1: // 1. Update movie
+					System.out.println("Movie ID: ");
+
+					int movieID = getUserSelection();
+					
+					try {
+						if (Query.isExistingMovie(dbConnection, movieID)) {
+							Query.getMovieByID(dbConnection, movieID);
+						}
+						else {
+							System.out.println("Movie with ID " + movieID + " not found. Please try again.");
+							break; // take me back to the displayUpdateItemMenu
+						}
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateItemMenu
+					}
+					
+					System.out.println("What would you like to update?");
+					System.out.println("1. Title");
+					System.out.println("2. Release date");
+					System.out.println("3. Certificate Rating");
+					System.out.println("4. Business cost per item");
+					System.out.println("5. Customer rental cost");
+					System.out.println("6. Customer purchase cost");
+					System.out.println("7. Stock");
+					System.out.println("8. Cancel update");
+					
+					selection = getUserSelection();
+					switch (selection) {
+						case 1: // 1. Title
+							System.out.print("New Title: ");
+							
+							String newMovieTitle = scanner.nextLine();
+							try {
+								Query.setMovieTitle(dbConnection, newMovieTitle, movieID);
+							}
+							catch (SQLException error) {
+								error.printStackTrace();
+								System.out.println("A database error was encountered. " +
+									"Please try again or contact your system administrator.");
+								break; // take me back to the displayUpdateItemMenu
+							}
+							break; // take me back to the displayUpdateItemMenu
+						case 2: // 2. Release date
+							System.out.print("New Release Date (yyyy-mm-dd): ");
+							
+							String newReleaseDate = scanner.nextLine();
+							try {
+								Query.setMovieReleaseDate(dbConnection, newReleaseDate, movieID);
+							}
+							catch (SQLException error) {
+								error.printStackTrace();
+								System.out.println("A database error was encountered. " +
+									"Please try again or contact your system administrator.");
+								break; // take me back to the displayUpdateItemMenu
+							}
+							break; // take me back to the displayUpdateItemMenu
+						case 3:
+							break; // take me back to the displayUpdateItemMenu
+						case 4:
+							break; // take me back to the displayUpdateItemMenu
+						case 5:
+							break; // take me back to the displayUpdateItemMenu
+						case 6:
+							break; // take me back to the displayUpdateItemMenu
+						case 7:
+							break; // take me back to the displayUpdateItemMenu
+						case 8:
+							break; // take me back to the displayUpdateItemMenu
+					}
+					
 					break; // take me back to the displayUpdateItemMenu
 				case 2:
 					System.out.println("Menu option has not yet been implemented. " +
@@ -356,7 +446,7 @@ public class Main {
 			
 			System.out.println("1. Add Movie"); // Performs a function
 			System.out.println("2. Add Actor"); // Performs a function
-			System.out.println("3. Add Genre");
+			System.out.println("3. Add Genre"); // Performs a function
 			System.out.println("4. Add Director"); // Performs a function
 			System.out.println("5. Back");
 			

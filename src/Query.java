@@ -37,6 +37,82 @@ public class Query {
 	}
 	
 	/**
+	 * isExistingMovie determines whether the provided movieID references an existing movie in the database.
+	 * @param connection The database connection object
+	 * @param movieID The MovieID to search
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean isExistingMovie(Connection connection, int movieID) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery("SELECT * FROM Movies WHERE MovieID = " + movieID);
+			if (!result.next()) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
+	 * Sets a new MovieTitle value for the specified MovieID
+	 * @param connection The database connection object
+	 * @param newMovieTitle The new MovieTitle value
+	 * @param movieID The movie to update
+	 * @throws SQLException
+	 */
+	public static void setMovieTitle(Connection connection, String newMovieTitle, int movieID) throws SQLException {
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate("UPDATE Movies SET MovieTitle = \"" + newMovieTitle + "\" WHERE MovieID = " + movieID);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	/**
+	 * Sets new MovieYear and ReleaseDate values for the specified MovieID
+	 * @param connection The database connection object
+	 * @param newMovieReleaseDate The new ReleaseDate value
+	 * @param movieID The movie to update
+	 * @throws SQLException
+	 */
+	public static void setMovieReleaseDate(Connection connection, String newMovieReleaseDate, int movieID) throws SQLException {
+		Statement statement = null;
+		
+		String newMovieYear = newMovieReleaseDate.split("-")[0];
+		
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate("UPDATE Movies SET ReleaseDate = \"" + newMovieReleaseDate + "\", MovieYear = \"" + newMovieYear + "\" WHERE MovieID = " + movieID);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	/**
 	 * Attempts to add a new customer to the database with provided customer information
 	 * only after verifying that the provided username is unique, and that the provided
 	 * referencedBy user exists. 
