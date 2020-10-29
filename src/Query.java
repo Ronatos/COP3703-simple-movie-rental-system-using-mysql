@@ -5,11 +5,11 @@ import java.sql.*;
  * 
  * isExistingGenre(x)
  * isExistingDirector(x)
- * getActorByFirstName()
- * getActorByLastName()
- * getGenreByID()
- * getGenreByType()
- * getGenre() <-- helper function?
+ * getActorByFirstName(x)
+ * getActorByLastName(x)
+ * getGenreByID(x)
+ * getGenreByType(x)
+ * getGenre(x) <-- helper function?
  * getDirectorByID()
  * getDirectorByFirstName()
  * getDirectorByLastName()
@@ -267,6 +267,56 @@ public class Query {
 		}
 	}
 	
+	/**
+	 * getActorByLastName prints out the details of the actor with the relevant last name
+	 * @param connection The database connection object
+	 * @param lastName The actor's last name to search for
+	 * @throws SQLException
+	 */
+	public static void getActorByLastName(Connection connection, String lastName) throws SQLException {
+		String query = "SELECT * FROM Actors WHERE LastName = \"" + lastName +"\"";
+		try {
+			getActor(connection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	/**
+	 * getGenreByID prints out the details of the genre with the relevant ID
+	 * @param connection The database connection object
+	 * @param genreID The genre's ID to search for
+	 * @throws SQLException
+	 */
+	public static void getGenreByID(Connection connection, int genreID)throws SQLException {
+		String query = "SELECT * FROM Genres WHERE GenreID = " + genreID;
+		try {
+			getGenre(connection, query);
+		}
+		catch (SQLException error){
+			throw error;
+		}
+	}
+	
+	
+	
+	/**
+	 * getGenreByType prints out the details of the genre with the relevant type
+	 * @param connection The database connection object
+	 * @param genreID The genre's type to search for
+	 * @throws SQLException
+	 */
+	public static void getGenreByType(Connection connection, String genreType)throws SQLException {
+		String query = "SELECT * FROM Genres WHERE GenreType = " + genreType;
+		try {
+			getGenre(connection, query);
+		}
+		catch (SQLException error){
+			throw error;
+		}
+	}
+	
 	
 	/**
 	 * A helper function to be used by various getActorByX() functions which accepts a query to search for an
@@ -288,6 +338,38 @@ public class Query {
 				System.out.println("    ActorID: " + result.getInt("ActorID") + ",");
 				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
 				System.out.println("    LastName: " + result.getString("LastName") + ",");
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	
+	/**
+	 * A helper function to be used by various getGenreByX() functions which accepts a query to search for an
+	 * genre by a particular value, and prints out ALL details of the relevant genre.
+	 * @param connection The database connection object
+	 * @param query Must be of the form SELECT * FROM Genres BY {value}
+	 * @throws SQLException
+	 */
+	private static void getGenre(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while(result.next()) {
+				System.out.println("{");
+				System.out.println("    Genre: " + result.getInt("GenreID") + ",");
+				System.out.println("    GenreType: " + result.getString("GenreType") + ",");
 				System.out.println("}");
 			}
 		}
@@ -598,8 +680,15 @@ public class Query {
 		}
 	}
 
-<<<<<<< HEAD
-public static void insertActor(Connection connection, String firstName, String lastName) {
+	/**
+	 * Adds a new actor to the database with relevant information
+	 * @param dbConnection The database connection object
+	 * @param firstName The first name of the actor
+	 * @param lastName The last name of the actor
+	 * @throws SQLException
+	 * @throws LogicException 
+	 */
+	public static void insertActor(Connection connection, String firstName, String lastName) throws SQLException, LogicException {
 	// TODO Auto-generated method stub
 	
 	Statement statement = null;
@@ -634,40 +723,6 @@ public static void insertActor(Connection connection, String firstName, String l
 	}
   }
 	
-	
-}
-
-public static void insertGenre(Connection Connection, String genre) {
-	// TODO Auto-generated method stub
-	
-}
-
-public static void insertDirector(Connection Connection, String firstName, String lastName) {
-	// TODO Auto-generated method stub
-=======
-	/**
-	 * Adds a new actor to the database with relevant information
-	 * @param dbConnection The database connection object
-	 * @param firstName The first name of the actor
-	 * @param lastName The last name of the actor
-	 * @throws SQLException
-	 */
-	public static void insertActor(Connection connection, String firstName, String lastName) throws SQLException {
-		Statement statement = null;
-		
-		String addNewActor = "INSERT INTO Actors (FirstName, LastName) VALUES (\"" + firstName + "\", \"" + lastName + "\")";
-		
-		try {
-			statement = connection.createStatement();
-			statement.executeUpdate(addNewActor);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		finally {
-			statement.close();
-		}
-	}
 
 	/**
 	 * Adds a new genre to the database with relevant information
@@ -715,7 +770,6 @@ public static void insertDirector(Connection Connection, String firstName, Strin
 			statement.close();
 		}
 	}
->>>>>>> 96bc469d4463b8ba046d2c7830470a01b28c22a4
 	
 	private static void updateTable(Connection connection, String query) throws SQLException {
 		Statement statement = null;
