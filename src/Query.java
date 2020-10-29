@@ -1,8 +1,10 @@
 import java.sql.*;
 
 /*
- * isExistingGenre()
- * isExistingDirector()
+ * x = completed
+ * 
+ * isExistingGenre(x)
+ * isExistingDirector(x)
  * getActorByFirstName()
  * getActorByLastName()
  * getGenreByID()
@@ -86,6 +88,40 @@ public class Query {
 	 */
 	public static boolean isExistingActor(Connection connection, int actorID) throws SQLException {
 		String query = "SELECT * FROM Actors WHERE ActorID = " + actorID;
+		try {
+			return isExisting(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * isExsistingGenre determines whether the provided genreID references an existing genre in the database
+	 * @param connection The database connection object
+	 * @param genreID The genre to search for
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean isExistingGenre(Connection connection, int genreID) throws SQLException {
+		String query = "SELECT * FROM Genres WHERE GenreID = " + genreID;
+		try {
+			return isExisting(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * isExistingDirector determines whether the provided director references an existing director in the database
+	 * @param connection The database connection object
+	 * @param directorID The director to search for
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean isExistingDirector(Connection connection, int directorID)throws SQLException {
+		String query = "SELECT * FROM Directors WHERE DirectorID = " + directorID;
 		try {
 			return isExisting(connection, query);
 		}
@@ -214,6 +250,23 @@ public class Query {
 			throw error;
 		}
 	}
+	
+	/**\
+	 * getActorByFirstName prints out the details of the actor with relevant first name
+	 * @param connection The database connection object
+	 * @param firstName The actor's first name to search for
+	 * @throws SQLException
+	 */
+	public static void getActorByFirstName(Connection connection, String firstName) throws SQLException  {
+		String query = "SELECT * FROM Actors WHERE FirstName = \"" + firstName + "\"";
+		try {
+			getActor(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
 	
 	/**
 	 * A helper function to be used by various getActorByX() functions which accepts a query to search for an
