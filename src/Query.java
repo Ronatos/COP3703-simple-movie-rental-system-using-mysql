@@ -274,7 +274,7 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void getActorByLastName(Connection connection, String lastName) throws SQLException {
-		String query = "SELECT * FROM Actors WHERE LastName = \"" + lastName +"\"";
+		String query = "SELECT * FROM Actors WHERE LastName = \"" + lastName + "\"";
 		try {
 			getActor(connection, query);
 		}
@@ -308,7 +308,7 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void getGenreByType(Connection connection, String genreType)throws SQLException {
-		String query = "SELECT * FROM Genres WHERE GenreType = " + genreType;
+		String query = "SELECT * FROM Genres WHERE GenreType = \"" + genreType + "\"";
 		try {
 			getGenre(connection, query);
 		}
