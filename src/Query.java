@@ -256,17 +256,50 @@ public static void insertMovie(Connection connection, String movieTitle, String 
 	}
   }
 
-public static void insertActor(Connection dbConnection, String firstName, String lastName) {
+public static void insertActor(Connection connection, String firstName, String lastName) {
+	// TODO Auto-generated method stub
+	
+	Statement statement = null;
+	ResultSet result = null;
+	String verificationQuery = "SELECT First Name, Last Name FROM Actors";
+	String addNewActor = "INSERT INTO Actors (FirstName, LastName) VALUE (\"" + firstName + "\", \"" + lastName + "\")";
+	
+	String exsistingActor = null;
+	
+	try {
+		statement = connection.createStatement();
+		result = statement.executeQuery(verificationQuery);
+		while (result.next()) {
+			exsistingActor = result.getString("FirstName, LastName");
+			if (exsistingActor.equals(firstName) && exsistingActor.equals(lastName)) {
+				throw new LogicException("Actor already exsist. Please try again.");
+			}
+		}
+		result.close();
+		
+		statement.executeUpdate(addNewActor);
+		result.close();
+	}
+	catch (SQLException error) {
+		throw error;
+	}
+	catch (LogicException error) {
+		throw error;
+	}
+	finally {
+		statement.close();
+	}
+  }
+	
+	
+}
+
+public static void insertGenre(Connection Connection, String genre) {
 	// TODO Auto-generated method stub
 	
 }
 
-public static void insertGenre(Connection dbConnection, String genre) {
-	// TODO Auto-generated method stub
-	
-}
-
-public static void insertDirector(Connection dbConnection, String firstName, String lastName) {
+public static void insertDirector(Connection Connection, String firstName, String lastName) {
 	// TODO Auto-generated method stub
 	
 }
