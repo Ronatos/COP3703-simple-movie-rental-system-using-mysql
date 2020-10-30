@@ -348,14 +348,14 @@ public class Main {
 	}
 	
 	/**
-	 * Incomplete and untested.
+	 * Complete and tested.
 	 * displayUpdateItemMenu is a sub-menu of displayUpdateInventoryMenu.
 	 * This menu provides options to update a movie, actor, director, genre.
 	 * 
 	 * Update movie: C
-	 * Update actor: Incomplete
+	 * Update actor: C
 	 * Update director: C
-	 * Update genre: Incomplete
+	 * Update genre: C
 	 * Back: Returns you to the update inventory menu.
 	 */
 	public static void displayUpdateItemMenu() {
@@ -431,12 +431,73 @@ public class Main {
 					}
 					
 					break; // take me back to the displayUpdateItemMenu
-				case 4:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
+				case 4: // 4. Update Genre
+					System.out.print("Genre ID: ");
+					int genreID = getUserSelection();
+					
+					try {
+						if (Query.isExistingGenre(dbConnection, genreID)) {
+							displayUpdateGenreMenu(genreID);
+						}
+						else {
+							System.out.println("Genre with ID " + genreID + " not found. Please try again.");
+							break; // take me back to the displayUpdateItemMenu
+						}
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateItemMenu
+					}
+					
 					break; // take me back to the displayUpdateItemMenu
 				case 5:
 					return;
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Complete and tested.
+	 * displayUpdateGenreMenu is a sub-menu of displayUpdateItemMenu which handles
+	 * updating a genre of specific genreID.
+	 * @param genreID The director to update
+	 */
+	public static void displayUpdateGenreMenu(int genreID) {
+		do {
+			try {
+				Query.getGenreByID(dbConnection, genreID);
+			}
+			catch (SQLException error) {
+				error.printStackTrace();
+				System.out.println("A database error was encountered. " +
+					"Please try again or contact your system administrator.");
+				return; // take me back to the displayUpdateItemMenu
+			}
+			
+			System.out.println("What would you like to update about this genre?");
+			System.out.println("1. Genre type");
+			System.out.println("2. Finish updating this genre");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. First Name
+					System.out.print("New Genre Type: ");
+					
+					String newGenreType = scanner.nextLine();
+					try {
+						Query.setGenreType(dbConnection, newGenreType, genreID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateDirectorMenu
+					}
+					break; // take me back to the displayUpdateDirectorMenu
+				case 2: // 2. Finish updating this genre
+					return; // take me back to the displayUpdateItemMenu
 			}
 		} while (true);
 	}
@@ -499,6 +560,7 @@ public class Main {
 			}
 		} while (true);
 	}
+	
 	/**
 	 * Finished and tested.
 	 * displayUpdateActorMenu is a sub-menu of displayUpdateItemMenu which handles

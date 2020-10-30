@@ -546,6 +546,24 @@ public class Query {
 	}
 	
 	/**
+	 * Sets a new GenreType value for the specified GenreID
+	 * @param connection The database connection object
+	 * @param newGenreType The new genre type
+	 * @param genreID The genre to update
+	 * @throws SQLException
+	 */
+	public static void setGenreType(Connection connection, String newGenreType, int genreID) throws SQLException {
+		String query = "UPDATE Genres SET GenreType = \"" + newGenreType + "\" WHERE GenreID = " + genreID;
+		
+		try {
+			updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
 	 * Sets a new MovieTitle value for the specified MovieID
 	 * @param connection The database connection object
 	 * @param newMovieTitle The new MovieTitle value
