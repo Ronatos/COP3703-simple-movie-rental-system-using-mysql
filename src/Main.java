@@ -354,7 +354,7 @@ public class Main {
 	 * 
 	 * Update movie: C
 	 * Update actor: Incomplete
-	 * Update director: Incomplete
+	 * Update director: C
 	 * Update genre: Incomplete
 	 * Back: Returns you to the update inventory menu.
 	 */
@@ -410,9 +410,26 @@ public class Main {
 					}
 					
 					break; // take me back to the displayUpdateItemMenu
-				case 3:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
+				case 3: // 3. Update Director
+					System.out.print("Director ID: ");
+					int directorID = getUserSelection();
+					
+					try {
+						if (Query.isExistingDirector(dbConnection, directorID)) {
+							displayUpdateDirectorMenu(directorID);
+						}
+						else {
+							System.out.println("Director with ID " + directorID + " not found. Please try again.");
+							break; // take me back to the displayUpdateItemMenu
+						}
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateItemMenu
+					}
+					
 					break; // take me back to the displayUpdateItemMenu
 				case 4:
 					System.out.println("Menu option has not yet been implemented. " +
@@ -424,6 +441,64 @@ public class Main {
 		} while (true);
 	}
 	
+	/**
+	 * Untested.
+	 * displayUpdateDirectorMenu is a sub-menu of displayUpdateItemMenu which handles
+	 * updating an director of specific directorID.
+	 * @param directorID The director to update
+	 */
+	public static void displayUpdateDirectorMenu(int directorID) {
+		do {
+			try {
+				Query.getDirectorByID(dbConnection, directorID);
+			}
+			catch (SQLException error) {
+				error.printStackTrace();
+				System.out.println("A database error was encountered. " +
+					"Please try again or contact your system administrator.");
+				return; // take me back to the displayUpdateItemMenu
+			}
+			
+			System.out.println("What would you like to update about this actor?");
+			System.out.println("1. First name");
+			System.out.println("2. Last name");
+			System.out.println("3. Finish updating this director");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. First Name
+					System.out.print("New First Name: ");
+					
+					String newDirectorFirstName = scanner.nextLine();
+					try {
+						Query.setDirectorFirstName(dbConnection, newDirectorFirstName, directorID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateDirectorMenu
+					}
+					break; // take me back to the displayUpdateDirectorMenu
+				case 2: // 2. Last Name
+					System.out.print("New Last Name: ");
+					
+					String newDirectorLastName = scanner.nextLine();
+					try {
+						Query.setDirectorLastName(dbConnection, newDirectorLastName, directorID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateDirectorMenu
+					}
+					break; // take me back to the displayUpdateDirectorMenu
+				case 3: // 3. Finish updating this director
+					return; // take me back to the displayUpdateItemMenu
+			}
+		} while (true);
+	}
 	/**
 	 * Finished and tested.
 	 * displayUpdateActorMenu is a sub-menu of displayUpdateItemMenu which handles

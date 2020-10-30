@@ -284,6 +284,22 @@ public class Query {
 	}
 	
 	/**
+	 * getDirectorByID prints out the details of the director with relevant ID.
+	 * @param connection The database connection object
+	 * @param actorID The actor to search for
+	 * @throws SQLException
+	 */
+	public static void getDirectorByID(Connection connection, int DirectorID) throws SQLException {
+		String query = "SELECT * FROM Directors WHERE DirectorID = " + DirectorID;
+		try {
+			getDirector(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
 	 * getGenreByID prints out the details of the genre with the relevant ID
 	 * @param connection The database connection object
 	 * @param genreID The genre's ID to search for
@@ -350,6 +366,37 @@ public class Query {
 		}
 	}
 	
+	/**
+	 * A helper function to be used by various getDirectorByX() functions which accepts a query to search for a
+	 * Director by a particular value, and prints out ALL details of the relevant Director.
+	 * @param connection The database connection object
+	 * @param query Must be of the form SELECT * FROM Director BY {value}
+	 * @throws SQLException
+	 */
+	private static void getDirector(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("{");
+				System.out.println("    DirectorID: " + result.getInt("DirectorID") + ",");
+				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
+				System.out.println("    LastName: " + result.getString("LastName") + ",");
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
 	
 	/**
 	 * A helper function to be used by various getGenreByX() functions which accepts a query to search for an
@@ -453,6 +500,42 @@ public class Query {
 	 */
 	public static void setActorLastName(Connection connection, String newActorLastName, int actorID) throws SQLException {
 		String query = "UPDATE Actors SET LastName = \"" + newActorLastName + "\" WHERE ActorID = " + actorID;
+		
+		try {
+			updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * Sets a new FirstName value for the specified DirectorID
+	 * @param connection The database connection object
+	 * @param newDirectorFirstName The director's new first name
+	 * @param directorID The director to update
+	 * @throws SQLException
+	 */
+	public static void setDirectorFirstName(Connection connection, String newDirectorFirstName, int directorID) throws SQLException {
+		String query = "UPDATE Director SET FirstName = \"" + newDirectorFirstName + "\" WHERE DirectorID = " + directorID;
+		
+		try {
+			updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * Sets a new LastName value for the specified DirectorID
+	 * @param connection The database connection object
+	 * @param newDirectorLastName The director's new last name
+	 * @param directorID The director to update
+	 * @throws SQLException
+	 */
+	public static void setDirectorLastName(Connection connection, String newDirectorLastName, int directorID) throws SQLException {
+		String query = "UPDATE Director SET LastName = \"" + newDirectorLastName + "\" WHERE DirectorID = " + directorID;
 		
 		try {
 			updateTable(connection, query);
