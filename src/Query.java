@@ -517,7 +517,7 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setDirectorFirstName(Connection connection, String newDirectorFirstName, int directorID) throws SQLException {
-		String query = "UPDATE Director SET FirstName = \"" + newDirectorFirstName + "\" WHERE DirectorID = " + directorID;
+		String query = "UPDATE Directors SET FirstName = \"" + newDirectorFirstName + "\" WHERE DirectorID = " + directorID;
 		
 		try {
 			updateTable(connection, query);
@@ -535,7 +535,7 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void setDirectorLastName(Connection connection, String newDirectorLastName, int directorID) throws SQLException {
-		String query = "UPDATE Director SET LastName = \"" + newDirectorLastName + "\" WHERE DirectorID = " + directorID;
+		String query = "UPDATE Directors SET LastName = \"" + newDirectorLastName + "\" WHERE DirectorID = " + directorID;
 		
 		try {
 			updateTable(connection, query);
@@ -840,11 +840,11 @@ public class Query {
 	public static void insertDirector(Connection connection, String firstName, String lastName) throws SQLException {
 		Statement statement = null;
 		
-		String addNewActor = "INSERT INTO Directors (FirstName, LastName) VALUES (\"" + firstName + "\", \"" + lastName + "\")";
+		String addNewDirector = "INSERT INTO Directors (FirstName, LastName) VALUES (\"" + firstName + "\", \"" + lastName + "\")";
 		
 		try {
 			statement = connection.createStatement();
-			statement.executeUpdate(addNewActor);
+			statement.executeUpdate(addNewDirector);
 		}
 		catch (SQLException error) {
 			throw error;

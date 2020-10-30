@@ -442,7 +442,7 @@ public class Main {
 	}
 	
 	/**
-	 * Untested.
+	 * Complete and tested.
 	 * displayUpdateDirectorMenu is a sub-menu of displayUpdateItemMenu which handles
 	 * updating an director of specific directorID.
 	 * @param directorID The director to update
@@ -771,6 +771,9 @@ public class Main {
 						System.out.println("A database error was encountered. " +
 							"Please try again or contact your system administrator.");
 						break; // take me back to the add new item menu
+					}
+					catch (LogicException error) {
+						System.out.println(error.getMessage());
 					}
 					
 					break; // take me back to the add new item menu
