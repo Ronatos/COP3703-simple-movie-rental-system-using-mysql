@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /*
@@ -7,6 +8,8 @@ import java.util.Scanner;
  *    The user doesn't need to see these.
  * 2. Add a way for the employees who have just searched for a movie to update that movie right there instead of needing to
  * 	  navigate through the tree.
+ * 3. Add a way for employees to look up the ID of an item, since updating them requires the employee to know the ID
+ * 4. Add user friendly way of knowing where they are in the tree (home/employee dashboard/add new item/) for example
  */
 
 public class Main {
@@ -58,22 +61,19 @@ public class Main {
 	 * Complete and tested.
 	 * displayUserLoginMenu is the root of the UI. This menu provides options to log in,
 	 * create a new account, or exit the application gracefully.
-	 * 
-	 * Log in: Used by both employees and customers, group membership is handled,
-	 * and the appropriate dashboard is displayed.
-	 * Create New Account: Used to create a new account, this gathers relevant account info,
-	 * and passes it to the database.
-	 * Quit: The only way the application should end.
 	 */
 	public static void displayUserLoginMenu() {
 		do {
 			String username;
 			String password;
 			
+			System.out.println("----------");
+			System.out.println("Home");
 			System.out.println("Greetings, and welcome to UNFMovies!");
-			System.out.println("1. Log in"); // Takes you to a sub-menu
-			System.out.println("2. Create new account"); // Performs a function
-			System.out.println("3. Quit"); // Ends the application
+			System.out.println("----------");
+			System.out.println("1. Log in");
+			System.out.println("2. Create new account");
+			System.out.println("3. Quit");
 			
 			int selection = getUserSelection();
 			switch (selection) {
@@ -94,9 +94,7 @@ public class Main {
 							dbConnection, username, password);
 					}
 					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
+						printDatabaseError(error);
 						break; // take me back to the login menu
 					}
 						
@@ -153,9 +151,7 @@ public class Main {
 							dbConnection, username, password, firstName, lastName, referredBy);
 					}
 					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
+						printDatabaseError(error);
 						break; // take me back to the login menu
 					}
 					catch (LogicException error) {
@@ -224,30 +220,30 @@ public class Main {
 	}
 	
 	/**
+	 * Alex
 	 * Incomplete and untested.
-	 * - Locate a movie is complete and has been tested
 	 * displayEmployeeDashboard is a sub-menu of displayUserLoginMenu.
-	 * This menu provides options to locate a movie, update existing inventory,
+	 * This menu provides options to search, update existing inventory,
 	 * manage a customer's account, generate a report, or log out of the application.
-	 * 
-	 * Locate a movie: This allows the employee to search for a movie by its MovieTitle or
-	 * its MovieID properties.
-	 * Update Inventory: Displays the update inventory menu.
-	 * Customer Management: Incomplete
-	 * Reports: Incomplete
-	 * Log out: Log out and return to the login menu.
 	 */
-	public static void displayEmployeeDashboard() {
+	private static void displayEmployeeDashboard() {
 		do {
-			System.out.println("1. Locate a movie"); // Performs a function
-			System.out.println("2. Update inventory"); // Takes you to a sub-menu
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard");
+			System.out.println("What would you like to do?");
+			System.out.println("----------");
+			System.out.println("1. Search"); // the rabbit hole starts here
+			System.out.println("2. Update inventory");
 			System.out.println("3. Customer Management");
 			System.out.println("4. Reports");
 			System.out.println("5. Log out");
 			
 			int selection = getUserSelection();
 			switch (selection) {
-				case 1: // 1. Locate a movie
+				case 1: // 1. Search
+					displayEmployeeSearchMenu();
+					break;
+					/*
 					System.out.println("Select a movie property to search by.");
 					System.out.println("1. Movie ID");
 					System.out.println("2. Movie Title");
@@ -287,6 +283,7 @@ public class Main {
 					}
 					
 					break; // take me back to the employee dashboard
+					*/
 				case 2:
 					displayUpdateInventoryMenu();
 					break; // take me back to the employee dashboard
@@ -305,6 +302,212 @@ public class Main {
 	}
 	
 	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search");
+			System.out.println("Which entity would you like to search for?");
+			System.out.println("----------");
+			System.out.println("1. Actor");
+			System.out.println("2. Customer");
+			System.out.println("3. Director");
+			System.out.println("4. Genre");
+			System.out.println("5. Movie");
+			System.out.println("6. Review");
+			System.out.println("7. Transaction");
+			System.out.println("8. Back to Employee Dashboard");
+			
+			int selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. Actor
+					displayEmployeeSearchActorMenu();
+					break;
+				case 2: // 2. Customer
+					displayEmployeeSearchCustomerMenu();
+					break;
+				case 3: // 3. Director
+					displayEmployeeSearchDirectorMenu();
+					break;
+				case 4: // 4. Genre
+					displayEmployeeSearchGenreMenu();
+					break;
+				case 5: // 5. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 6: // 6. Review
+					displayEmployeeSearchReviewMenu();
+					break;
+				case 7: // 7. Transaction
+					displayEmployeeSearchTransactionMenu();
+					break;
+				case 8: // 8. Back to Employee Dashboard
+					return;
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchActorMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Actor");
+			System.out.println("How would you like to search for an actor?");
+			System.out.println("----------");
+			System.out.println("1. Actor ID");
+			System.out.println("2. Movie");
+			System.out.println("3. First name");
+			System.out.println("4. Last name");
+			System.out.println("5. Back to Search");
+			
+			int	selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. Actor ID
+					System.out.print("Actor ID: ");
+					
+					try {
+						int actorID = scanner.nextInt();
+						Query.getActorByID(dbConnection, actorID);
+						Query.getMoviesByActor(dbConnection, actorID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 3: // 3. First Name
+					System.out.print("First name: ");
+					
+					String firstName = scanner.nextLine();
+					try {
+						Query.getActorByFirstName(dbConnection, firstName);
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Last Name
+					System.out.print("Last name: ");
+					
+					String lastName = scanner.nextLine();
+					try {
+						Query.getActorByLastName(dbConnection, lastName);
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back to Search
+					return;
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchCustomerMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Customer");
+			System.out.println("How would you like to search for a customer?");
+			System.out.println("----------");
+			System.out.println("1. Customer ID");
+			System.out.println("2. Transaction");
+			System.out.println("3. Review");
+			System.out.println("4. Username");
+			System.out.println("5. Back to Search");
+			
+			int	selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. Customer ID
+					System.out.print("Customer ID: ");
+					
+					try {
+						int customerID = scanner.nextInt();
+						Query.getCustomerByID(dbConnection, customerID);
+						Query.getTransactionsByCustomer(dbConnection, customerID);
+						Query.getReviewsByCustomer(dbConnection, customerID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Transaction
+					displayEmployeeSearchTransactionMenu();
+					break;
+				case 3: // 3. Review
+					displayEmployeeSearchReviewMenu();
+					break;
+				case 4: // 4. Username
+					System.out.print("Username: ");
+					
+					String username = scanner.nextLine();
+					try {
+						Query.getCustomerByUsername(dbConnection, username);
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back to Search
+					return;
+			}
+		} while (true);
+	}
+	
+	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchDirectorMenu() {
+		
+	}
+	
+	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchGenreMenu() {
+		
+	}
+	
+	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchMovieMenu() {
+		
+	}
+	
+	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchReviewMenu() {
+		
+	}
+	
+	/**
+	 * Alex
+	 */
+	private static void displayEmployeeSearchTransactionMenu() {
+		
+	}
+	
+	/**
 	 * Incomplete and untested.
 	 * - Add new item is complete and tested
 	 * displayUpdateInventoryMenu is a sub-menu of displayEmployeeDashboard.
@@ -312,7 +515,7 @@ public class Main {
 	 * link existing items, delete an item, or return to the employee dashboard.
 	 * 
 	 * Add a new item: Takes you to the add new item sub-menu.
-	 * Update existing item: Incomplete
+	 * Update existing item: Takes you to the update item sub-menu
 	 * Link existing items: Incomplete
 	 * Delete item: Incomplete
 	 * Back: Returns you to the employee dashboard.
@@ -883,7 +1086,7 @@ public class Main {
 	 * @param scanner The scanner object
 	 * @return A user-selected integer
 	 */
-	public static int getUserSelection() {
+	private static int getUserSelection() {
 		do {
 			try {
 				return Integer.parseInt(scanner.nextLine());
@@ -892,5 +1095,11 @@ public class Main {
 				System.out.println("Please enter an integer.");
 			}
 		} while (true);
+	}
+	
+	private static void printDatabaseError(Exception error) {
+		error.printStackTrace();
+		System.out.println("A database error was encountered. " +
+			"Please try again or contact your system administrator.");
 	}
 }

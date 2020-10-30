@@ -284,6 +284,198 @@ public class Query {
 	}
 	
 	/**
+	 * getMoviesByActor prints out the details of all movie that contain the relevant actor.
+	 * @param connection The database connection object
+	 * @param actorID The actor to search for
+	 * @throws SQLException
+	 */
+	public static void getMoviesByActor(Connection connection, int actorID) throws SQLException {
+		String query = "SELECT MovieID FROM Movie_Actors WHERE ActorID = " + actorID;
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				getMovieByID(connection, result.getInt("MovieID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void getCustomerByID(Connection connection, int customerID) throws SQLException {
+		String query = "SELECT * FROM Customers WHERE CustomerID = " + customerID;
+		try {
+			getCustomer(connection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	public static void getCustomerByUsername(Connection connection, String username) throws SQLException {
+		String query = "SELECT * FROM Customers WHERE Username = \"" + username + "\"";
+		try {
+			getCustomer(connection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	private static void getCustomer(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("Customer {");
+				System.out.println("    CustomerID: " + result.getInt("CustomerID") + ",");
+				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
+				System.out.println("    LastName: " + result.getString("LastName") + ",");
+				System.out.println("    Username: " + result.getString("Username"));
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void getTransactionsByCustomer(Connection connection, int customerID) throws SQLException {
+		String query = "SELECT TransactionID FROM Transactions WHERE CustomerID = " + customerID;
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				getTransactionByID(connection, result.getInt("TransactionID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void getTransactionByID(Connection connection, int transactionID) throws SQLException {
+		String query = "SELECT * FROM Transactions WHERE TransactionID = " + transactionID;
+		try {
+			getTransaction(connection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	private static void getTransaction(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("Transaction {");
+				System.out.println("    TransactionID: " + result.getInt("TransactionID") + ",");
+				System.out.println("    CustomerID: " + result.getInt("CustomerID") + ",");
+				System.out.println("    MovieID: " + result.getString("MovieID") + ",");
+				System.out.println("    TransactionDate: " + result.getString("TransactionDate") + ", ");
+				System.out.println("    isRental: " + result.getBoolean("isRental"));
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void getReviewsByCustomer(Connection connection, int customerID) throws SQLException {
+		String query = "SELECT ReviewID FROM Reviews WHERE CustomerID = " + customerID;
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				getReviewByID(connection, result.getInt("ReviewID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void getReviewByID(Connection connection, int reviewID) throws SQLException {
+		String query = "SELECT * FROM Reviews WHERE ReviewID = " + reviewID;
+		try {
+			getReview(connection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	private static void getReview(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("Review {");
+				System.out.println("    ReviewID: " + result.getInt("ReviewID") + ",");
+				System.out.println("    CustomerID: " + result.getInt("CustomerID") + ",");
+				System.out.println("    MovieID: " + result.getInt("MovieID") + ",");
+				System.out.println("    Rating: " + result.getInt("Rating") + ", ");
+				System.out.println("    Comment: " + result.getString("Comment"));
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * getDirectorByID prints out the details of the director with relevant ID.
 	 * @param connection The database connection object
 	 * @param actorID The actor to search for
@@ -350,7 +542,7 @@ public class Query {
 			result = statement.executeQuery(query);
 			
 			while (result.next()) {
-				System.out.println("{");
+				System.out.println("Actor {");
 				System.out.println("    ActorID: " + result.getInt("ActorID") + ",");
 				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
 				System.out.println("    LastName: " + result.getString("LastName") + ",");
@@ -382,7 +574,7 @@ public class Query {
 			result = statement.executeQuery(query);
 			
 			while (result.next()) {
-				System.out.println("{");
+				System.out.println("Director {");
 				System.out.println("    DirectorID: " + result.getInt("DirectorID") + ",");
 				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
 				System.out.println("    LastName: " + result.getString("LastName") + ",");
@@ -414,7 +606,7 @@ public class Query {
 			result = statement.executeQuery(query);
 			
 			while(result.next()) {
-				System.out.println("{");
+				System.out.println("Genre {");
 				System.out.println("    Genre: " + result.getInt("GenreID") + ",");
 				System.out.println("    GenreType: " + result.getString("GenreType") + ",");
 				System.out.println("}");
@@ -446,7 +638,7 @@ public class Query {
 			result = statement.executeQuery(query);
 			
 			while (result.next()) {
-				System.out.println("{");
+				System.out.println("Movie {");
 				System.out.println("    MovieID: " + result.getInt("MovieID") + ",");
 				System.out.println("    MovieTitle: " + result.getString("MovieTitle") + ",");
 				System.out.println("    MovieYear: " + result.getString("MovieYear") + ",");
