@@ -10,10 +10,10 @@ import java.sql.*;
  * getGenreByID(x)
  * getGenreByType(x)
  * getGenre(x) <-- helper function?
- * getDirectorByID()
- * getDirectorByFirstName()
- * getDirectorByLastName()
- * getDirector() <-- helper function?
+ * getDirectorByID(x)
+ * getDirectorByFirstName(x)
+ * getDirectorByLastName(x)
+ * getDirector(x) <-- helper function?
  * setGenreType()
  * setDirectorFirstName()
  * setDirectorLastName()
@@ -251,7 +251,7 @@ public class Query {
 		}
 	}
 	
-	/**\
+	/**
 	 * getActorByFirstName prints out the details of the actor with relevant first name
 	 * @param connection The database connection object
 	 * @param firstName The actor's first name to search for
@@ -304,7 +304,7 @@ public class Query {
 	/**
 	 * getGenreByType prints out the details of the genre with the relevant type
 	 * @param connection The database connection object
-	 * @param genreID The genre's type to search for
+	 * @param genreType The genre's type to search for
 	 * @throws SQLException
 	 */
 	public static void getGenreByType(Connection connection, String genreType)throws SQLException {
@@ -317,6 +317,89 @@ public class Query {
 		}
 	}
 	
+	
+	/**
+	 * getDirectorByID prints out the details of the director with the relevant ID
+	 * @param connection The database connection object
+	 * @param directorID The director's ID to search for
+	 * @throws SQLException
+	 */
+	public static void getDirectorByID(Connection connection, int directorID)throws SQLException {
+		String query = "SELECT * FROM Directors WHERE DirectorID = " + directorID;
+		try {
+			getDirector(connection, query);
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+	}
+	
+	
+	
+	/**
+	 * getDirectorByFirstName prints out the details of the director with relevant first name
+	 * @param connection The database connection object
+	 * @param firstName The directors first name to search for
+	 * @throws SQLException
+	 */
+	public static void getDirectorByFirstName(Connection connection, String firstName)throws SQLException {
+		String query = "SELECT * FROM Directors WHERE FirstName = \"" + firstName + "\"";
+		try {
+			getDirector(connection, query);
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+	}
+	
+	
+	/**
+	 * getDirectorByLastName prints out the details of the director with relevant last name
+	 * @param connection The database connection object
+	 * @param lastName The directors last name to search for
+	 * @throws SQLException
+	 */
+	public static void getDirectorByLastName(Connection connection, String lastName)throws SQLException {
+		String query = "SELECT * FROM Directors WHERE LastName = \"" + lastName + "\"";
+		try {
+			getDirector(connection, query);
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * A helper function to be used by various getDirectorByX() functions which accepts a query to search for
+	 * a director by a particular value, and prints out ALL details of the relevant director.
+	 * @param connection The database connection object
+	 * @param query Must be of the form SELECT * FROM Directors BY {value}
+	 * @throws SQLException
+	 */
+	private static void getDirector(Connection connection, String query) throws SQLException{
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while(result.next()) {
+				System.out.println("{");
+				System.out.println("    DirectorID: " + result.getInt("DirectorID") + ",");
+				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
+				System.out.println("    LastName: " + result.getString("LastName") + ",");
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
 	
 	/**
 	 * A helper function to be used by various getActorByX() functions which accepts a query to search for an
@@ -368,7 +451,7 @@ public class Query {
 			
 			while(result.next()) {
 				System.out.println("{");
-				System.out.println("    Genre: " + result.getInt("GenreID") + ",");
+				System.out.println("    GenreID: " + result.getInt("GenreID") + ",");
 				System.out.println("    GenreType: " + result.getString("GenreType") + ",");
 				System.out.println("}");
 			}
