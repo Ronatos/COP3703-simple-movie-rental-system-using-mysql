@@ -177,7 +177,7 @@ public class Main {
 		} while (true);
 	}
 	
-	// Incomplete
+	// Incomplete (Tyler is working on this)
 	public static void displayCustomerDashboard() {
 		do {
 			System.out.println("1. Find a movie");
@@ -186,6 +186,40 @@ public class Main {
 			System.out.println("4. Log out");
 			
 			int selection = getUserSelection();
+			
+			switch (selection) {
+			case 1: //1. Find a movie
+					System.out.println("1. Recommended Movies");
+					System.out.println("2. Search by Atribute");
+					System.out.println("3. Back to dashboard");
+					
+						selection = getUserSelection();
+						
+						switch (selection) {
+						case 1://1. Recommended Movies
+							break;
+						case 2://2. Search by Attribute
+							break;
+						case 3://3. back to dashboard
+							break;
+						}
+				break;
+			case 2: //2. Rental return
+				//kinda scary right now but will keep working on it	
+				break;
+			case 3: //3. Account Management
+				break;
+			case 4: //4. Log out
+				System.out.println("Goodbye!");
+				scanner.close();
+				try {
+					dbConnection.close();
+				}
+				catch (SQLException error) {
+					error.printStackTrace();
+				}
+				System.exit(0);		
+			}
 		} while (true);
 	}
 	
