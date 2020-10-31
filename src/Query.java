@@ -291,6 +291,25 @@ public class Query {
 	 */
 	public static void getMoviesByActor(Connection connection, int actorID) throws SQLException {
 		String query = "SELECT MovieID FROM Movie_Actors WHERE ActorID = " + actorID;
+		try {
+			getMoviesByEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void getMoviesByDirector(Connection connection, int directorID) throws SQLException {
+		String query = "SELECT MovieID FROM Movie_Directors WHERE DirectorID = " + directorID;
+		try {
+			getMoviesByEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	private static void getMoviesByEntity(Connection connection, String query) throws SQLException {
 		Statement statement = null;
 		ResultSet result = null;
 		
@@ -483,6 +502,26 @@ public class Query {
 	 */
 	public static void getDirectorByID(Connection connection, int DirectorID) throws SQLException {
 		String query = "SELECT * FROM Directors WHERE DirectorID = " + DirectorID;
+		try {
+			getDirector(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void getDirectorByFirstName(Connection connection, String firstName) throws SQLException {
+		String query = "SELECT * FROM Directors WHERE FirstName = \"" + firstName + "\"";
+		try {
+			getDirector(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void getDirectorByLastName(Connection connection, String lastName) throws SQLException {
+		String query = "SELECT * FROM Directors WHERE LastName = \"" + lastName + "\"";
 		try {
 			getDirector(connection, query);
 		}

@@ -476,7 +476,66 @@ public class Main {
 	 * Alex
 	 */
 	private static void displayEmployeeSearchDirectorMenu() {
-		
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Director");
+			System.out.println("How would you like to search for a director?");
+			System.out.println("----------");
+			System.out.println("1. Director ID");
+			System.out.println("2. Movie");
+			System.out.println("3. First Name");
+			System.out.println("4. Last Name");
+			System.out.println("5. Back to Search");
+			
+			int	selection = getUserSelection();
+			switch (selection) {
+				case 1: // 1. Director ID
+					System.out.print("Director ID: ");
+					
+					try {
+						int directorID = scanner.nextInt();
+						Query.getDirectorByID(dbConnection, directorID);
+						Query.getMoviesByDirector(dbConnection, directorID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 3: // 3. First Name
+					System.out.print("First Name: ");
+					
+					String firstName = scanner.nextLine();
+					try {
+						Query.getDirectorByFirstName(dbConnection, firstName);
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Last Name
+					System.out.print("Last Name: ");
+					
+					String lastName = scanner.nextLine();
+					try {
+						Query.getDirectorByLastName(dbConnection, lastName);
+					}
+					catch (SQLException error) {
+						printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back to Search
+					return;
+			}
+		} while (true);
 	}
 	
 	/**
