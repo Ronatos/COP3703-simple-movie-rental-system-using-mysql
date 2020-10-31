@@ -292,7 +292,7 @@ public class Main {
 			System.out.println("5. Movie");
 			System.out.println("6. Review");
 			System.out.println("7. Transaction");
-			System.out.println("8. Back to Employee Dashboard");
+			System.out.println("8. Back");
 			
 			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -317,7 +317,7 @@ public class Main {
 				case 7: // 7. Transaction
 					displayEmployeeSearchTransactionMenu();
 					break;
-				case 8: // 8. Back to Employee Dashboard
+				case 8: // 8. Back
 					return;
 			}
 		} while (true);
@@ -342,7 +342,7 @@ public class Main {
 			System.out.println("2. Movie");
 			System.out.println("3. First name");
 			System.out.println("4. Last name");
-			System.out.println("5. Back to Search");
+			System.out.println("5. Back");
 			
 			int	selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -350,7 +350,7 @@ public class Main {
 					System.out.print("Actor ID: ");
 					
 					try {
-						int actorID = scanner.nextInt();
+						int actorID = Utils.getUserSelection(scanner);
 						Query.getActorByID(dbConnection, actorID);
 						Query.getMoviesByActor(dbConnection, actorID);
 					}
@@ -389,7 +389,7 @@ public class Main {
 						break;
 					}
 					break;
-				case 5: // 5. Back to Search
+				case 5: // 5. Back
 					return;
 			}
 		} while (true);
@@ -415,7 +415,7 @@ public class Main {
 			System.out.println("2. Transaction");
 			System.out.println("3. Review");
 			System.out.println("4. Username");
-			System.out.println("5. Back to Search");
+			System.out.println("5. Back");
 			
 			int	selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -423,7 +423,7 @@ public class Main {
 					System.out.print("Customer ID: ");
 					
 					try {
-						int customerID = scanner.nextInt();
+						int customerID = Utils.getUserSelection(scanner);
 						Query.getCustomerByID(dbConnection, customerID);
 						Query.getTransactionsByCustomer(dbConnection, customerID);
 						Query.getReviewsByCustomer(dbConnection, customerID);
@@ -454,7 +454,7 @@ public class Main {
 						break;
 					}
 					break;
-				case 5: // 5. Back to Search
+				case 5: // 5. Back
 					return;
 			}
 		} while (true);
@@ -479,7 +479,7 @@ public class Main {
 			System.out.println("2. Movie");
 			System.out.println("3. First Name");
 			System.out.println("4. Last Name");
-			System.out.println("5. Back to Search");
+			System.out.println("5. Back");
 			
 			int	selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -487,7 +487,7 @@ public class Main {
 					System.out.print("Director ID: ");
 					
 					try {
-						int directorID = scanner.nextInt();
+						int directorID = Utils.getUserSelection(scanner);
 						Query.getDirectorByID(dbConnection, directorID);
 						Query.getMoviesByDirector(dbConnection, directorID);
 					}
@@ -526,7 +526,7 @@ public class Main {
 						break;
 					}
 					break;
-				case 5: // 5. Back to Search
+				case 5: // 5. Back
 					return;
 			}
 		} while (true);
@@ -550,7 +550,7 @@ public class Main {
 				"the genre and all movies in the genre.");
 			System.out.println("2. Movie");
 			System.out.println("3. Genre Type");
-			System.out.println("4. Back to Search");
+			System.out.println("4. Back");
 			
 			int	selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -558,7 +558,7 @@ public class Main {
 					System.out.print("Genre ID: ");
 					
 					try {
-						int genreID = scanner.nextInt();
+						int genreID = Utils.getUserSelection(scanner);;
 						Query.getGenreByID(dbConnection, genreID);
 						Query.getMoviesByGenre(dbConnection, genreID);
 					}
@@ -585,7 +585,7 @@ public class Main {
 						break;
 					}
 					break;
-				case 4: // 4. Back to Search
+				case 4: // 4. Back
 					return;
 			}
 		} while (true);
@@ -614,7 +614,7 @@ public class Main {
 			System.out.println("5. Movie Title");
 			System.out.println("6. Certificate Rating");
 			System.out.println("7. Release Date");
-			System.out.println("8. Back to Search");
+			System.out.println("8. Back");
 			
 			int	selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -622,7 +622,7 @@ public class Main {
 					System.out.print("Movie ID: ");
 					
 					try {
-						int movieID = scanner.nextInt();
+						int movieID = Utils.getUserSelection(scanner);;
 						Query.getMovieByID(dbConnection, movieID);
 						Query.getActorsByMovie(dbConnection, movieID);
 						Query.getDirectorsByMovie(dbConnection, movieID);
@@ -682,7 +682,7 @@ public class Main {
 						break;
 					}
 					break;
-				case 8: // 8. Back to Search
+				case 8: // 8. Back
 					return;
 			}
 		} while (true);
@@ -704,7 +704,7 @@ public class Main {
 			System.out.println("1. Review ID");
 			System.out.println("2. Customer");
 			System.out.println("3. Movie");
-			System.out.println("4. Back to Search");
+			System.out.println("4. Back");
 			
 			int	selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -712,7 +712,7 @@ public class Main {
 					System.out.print("Review ID: ");
 					
 					try {
-						int reviewID = scanner.nextInt();
+						int reviewID = Utils.getUserSelection(scanner);;
 						Query.getReviewByID(dbConnection, reviewID);
 						Query.getCustomerByReview(dbConnection, reviewID);
 						Query.getMovieByReview(dbConnection, reviewID);
@@ -731,7 +731,7 @@ public class Main {
 				case 3: // 3. Movie
 					displayEmployeeSearchMovieMenu();
 					break;
-				case 4: // 4. Back to Search
+				case 4: // 4. Back
 					return;
 			}
 		} while (true);
@@ -755,8 +755,8 @@ public class Main {
 				"the customer, the transaction, and any data about a rental if there was one.");
 			System.out.println("2. Customer");
 			System.out.println("3. Movie");
-			System.out.println("3. Transaction Date");
-			System.out.println("4. Back to Search");
+			System.out.println("4. Transaction Date");
+			System.out.println("5. Back");
 			
 			int	selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -764,7 +764,7 @@ public class Main {
 					System.out.print("Transaction ID: ");
 					
 					try {
-						int transactionID = scanner.nextInt();
+						int transactionID = Utils.getUserSelection(scanner);;
 						Query.getCustomerByTransaction(dbConnection, transactionID);
 						Query.getTransactionByID(dbConnection, transactionID);
 						Query.getMovieByTransaction(dbConnection, transactionID);
@@ -796,7 +796,7 @@ public class Main {
 						Utils.printDatabaseError(error);
 					}
 					break;
-				case 5: // 5. Back to Search
+				case 5: // 5. Back
 					return;
 			}
 		} while (true);
