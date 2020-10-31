@@ -157,6 +157,35 @@ public class Query {
 	}
 	
 	/**
+	 * getActorsByMovie prints out the details of all actors who play in the relevant movie.
+	 * @param connection The database connection object
+	 * @param movieID The movie with actors to print
+	 * @throws SQLException
+	 */
+	public static void getActorsByMovie(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT ActorID FROM Movie_Actors WHERE MovieID = " + movieID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getActorByID(connection, result.getInt("ActorID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * getCustomerByID prints out the details of the customer with the relevant ID
 	 * @param connection The database connection object
 	 * @param customerID The customer to search for
@@ -237,6 +266,35 @@ public class Query {
 	}
 	
 	/**
+	 * getDirectorsByMovie prints out the details of all directors who directed the relevant movie.
+	 * @param connection The database connection object
+	 * @param movieID The movie with directors to print
+	 * @throws SQLException
+	 */
+	public static void getDirectorsByMovie(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT DirectorID FROM Movie_Directors WHERE MovieID = " + movieID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getDirectorByID(connection, result.getInt("DirectorID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * getGenreByID prints out the details of the genre with the relevant ID
 	 * @param connection The database connection object
 	 * @param genreID The genre's ID to search for
@@ -269,6 +327,35 @@ public class Query {
 	}
 	
 	/**
+	 * getGenresByMovie prints out the details of all genres the relevant movie is classified as.
+	 * @param connection The database connection object
+	 * @param movieID The movie with genres to print
+	 * @throws SQLException
+	 */
+	public static void getGenresByMovie(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT GenreID FROM Movie_Genres WHERE MovieID = " + movieID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getGenreByID(connection, result.getInt("GenreID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * getMovieByID prints out the details of the movie with relevant ID
 	 * @param connection The connection object
 	 * @param movieID The movie to search for
@@ -276,6 +363,38 @@ public class Query {
 	 */
 	public static void getMovieByID(Connection connection, int movieID) throws SQLException {
 		String query = "SELECT * FROM Movies WHERE MovieID = " + movieID;
+		try {
+			Query_Utils.getMovie(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * getMovieByCertificateRating prints out the details of the movie with relevant Certificate Rating
+	 * @param connection The database connection object
+	 * @param certificateRating The relevant certificate rating ("PG-13", "R", etc.)
+	 * @throws SQLException
+	 */
+	public static void getMovieByCertificateRating(Connection connection, String certificateRating) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE CertificateRating = \"" + certificateRating + "\"";
+		try {
+			Query_Utils.getMovie(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * getMovieByReleaseDate prints out the details of the movie with relevant Release Date
+	 * @param connection The database connection object
+	 * @param releaseDate The relevant release date
+	 * @throws SQLException
+	 */
+	public static void getMovieByReleaseDate(Connection connection, String releaseDate) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE ReleaseDate = \"" + releaseDate + "\"";
 		try {
 			Query_Utils.getMovie(connection, query);
 		}
@@ -307,6 +426,7 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void getMoviesByActor(Connection connection, int actorID) throws SQLException {
+
 		String query = "SELECT MovieID FROM Movie_Actors WHERE ActorID = " + actorID;
 		try {
 			Query_Utils.getMoviesByEntity(connection, query);
@@ -433,6 +553,7 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void getTransactionsByCustomer(Connection connection, int customerID) throws SQLException {
+		
 		String query = "SELECT TransactionID FROM Transactions WHERE CustomerID = " + customerID;
 		Statement statement = null;
 		ResultSet result = null;
@@ -443,6 +564,35 @@ public class Query {
 			
 			while (result.next()) {
 				getTransactionByID(connection, result.getInt("TransactionID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
+	 * getTransactionsByMovie prints out the details of all transactions containing the relevant movie.
+	 * @param connection The database connection object
+	 * @param movieID The movie with transactions to print
+	 * @throws SQLException
+	 */
+	public static void getTransactionsByMovie(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT TransactionID FROM Transactions WHERE MovieID = " + movieID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getTransactionByID(connection, result.getInt("TransactionID"));
 			}
 		}
 		catch (SQLException error) {
