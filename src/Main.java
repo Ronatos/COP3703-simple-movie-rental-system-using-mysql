@@ -243,7 +243,7 @@ public class Main {
 			System.out.println("What would you like to do?");
 			System.out.println("----------");
 			System.out.println("1. Search");
-			System.out.println("2. Update inventory");
+			System.out.println("2. Update");
 			System.out.println("3. Customer Management");
 			System.out.println("4. Reports");
 			System.out.println("5. Log out");
@@ -253,10 +253,10 @@ public class Main {
 				case 1: // 1. Search
 					displayEmployeeSearchMenu();
 					break;
-					/*
 				case 2:
 					displayUpdateInventoryMenu();
 					break; // back to the employee dashboard
+					/*
 				case 3:
 					System.out.println("Menu option has not yet been implemented. " +
 						"Check back later.");
@@ -714,8 +714,8 @@ public class Main {
 					try {
 						int reviewID = scanner.nextInt();
 						Query.getReviewByID(dbConnection, reviewID);
-						Query.getCustomersByReview(dbConnection, reviewID);
-						Query.getMoviesByReview(dbConnection, reviewID);
+						Query.getCustomerByReview(dbConnection, reviewID);
+						Query.getMovieByReview(dbConnection, reviewID);
 					}
 					catch (InputMismatchException error) {
 						System.out.println("Not a valid ID. Please try again.");
@@ -765,9 +765,9 @@ public class Main {
 					
 					try {
 						int transactionID = scanner.nextInt();
-						Query.getCustomerByTransactionID(dbConnection, transactionID);
+						Query.getCustomerByTransaction(dbConnection, transactionID);
 						Query.getTransactionByID(dbConnection, transactionID);
-						Query.getMoviesByTransaction(dbConnection, transactionID);
+						Query.getMovieByTransaction(dbConnection, transactionID);
 					}
 					catch (InputMismatchException error) {
 						System.out.println("Not a valid ID. Please try again.");
@@ -787,7 +787,7 @@ public class Main {
 					
 					String transactionDate = scanner.nextLine();
 					try {
-						Query.getTransactionsByTransactionDate(dbConnection, transactionDate);
+						Query.getTransactionByTransactionDate(dbConnection, transactionDate);
 					}
 					catch (InputMismatchException error) {
 						System.out.println("Not a valid ID. Please try again.");
@@ -823,7 +823,7 @@ public class Main {
 			System.out.println("4. Delete item");
 			System.out.println("5. Back");
 			
-			int selection = getUserSelection();
+			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
 				case 1: // 1. Add new item
 					displayAddNewItemMenu();

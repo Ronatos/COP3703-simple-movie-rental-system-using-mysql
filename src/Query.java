@@ -208,12 +208,71 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void getCustomerByUsername(Connection connection, String username) throws SQLException {
+
 		String query = "SELECT * FROM Customers WHERE Username = \"" + username + "\"";
 		try {
 			Query_Utils.getCustomer(connection, query);
 		}
 		catch(SQLException error){
 			throw error;
+		}
+	}
+	
+	/**
+	 * getCustomerByReview prints out all the details of the customer who wrote the relevant review
+	 * @param connection The database connection object
+	 * @param reviewID The relevant review whose author will be printed
+	 * @throws SQLException
+	 */
+	public static void getCustomerByReview(Connection connection, int reviewID) throws SQLException {
+		String query = "SELECT CustomerID FROM Reviews WHERE ReviewID = " + reviewID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getCustomerByID(connection, result.getInt("CustomerID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
+	 * getCustomerByTransaction prints the customer's data who made the relevant transaction
+	 * @param connection The database connection object
+	 * @param transactionID The transaction from which to pull the customer data
+	 * @throws SQLException
+	 */
+	public static void getCustomerByTransaction(Connection connection, int transactionID) throws SQLException {
+		String query = "SELECT CustomerID FROM Transactions WHERE TransactionID = " + transactionID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getCustomerByID(connection, result.getInt("CustomerID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
 		}
 	}
 	
@@ -404,6 +463,35 @@ public class Query {
 	}
 	
 	/**
+	 * getMovieByReview prints data about the movie reviewed in the relevant reviewID
+	 * @param connection The database connection object
+	 * @param reviewID The review ID of the movie to print
+	 * @throws SQLException
+	 */
+	public static void getMovieByReview(Connection connection, int reviewID) throws SQLException {
+		String query = "SELECT MovieID FROM Reviews WHERE ReviewID = " + reviewID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getMovieByID(connection, result.getInt("MovieID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * getMovieByTitle prints out the details of the movie with relevant Title.
 	 * @param connection The connection object
 	 * @param movieTitle The movie to search for
@@ -416,6 +504,35 @@ public class Query {
 		}
 		catch (SQLException error) {
 			throw error;
+		}
+	}
+	
+	/**
+	 * getMovieByTransaction prints out the movie which was involved in the relevant transaction.
+	 * @param connection The database connection object
+	 * @param transactionID The transaction which contains the movie to print
+	 * @throws SQLException
+	 */
+	public static void getMovieByTransaction(Connection connection, int transactionID) throws SQLException {
+		String query = "SELECT MovieID FROM Transactions WHERE TransactionID = " + transactionID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query.getMovieByID(connection, result.getInt("MovieID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
 		}
 	}
 	
@@ -538,6 +655,22 @@ public class Query {
 	 */
 	public static void getTransactionByID(Connection connection, int transactionID) throws SQLException {
 		String query = "SELECT * FROM Transactions WHERE TransactionID = " + transactionID;
+		try {
+			Query_Utils.getTransaction(connection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	/**
+	 * getTransactionByTransactionDate prints out the details of transactions made on the relevant date.
+	 * @param connection The database connection object
+	 * @param transactionDate The date the transaction was made
+	 * @throws SQLException
+	 */
+	public static void getTransactionByTransactionDate(Connection connection, String transactionDate) throws SQLException {
+		String query = "SELECT * FROM Transactions WHERE TransactionDate = \"" + transactionDate + "\"";
 		try {
 			Query_Utils.getTransaction(connection, query);
 		}
