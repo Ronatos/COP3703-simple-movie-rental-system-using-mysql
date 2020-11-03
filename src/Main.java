@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /*
@@ -7,6 +8,8 @@ import java.util.Scanner;
  *    The user doesn't need to see these.
  * 2. Add a way for the employees who have just searched for a movie to update that movie right there instead of needing to
  * 	  navigate through the tree.
+ * 3. Add a way for employees to look up the ID of an item, since updating them requires the employee to know the ID
+ * 4. Add user friendly way of knowing where they are in the tree (home/employee dashboard/add new item/) for example
  */
 
 public class Main {
@@ -15,12 +18,14 @@ public class Main {
 	static Connection dbConnection = null;
 	
 	public static void main(String[] args) {
-		
-		// Get database connection
+		dbConnection = getDatabaseConnection();
+		displayRootMenu();
+	}
+	
+	private static Connection getDatabaseConnection() {
 		String dbURL = "jdbc:mysql://cisvm-winsrv-mysql1.unfcsd.unf.edu:3308/group2";
 		
 		do {
-			// Acquire administrator credentials to establish initial database connection
 			System.out.println("Establishing database connection...");
 			
 	        System.out.print("Admin Username: ");
@@ -29,53 +34,42 @@ public class Main {
 	        System.out.print("Admin Password: ");
 	        String password = scanner.nextLine();
 	        
-	        // Attempt to establish initial database connection with provided administrator
-	        // credentials
 	        try {
-	        	dbConnection = DriverManager.getConnection(dbURL, username, password);
-	            System.out.println("Database connection established.");
+	        	return DriverManager.getConnection(dbURL, username, password);
 	        }
 	        catch (SQLException error) {
-	        	System.out.println("Unable to establish database connection. " +
-	        		"Please try again or contact your system administrator.");
+	        	Utils.printDatabaseError(error);
 	            System.out.print("Try again? (y/n): ");
 	            
 	            String response = scanner.nextLine();
 	            if (!response.equals("y")) {
-	            	error.printStackTrace();
 	    			System.out.println("Goodbye!");
 	    			scanner.close();
 	    			System.exit(0);
 	            }
 	        }
-		} while (dbConnection == null);
-		
-		// Display UI root
-		displayUserLoginMenu();
+		} while (true);
 	}
 
 	/**
 	 * Complete and tested.
-	 * displayUserLoginMenu is the root of the UI. This menu provides options to log in,
+	 * displayRootMenu is the root of the UI. This menu provides options to log in,
 	 * create a new account, or exit the application gracefully.
-	 * 
-	 * Log in: Used by both employees and customers, group membership is handled,
-	 * and the appropriate dashboard is displayed.
-	 * Create New Account: Used to create a new account, this gathers relevant account info,
-	 * and passes it to the database.
-	 * Quit: The only way the application should end.
 	 */
-	public static void displayUserLoginMenu() {
+	private static void displayRootMenu() {
 		do {
 			String username;
 			String password;
 			
+			System.out.println("----------");
+			System.out.println("Home");
 			System.out.println("Greetings, and welcome to UNFMovies!");
-			System.out.println("1. Log in"); // Takes you to a sub-menu
-			System.out.println("2. Create new account"); // Performs a function
-			System.out.println("3. Quit"); // Ends the application
+			System.out.println("----------");
+			System.out.println("1. Log in");
+			System.out.println("2. Create new account");
+			System.out.println("3. Quit");
 			
-			int selection = getUserSelection();
+			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
 				case 1: // 1. Log in
 					boolean userIsCustomer = false;
@@ -94,25 +88,12 @@ public class Main {
 							dbConnection, username, password);
 					}
 					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
-						break; // take me back to the login menu
+						Utils.printDatabaseError(error);
+						break; // back to the root menu
 					}
 						
-					if (userIsCustomer && userIsEmployee) {	
-						System.out.println("1. Employee dashboard");
-						System.out.println("2. Customer dashboard");
-						
-						selection = getUserSelection();
-						switch (selection) {
-							case 1:
-								displayEmployeeDashboard();
-								break; // take me back to the login menu
-							case 2:
-								displayCustomerDashboard();
-								break; // take me back to the login menu
-						}
+					if (userIsCustomer && userIsEmployee) {
+						displayDashboardDecisionMenu();
 					}
 					else if (userIsCustomer) {
 						displayCustomerDashboard();
@@ -124,7 +105,7 @@ public class Main {
 						System.out.println("Incorrect username or password.");
 					}
 					
-					break; // take me back to the login menu
+					break; // back to the root menu
 				case 2: // 2. Create new account
 					String referredBy = "";
 					
@@ -153,9 +134,7 @@ public class Main {
 							dbConnection, username, password, firstName, lastName, referredBy);
 					}
 					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
+						Utils.printDatabaseError(error);
 						break; // take me back to the login menu
 					}
 					catch (LogicException error) {
@@ -177,6 +156,32 @@ public class Main {
 		} while (true);
 	}
 	
+	/**
+	 * Complete and tested.
+	 * displayDashboardDecisionMenu is displayed after logging in to the application
+	 * if the user exists in both the Employees and Customers tables.
+	 */
+	private static void displayDashboardDecisionMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Login");
+			System.out.println("Which dashboard would you like to use?");
+			System.out.println("----------");
+			System.out.println("1. Employee dashboard");
+			System.out.println("2. Customer dashboard");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1:
+					displayEmployeeDashboard();
+					return; // back to the root menu
+				case 2:
+					displayCustomerDashboard();
+					return; // back to the root menu
+			}
+		} while (true);
+	}
+	
 	// Incomplete (Tyler is working on this)
 	public static void displayCustomerDashboard() {
 		do {
@@ -185,7 +190,7 @@ public class Main {
 			System.out.println("3. Account Management");
 			System.out.println("4. Log out");
 			
-			int selection = getUserSelection();
+			int selection = Utils.getUserSelection(scanner);
 			
 			switch (selection) {
 			case 1: //1. Find a movie
@@ -193,7 +198,7 @@ public class Main {
 					System.out.println("2. Search by Atribute");
 					System.out.println("3. Back to dashboard");
 					
-						selection = getUserSelection();
+						selection = Utils.getUserSelection(scanner);
 						
 						switch (selection) {
 						case 1://1. Recommended Movies
@@ -223,223 +228,801 @@ public class Main {
 		} while (true);
 	}
 	
+	// Employee -----------------------------------------------------------------------------------
+	
 	/**
 	 * Incomplete and untested.
-	 * - Locate a movie is complete and has been tested
 	 * displayEmployeeDashboard is a sub-menu of displayUserLoginMenu.
-	 * This menu provides options to locate a movie, update existing inventory,
+	 * This menu provides options to search, update existing inventory,
 	 * manage a customer's account, generate a report, or log out of the application.
-	 * 
-	 * Locate a movie: This allows the employee to search for a movie by its MovieTitle or
-	 * its MovieID properties.
-	 * Update Inventory: Displays the update inventory menu.
-	 * Customer Management: Incomplete
-	 * Reports: Incomplete
-	 * Log out: Log out and return to the login menu.
 	 */
-	public static void displayEmployeeDashboard() {
+	private static void displayEmployeeDashboard() {
 		do {
-			System.out.println("1. Locate a movie"); // Performs a function
-			System.out.println("2. Update inventory"); // Takes you to a sub-menu
-			System.out.println("3. Customer Management");
-			System.out.println("4. Reports");
-			System.out.println("5. Log out");
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard");
+			System.out.println("What would you like to do?");
+			System.out.println("----------");
+			System.out.println("1. Search");
+			System.out.println("2. Add");
+			System.out.println("3. Update");
+			System.out.println("4. Link");
+			System.out.println("4. Customer Management");
+			System.out.println("5. Reports");
+			System.out.println("6. Log out");
 			
-			int selection = getUserSelection();
+			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
-				case 1: // 1. Locate a movie
-					System.out.println("Select a movie property to search by.");
-					System.out.println("1. Movie ID");
-					System.out.println("2. Movie Title");
-					
-					selection = getUserSelection();
-					switch (selection) {
-						case 1: // 1. Movie ID
-							System.out.print("Movie ID: ");
-							
-							int movieID = getUserSelection();
-							try {
-								Query.getMovieByID(dbConnection, movieID);
-							}
-							catch (SQLException error) {
-								error.printStackTrace();
-								System.out.println("A database error was encountered. " +
-									"Please try again or contact your system administrator.");
-								break; // take me back to the employee dashboard
-							}
-							
-							break; // take me back to the employee dashboard
-						case 2: // 2. Movie Title
-							System.out.print("Movie Title: ");
-							
-							String movieTitle = scanner.nextLine();
-							try {
-								Query.getMovieByTitle(dbConnection, movieTitle);
-							}
-							catch (SQLException error) {
-								error.printStackTrace();
-								System.out.println("A database error was encountered. " +
-									"Please try again or contact your system administrator.");
-								break; // take me back to the employee dashboard
-							}
-							
-							break; // take me back to the employee dashboard
-					}
-					
-					break; // take me back to the employee dashboard
-				case 2:
-					displayUpdateInventoryMenu();
-					break; // take me back to the employee dashboard
-				case 3:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
+				case 1: // 1. Search
+					displayEmployeeSearchMenu();
 					break;
-				case 4:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
+				case 2: // 2. Add
+					displayEmployeeAddMenu();
 					break;
-				case 5:
-					return; // Take me back to the log in menu
+				case 3: // 3. Update
+					displayEmployeeUpdateMenu();
+					break;
+				case 6:
+					return; // back to the root menu
 			}
 		} while (true);
 	}
 	
-	/**
-	 * Incomplete and untested.
-	 * - Add new item is complete and tested
-	 * displayUpdateInventoryMenu is a sub-menu of displayEmployeeDashboard.
-	 * This menu provides options to add a new item, update an existing item,
-	 * link existing items, delete an item, or return to the employee dashboard.
-	 * 
-	 * Add a new item: Takes you to the add new item sub-menu.
-	 * Update existing item: Incomplete
-	 * Link existing items: Incomplete
-	 * Delete item: Incomplete
-	 * Back: Returns you to the employee dashboard.
-	 */
-	public static void displayUpdateInventoryMenu() {
-		do {
-			System.out.println("1. Add new item"); // Takes you to a sub-menu
-			System.out.println("2. Update existing item"); // Takes you to a sub-menu
-			System.out.println("3. Link existing items"); // Performs a function
-			System.out.println("4. Delete item");
-			System.out.println("5. Back");
-			
-			int selection = getUserSelection();
-			switch (selection) {
-				case 1: // 1. Add new item
-					displayAddNewItemMenu();
-					break; // take me back to the update inventory menu
-				case 2: // 2. Update existing item
-					displayUpdateItemMenu();
-					break; // take me back to the update inventory menu
-				case 3:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break; // take me back to the update inventory menu
-				case 4:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break; // take me back to the update inventory menu
-				case 5:
-					return; // take me back to the employee dashboard
-			}
-		} while (true);
-	}
+	// Employee - Search --------------------------------------------------------------------------
 	
 	/**
-	 * Incomplete and untested.
-	 * displayUpdateItemMenu is a sub-menu of displayUpdateInventoryMenu.
-	 * This menu provides options to update a movie, actor, director, genre.
-	 * 
-	 * Update movie: C
-	 * Update actor: Incomplete
-	 * Update director: Incomplete
-	 * Update genre: Incomplete
-	 * Back: Returns you to the update inventory menu.
+	 * Complete and tested.
+	 * displayEmployeeSearchMenu is a sub-menu of displayEmployeeDashboard.
+	 * This menu allows the user to select an entity in the database to search for.
 	 */
-	public static void displayUpdateItemMenu() {
+	private static void displayEmployeeSearchMenu() {
 		do {
-			System.out.println("1. Update movie"); // Takes you to a sub-menu
-			System.out.println("2. Update actor");
-			System.out.println("3. Update director");
-			System.out.println("4. Update genre");
-			System.out.println("5. Back");
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search");
+			System.out.println("Which entity would you like to search for?");
+			System.out.println("----------");
+			System.out.println("1. Actor");
+			System.out.println("2. Customer");
+			System.out.println("3. Director");
+			System.out.println("4. Genre");
+			System.out.println("5. Movie");
+			System.out.println("6. Review");
+			System.out.println("7. Transaction");
+			System.out.println("8. Back");
 			
-			int selection = getUserSelection();
+			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
-				case 1: // 1. Update movie
-					System.out.print("Movie ID: ");
-					int movieID = getUserSelection();
-					
-					try {
-						if (Query.isExistingMovie(dbConnection, movieID)) {
-							displayUpdateMovieMenu(movieID);
-						}
-						else {
-							System.out.println("Movie with ID " + movieID + " not found. Please try again.");
-							break; // take me back to the displayUpdateItemMenu
-						}
-					}
-					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
-						break; // take me back to the displayUpdateItemMenu
-					}
-					
-					break; // take me back to the displayUpdateItemMenu
-				case 2: // 2. Update Actor
-					System.out.print("Actor ID: ");
-					int actorID = getUserSelection();
-					
-					try {
-						if (Query.isExistingActor(dbConnection, actorID)) {
-							displayUpdateActorMenu(actorID);
-						}
-						else {
-							System.out.println("Actor with ID " + actorID + " not found. Please try again.");
-							break; // take me back to the displayUpdateItemMenu
-						}
-					}
-					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
-						break; // take me back to the displayUpdateItemMenu
-					}
-					
-					break; // take me back to the displayUpdateItemMenu
-				case 3:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break; // take me back to the displayUpdateItemMenu
-				case 4:
-					System.out.println("Menu option has not yet been implemented. " +
-						"Check back later.");
-					break; // take me back to the displayUpdateItemMenu
-				case 5:
+				case 1: // 1. Actor
+					displayEmployeeSearchActorMenu();
+					break;
+				case 2: // 2. Customer
+					displayEmployeeSearchCustomerMenu();
+					break;
+				case 3: // 3. Director
+					displayEmployeeSearchDirectorMenu();
+					break;
+				case 4: // 4. Genre
+					displayEmployeeSearchGenreMenu();
+					break;
+				case 5: // 5. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 6: // 6. Review
+					displayEmployeeSearchReviewMenu();
+					break;
+				case 7: // 7. Transaction
+					displayEmployeeSearchTransactionMenu();
+					break;
+				case 8: // 8. Back
 					return;
 			}
 		} while (true);
 	}
 	
+	// Employee - Search - Actor ------------------------------------------------------------------
+	
 	/**
+	 * Complete and tested.
+	 * displayEmployeeSearchActorMenu is a sub-menu of displayEmployeeSearchMenu.
+	 * This menu allows the user to search for an actor entity using various attributes.
+	 */
+	private static void displayEmployeeSearchActorMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Actor");
+			System.out.println("How would you like to search for an actor?");
+			System.out.println("----------");
+			System.out.println("1. Actor ID");
+			System.out.println("   Searching for an actor by ID provides data\n" +
+				"   about the actor and all movies they have played in.");
+			System.out.println("2. Movie");
+			System.out.println("3. First name");
+			System.out.println("4. Last name");
+			System.out.println("5. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Actor ID
+					System.out.print("Actor ID: ");
+					
+					try {
+						int actorID = Utils.getUserSelection(scanner);
+						Query.getActorByID(dbConnection, actorID);
+						Query.getMoviesByActor(dbConnection, actorID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 3: // 3. First Name
+					System.out.print("First name: ");
+					
+					String firstName = scanner.nextLine();
+					try {
+						Query.getActorByFirstName(dbConnection, firstName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Last Name
+					System.out.print("Last name: ");
+					
+					String lastName = scanner.nextLine();
+					try {
+						Query.getActorByLastName(dbConnection, lastName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	// Employee - Search - Customer ---------------------------------------------------------------
+	
+	/**
+	 * Complete and tested.
+	 * displayEmployeeSearchCustomerMenu is a sub-menu of displayEmployeeSearchMenu.
+	 * This menu allows the user to search for a customer entity using various attributes.
+	 */
+	private static void displayEmployeeSearchCustomerMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Customer");
+			System.out.println("How would you like to search for a customer?");
+			System.out.println("----------");
+			System.out.println("1. Customer ID");
+			System.out.println("   Searching for a customer by ID provides data\n" +
+				"   about the customer, all transactions they have made,\n" +
+				"   all rentals they have had, and all reviews they have written.");
+			System.out.println("2. Transaction");
+			System.out.println("3. Review");
+			System.out.println("4. Username");
+			System.out.println("5. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Customer ID
+					System.out.print("Customer ID: ");
+					
+					try {
+						int customerID = Utils.getUserSelection(scanner);
+						Query.getCustomerByID(dbConnection, customerID);
+						Query.getTransactionsByCustomer(dbConnection, customerID);
+						Query.getReviewsByCustomer(dbConnection, customerID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Transaction
+					displayEmployeeSearchTransactionMenu();
+					break;
+				case 3: // 3. Review
+					displayEmployeeSearchReviewMenu();
+					break;
+				case 4: // 4. Username
+					System.out.print("Username: ");
+					
+					String username = scanner.nextLine();
+					try {
+						Query.getCustomerByUsername(dbConnection, username);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	// Employee - Search - Director ---------------------------------------------------------------
+	
+	/**
+	 * Complete and tested.
+	 * displayEmployeeSearchDirectorMenu is a sub-menu of displayEmployeeSearchMenu.
+	 * This menu allows the user to search for a director entity using various attributes.
+	 */
+	private static void displayEmployeeSearchDirectorMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Director");
+			System.out.println("How would you like to search for a director?");
+			System.out.println("----------");
+			System.out.println("1. Director ID");
+			System.out.println("   Searching for a director by ID provides data about\n" +
+				"   the director and all movies they have directed.");
+			System.out.println("2. Movie");
+			System.out.println("3. First Name");
+			System.out.println("4. Last Name");
+			System.out.println("5. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Director ID
+					System.out.print("Director ID: ");
+					
+					try {
+						int directorID = Utils.getUserSelection(scanner);
+						Query.getDirectorByID(dbConnection, directorID);
+						Query.getMoviesByDirector(dbConnection, directorID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 3: // 3. First Name
+					System.out.print("First Name: ");
+					
+					String firstName = scanner.nextLine();
+					try {
+						Query.getDirectorByFirstName(dbConnection, firstName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Last Name
+					System.out.print("Last Name: ");
+					
+					String lastName = scanner.nextLine();
+					try {
+						Query.getDirectorByLastName(dbConnection, lastName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	// Employee - Search - Genre ------------------------------------------------------------------
+	
+	/**
+	 * Complete and tested.
+	 * displayEmployeeSearchGenreMenu is a sub-menu of displayEmployeeSearchMenu.
+	 * This menu allows the user to search for a genre entity using various attributes.
+	 */
+	private static void displayEmployeeSearchGenreMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Genre");
+			System.out.println("How would you like to search for a genre?");
+			System.out.println("----------");
+			System.out.println("1. Genre ID");
+			System.out.println("   Searching for a genre by ID provides data about\n" +
+				"   the genre and all movies in the genre.");
+			System.out.println("2. Movie");
+			System.out.println("3. Genre Type");
+			System.out.println("4. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Genre ID
+					System.out.print("Genre ID: ");
+					
+					try {
+						int genreID = Utils.getUserSelection(scanner);;
+						Query.getGenreByID(dbConnection, genreID);
+						Query.getMoviesByGenre(dbConnection, genreID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 3: // 3. Genre Type
+					System.out.print("Genre: ");
+					
+					String genre = scanner.nextLine();
+					try {
+						Query.getGenreByType(dbConnection, genre);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	// Employee - Search - Movie ------------------------------------------------------------------
+	
+	/**
+	 * Complete and tested.
+	 * displayEmployeeSearchMovieMenu is a sub-menu of displayEmployeeSearchMenu.
+	 * This menu allows the user to search for a movie entity using various attributes.
+	 */
+	private static void displayEmployeeSearchMovieMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Movie");
+			System.out.println("How would you like to search for a movie?");
+			System.out.println("----------");
+			System.out.println("1. Movie ID");
+			System.out.println("   Searching for a movie by ID provides data about\n" +
+				"   the movie, all actors that played in it, all directors that directed it,\n" +
+				"   all genres it is classified as, and all transactions including the movie.");
+			System.out.println("2. Actor");
+			System.out.println("3. Director");
+			System.out.println("4. Genre");
+			System.out.println("5. Movie Title");
+			System.out.println("6. Certificate Rating");
+			System.out.println("7. Release Date");
+			System.out.println("8. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Movie ID
+					System.out.print("Movie ID: ");
+					
+					try {
+						int movieID = Utils.getUserSelection(scanner);;
+						Query.getMovieByID(dbConnection, movieID);
+						Query.getActorsByMovie(dbConnection, movieID);
+						Query.getDirectorsByMovie(dbConnection, movieID);
+						Query.getGenresByMovie(dbConnection, movieID);
+						Query.getTransactionsByMovie(dbConnection, movieID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Actor
+					displayEmployeeSearchActorMenu();
+					break;
+				case 3: // 3. Director
+					displayEmployeeSearchDirectorMenu();
+					break;
+				case 4: // 4. Genre
+					displayEmployeeSearchGenreMenu();
+					break;
+				case 5: // 5. Movie Title
+					System.out.print("Movie Title: ");
+					
+					String movieTitle = scanner.nextLine();
+					try {
+						Query.getMovieByTitle(dbConnection, movieTitle);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 6: // 6. Certificate Rating
+					System.out.print("Certificate Rating: ");
+					
+					String certificateRating = scanner.nextLine();
+					try {
+						Query.getMovieByCertificateRating(dbConnection, certificateRating);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 7: // 7. Release Date
+					System.out.print("Release Date: ");
+					
+					String releaseDate = scanner.nextLine();
+					try {
+						Query.getMovieByReleaseDate(dbConnection, releaseDate);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 8: // 8. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	// Employee - Search - Review -----------------------------------------------------------------
+	
+	/**
+	 * Complete and tested.
+	 * displayEmployeeSearchReviewMenu is a sub-menu of displayEmployeeSearchMenu.
+	 * This menu allows the user to search for a review entity using various attributes.
+	 */
+	private static void displayEmployeeSearchReviewMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Review");
+			System.out.println("How would you like to search for a review?");
+			System.out.println("----------");
+			System.out.println("1. Review ID");
+			System.out.println("   Searching for a review by ID provides data\n" +
+				"   about the review, the customer who wrote it, and the movie\n" +
+				"   it was written about.");
+			System.out.println("2. Customer");
+			System.out.println("3. Movie");
+			System.out.println("4. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Review ID
+					System.out.print("Review ID: ");
+					
+					try {
+						int reviewID = Utils.getUserSelection(scanner);;
+						Query.getReviewByID(dbConnection, reviewID);
+						Query.getCustomerByReview(dbConnection, reviewID);
+						Query.getMovieByReview(dbConnection, reviewID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Customer
+					displayEmployeeSearchCustomerMenu();
+					break;
+				case 3: // 3. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 4: // 4. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	// Employee - Search - Transaction ------------------------------------------------------------
+	
+	/**
+	 * Complete and tested.
+	 * displayEmployeeSearchTransactionMenu is a sub-menu of displayEmployeeSearchMenu.
+	 * This menu allows the user to search for a transaction entity using various attributes.
+	 */
+	private static void displayEmployeeSearchTransactionMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Search / Transaction");
+			System.out.println("How would you like to search for a transaction?");
+			System.out.println("----------");
+			System.out.println("1. Transaction ID");
+			System.out.println("   Searching for a transaction by ID provides data about\n" +
+				"   the customer, the transaction, and any data about a rental if there was one.");
+			System.out.println("2. Customer");
+			System.out.println("3. Movie");
+			System.out.println("4. Transaction Date");
+			System.out.println("5. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Transaction ID
+					System.out.print("Transaction ID: ");
+					
+					try {
+						int transactionID = Utils.getUserSelection(scanner);;
+						Query.getCustomerByTransaction(dbConnection, transactionID);
+						Query.getTransactionByID(dbConnection, transactionID);
+						Query.getMovieByTransaction(dbConnection, transactionID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					break;
+				case 2: // 2. Customer
+					displayEmployeeSearchCustomerMenu();
+					break;
+				case 3: // 3. Movie
+					displayEmployeeSearchMovieMenu();
+					break;
+				case 4: // 4. Transaction Date
+					System.out.print("Transaction date (yyyy-mm-dd): ");
+					
+					String transactionDate = scanner.nextLine();
+					try {
+						Query.getTransactionByTransactionDate(dbConnection, transactionDate);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					break;
+				case 5: // 5. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	// Employee - Add -----------------------------------------------------------------------------
+	
+	/**
+	 * Complete and tested
+	 * displayEmployeeAddMenu is a sub-menu of displayEmployeeDashboard.
+	 * This menu provides options to add a movie, add an actor, add a genre,
+	 * add a director, or return to the Employee Dashboard.
+	 */
+	public static void displayEmployeeAddMenu() {
+		do {
+			String firstName;
+			String lastName;
+			
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Add");
+			System.out.println("What would you like to add?");
+			System.out.println("----------");
+			System.out.println("1. New Actor");
+			System.out.println("2. New Director");
+			System.out.println("3. New Genre");
+			System.out.println("4. New Movie");
+			System.out.println("5. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. New Actor
+					System.out.print("Actor first name: ");
+					firstName = scanner.nextLine();
+					
+					System.out.print("Actor last name: ");
+					lastName = scanner.nextLine();
+					
+					try {
+						Query.insertActor(
+								dbConnection, firstName, lastName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					catch (LogicException error) {
+						System.out.println(error.getMessage());
+					}
+					
+					break;
+				case 2: // 2. New Director
+					System.out.print("Director first name: ");
+					firstName = scanner.nextLine();
+					
+					System.out.print("Director last name: ");
+					lastName = scanner.nextLine();
+					
+					try {
+						Query.insertDirector(
+								dbConnection, firstName, lastName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					break;
+				case 3: // 3. New Genre
+					System.out.print("Genre: ");
+					String genre = scanner.nextLine();
+					
+					try {
+						Query.insertGenre(
+								dbConnection, genre);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					break;
+				case 4: // 4. New Movie
+					System.out.print("Movie title: ");
+					String movieTitle = scanner.nextLine();
+					
+					System.out.print("Movie release date (yyyy-mm-dd): ");
+					String movieReleaseDate = scanner.nextLine();
+					
+					System.out.print("Movie certificate rating: ");
+					String movieCertificateRating = scanner.nextLine();
+					
+					System.out.print("Movie business cost per item: ");
+					double movieBusinessCost = scanner.nextDouble();
+					
+					System.out.print("Movie customer purchase cost: ");
+					double movieCustomerPurchaseCost = scanner.nextDouble();
+					
+					System.out.print("Movie customer rent cost: ");
+					double movieCustomerRentCost = scanner.nextDouble();
+					
+					try {
+						Query.insertMovie(
+								dbConnection,
+								movieTitle,
+								movieReleaseDate,
+								movieCertificateRating,
+								movieBusinessCost,
+								movieCustomerPurchaseCost,
+								movieCustomerRentCost);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+
+					break;
+				case 5: // 5. Back
+					return; // back to the employee dashboard
+			}
+		} while (true);
+	}
+	
+	// Employee - Update --------------------------------------------------------------------------
+	
+	/**
+	 * Complete and tested.
+	 * displayEmployeeUpdateMenu is a sub-menu of displayEmployeeDashboard.
+	 * This menu provides options to update a movie, actor, director, genre.
+	 */
+	public static void displayEmployeeUpdateMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Update");
+			System.out.println("What would you like to update?");
+			System.out.println("----------");
+			System.out.println("1. Update actor");
+			System.out.println("2. Update director");
+			System.out.println("3. Update genre");
+			System.out.println("4. Update movie");
+			System.out.println("5. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Update Actor
+					System.out.print("Actor ID: ");
+					int actorID = Utils.getUserSelection(scanner);
+					
+					try {
+						if (Query.isExistingActor(dbConnection, actorID)) {
+							displayEmployeeUpdateActorMenu(actorID);
+						}
+						else {
+							System.out.println("Actor with ID " + actorID + " not found. Please try again.");
+						}
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					
+					break;
+				case 2: // 2. Update Director
+					System.out.print("Director ID: ");
+					int directorID = Utils.getUserSelection(scanner);
+					
+					try {
+						if (Query.isExistingDirector(dbConnection, directorID)) {
+							displayEmployeeUpdateDirectorMenu(directorID);
+						}
+						else {
+							System.out.println("Director with ID " + directorID + " not found. Please try again.");
+						}
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					
+					break;
+				case 3: // 3. Update Genre
+					System.out.print("Genre ID: ");
+					int genreID = Utils.getUserSelection(scanner);
+					
+					try {
+						if (Query.isExistingGenre(dbConnection, genreID)) {
+							displayEmployeeUpdateGenreMenu(genreID);
+						}
+						else {
+							System.out.println("Genre with ID " + genreID + " not found. Please try again.");
+						}
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					
+					break;
+				case 4: // 4. Update movie
+					System.out.print("Movie ID: ");
+					int movieID = Utils.getUserSelection(scanner);
+					
+					try {
+						if (Query.isExistingMovie(dbConnection, movieID)) {
+							displayEmployeeUpdateMovieMenu(movieID);
+						}
+						else {
+							System.out.println("Movie with ID " + movieID + " not found. Please try again.");
+						}
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					
+					break;
+				case 5:
+					return; // back to the Employee Dashboard
+			}
+		} while (true);
+	}
+	
+	// Employee - Update - Actor ------------------------------------------------------------------
+	
+	/**
+	 * Might like to update this a little.
 	 * Finished and tested.
-	 * displayUpdateActorMenu is a sub-menu of displayUpdateItemMenu which handles
+	 * displayEmployeeUpdateActorMenu is a sub-menu of displayEmployeeUpdateMenu which handles
 	 * updating an actor of specific actorID.
 	 * @param actorID The actor to update
 	 */
-	public static void displayUpdateActorMenu(int actorID) {
+	public static void displayEmployeeUpdateActorMenu(int actorID) {
 		do {
 			try {
 				Query.getActorByID(dbConnection, actorID);
 			}
 			catch (SQLException error) {
-				error.printStackTrace();
-				System.out.println("A database error was encountered. " +
-					"Please try again or contact your system administrator.");
-				return; // take me back to the displayUpdateItemMenu
+				Utils.printDatabaseError(error);
+				return; // back to the displayEmployeeUpdateMenu
 			}
 			
 			System.out.println("What would you like to update about this actor?");
@@ -447,7 +1030,7 @@ public class Main {
 			System.out.println("2. Last name");
 			System.out.println("3. Finish updating this actor");
 			
-			int selection = getUserSelection();
+			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
 				case 1: // 1. First Name
 					System.out.print("New First Name: ");
@@ -483,13 +1066,125 @@ public class Main {
 		} while (true);
 	}
 	
+	// Employee - Update - Director ---------------------------------------------------------------
+	
 	/**
+	 * Might like to update this a little
+	 * Complete and tested.
+	 * displayUpdateDirectorMenu is a sub-menu of displayUpdateItemMenu which handles
+	 * updating an director of specific directorID.
+	 * @param directorID The director to update
+	 */
+	public static void displayEmployeeUpdateDirectorMenu(int directorID) {
+		do {
+			try {
+				Query.getDirectorByID(dbConnection, directorID);
+			}
+			catch (SQLException error) {
+				error.printStackTrace();
+				System.out.println("A database error was encountered. " +
+					"Please try again or contact your system administrator.");
+				return; // take me back to the displayUpdateItemMenu
+			}
+			
+			System.out.println("What would you like to update about this actor?");
+			System.out.println("1. First name");
+			System.out.println("2. Last name");
+			System.out.println("3. Finish updating this director");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. First Name
+					System.out.print("New First Name: ");
+					
+					String newDirectorFirstName = scanner.nextLine();
+					try {
+						Query.setDirectorFirstName(dbConnection, newDirectorFirstName, directorID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateDirectorMenu
+					}
+					break; // take me back to the displayUpdateDirectorMenu
+				case 2: // 2. Last Name
+					System.out.print("New Last Name: ");
+					
+					String newDirectorLastName = scanner.nextLine();
+					try {
+						Query.setDirectorLastName(dbConnection, newDirectorLastName, directorID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateDirectorMenu
+					}
+					break; // take me back to the displayUpdateDirectorMenu
+				case 3: // 3. Finish updating this director
+					return; // take me back to the displayUpdateItemMenu
+			}
+		} while (true);
+	}
+	
+	// Employee - Update - Genre ------------------------------------------------------------------
+	
+	/**
+	 * Might like to update this a little
+	 * Complete and tested.
+	 * displayUpdateGenreMenu is a sub-menu of displayUpdateItemMenu which handles
+	 * updating a genre of specific genreID.
+	 * @param genreID The director to update
+	 */
+	public static void displayEmployeeUpdateGenreMenu(int genreID) {
+		do {
+			try {
+				Query.getGenreByID(dbConnection, genreID);
+			}
+			catch (SQLException error) {
+				error.printStackTrace();
+				System.out.println("A database error was encountered. " +
+					"Please try again or contact your system administrator.");
+				return; // take me back to the displayUpdateItemMenu
+			}
+			
+			System.out.println("What would you like to update about this genre?");
+			System.out.println("1. Genre type");
+			System.out.println("2. Finish updating this genre");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. First Name
+					System.out.print("New Genre Type: ");
+					
+					String newGenreType = scanner.nextLine();
+					try {
+						Query.setGenreType(dbConnection, newGenreType, genreID);
+					}
+					catch (SQLException error) {
+						error.printStackTrace();
+						System.out.println("A database error was encountered. " +
+							"Please try again or contact your system administrator.");
+						break; // take me back to the displayUpdateDirectorMenu
+					}
+					break; // take me back to the displayUpdateDirectorMenu
+				case 2: // 2. Finish updating this genre
+					return; // take me back to the displayUpdateItemMenu
+			}
+		} while (true);
+	}
+	
+	// Employee - Update - Movie ------------------------------------------------------------------
+	
+	/**
+	 * Might like to update this a little
 	 * Finished and tested.
 	 * displayUpdateMovieMenu is a sub-menu of displayUpdateItemMenu which handles
 	 * updating a movie of specific movieID.
 	 * @param movieID The movie to update
 	 */
-	public static void displayUpdateMovieMenu(int movieID) {
+	public static void displayEmployeeUpdateMovieMenu(int movieID) {
 		do {
 			try {
 				Query.getMovieByID(dbConnection, movieID);
@@ -511,7 +1206,7 @@ public class Main {
 			System.out.println("7. Stock");
 			System.out.println("8. Finish updating this movie");
 			
-			int selection = getUserSelection();
+			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
 				case 1: // 1. Title
 					System.out.print("New Title: ");
@@ -600,7 +1295,7 @@ public class Main {
 				case 7: // 7. Stock
 					System.out.print("New Stock: ");
 					
-					int newStock = getUserSelection();
+					int newStock = Utils.getUserSelection(scanner);
 					try {
 						Query.setMovieStock(dbConnection, newStock, movieID);
 					}
@@ -613,143 +1308,6 @@ public class Main {
 					break; // take me back to the displayUpdateMovieMenu
 				case 8: // 8. Finish updating this movie
 					return; // take me back to the displayUpdateItemMenu
-			}
-		} while (true);
-	}
-	
-	/**
-	 * Complete and tested
-	 * displayAddNewItemMenu is a sub-menu of displayUpdateInventoryMenu.
-	 * This menu provides options to add a movie, add an actor, add a genre,
-	 * add a director, or return to the update inventory menu.
-	 * 
-	 * Add Movie: Gathers relevant movie data and passes it to the database to attempt to add it.
-	 * Add Actor: Gathers actor information and passes it to the database to attempt to add it.
-	 * Add Genre: Gathers genre information and passes it to the database to attempt to add it.
-	 * Add Director: Gathers director information and passes it to the database to attempt to add
-	 * it.
-	 * Back: Returns you to the update inventory menu.
-	 */
-	public static void displayAddNewItemMenu() {
-		do {
-			String firstName;
-			String lastName;
-			
-			System.out.println("1. Add Movie"); // Performs a function
-			System.out.println("2. Add Actor"); // Performs a function
-			System.out.println("3. Add Genre"); // Performs a function
-			System.out.println("4. Add Director"); // Performs a function
-			System.out.println("5. Back");
-			
-			int selection = getUserSelection();
-			switch (selection) {
-				case 1: // 1. Add Movie
-					System.out.print("Movie title: ");
-					String movieTitle = scanner.nextLine();
-					
-					System.out.print("Movie release date (yyyy-mm-dd): ");
-					String movieReleaseDate = scanner.nextLine();
-					
-					System.out.print("Movie certificate rating: ");
-					String movieCertificateRating = scanner.nextLine();
-					
-					System.out.print("Movie business cost per item: ");
-					double movieBusinessCost = scanner.nextDouble();
-					
-					System.out.print("Movie customer purchase cost: ");
-					double movieCustomerPurchaseCost = scanner.nextDouble();
-					
-					System.out.print("Movie customer rent cost: ");
-					double movieCustomerRentCost = scanner.nextDouble();
-					
-					try {
-						Query.insertMovie(
-								dbConnection,
-								movieTitle,
-								movieReleaseDate,
-								movieCertificateRating,
-								movieBusinessCost,
-								movieCustomerPurchaseCost,
-								movieCustomerRentCost);
-					}
-					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
-						break; // take me back to the add new item menu
-					}
-
-					break; // take me back to the add new item menu
-				case 2: // 2. Add Actor
-					System.out.print("Actor first name: ");
-					firstName = scanner.nextLine();
-					
-					System.out.print("Actor last name: ");
-					lastName = scanner.nextLine();
-					
-					try {
-						Query.insertActor(
-								dbConnection, firstName, lastName);
-					}
-					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
-						break; // take me back to the add new item menu
-					}
-					
-					break; // take me back to the add new item menu
-				case 3: // 3. Add Genre
-					System.out.print("Genre: ");
-					String genre = scanner.nextLine();
-					
-					try {
-						Query.insertGenre(
-								dbConnection, genre);
-					}
-					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
-						break; // take me back to the add new item menu
-					}
-					break; // take me back to the add new item menu
-				case 4: // 4. Add Director
-					System.out.print("Director first name: ");
-					firstName = scanner.nextLine();
-					
-					System.out.print("Director last name: ");
-					lastName = scanner.nextLine();
-					
-					try {
-						Query.insertDirector(
-								dbConnection, firstName, lastName);
-					}
-					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
-						break; // take me back to the add new item menu
-					}
-					break; // take me back to the add new item menu
-				case 5: // 5. Back
-					return; // take me back to the update inventory menu
-			}
-		} while (true);
-	}
-	
-	/**
-	 * Forces the user to enter an integer.
-	 * @param scanner The scanner object
-	 * @return A user-selected integer
-	 */
-	public static int getUserSelection() {
-		do {
-			try {
-				return Integer.parseInt(scanner.nextLine());
-			}
-			catch (NumberFormatException error) {
-				System.out.println("Please enter an integer.");
 			}
 		} while (true);
 	}
