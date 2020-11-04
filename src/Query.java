@@ -1,36 +1,7 @@
 import java.sql.*;
 
-<<<<<<< HEAD
-/*
- * x = completed
- * 
- * isExistingGenre(x)
- * isExistingDirector(x)
- * getActorByFirstName(x)
- * getActorByLastName(x)
- * getGenreByID(x)
- * getGenreByType(x)
- * getGenre(x) <-- helper function?
- * getDirectorByID(x)
- * getDirectorByFirstName(x)
- * getDirectorByLastName(x)
- * getDirector(x) <-- helper function?
- * setGenreType()
- * setDirectorFirstName()
- * setDirectorLastName()
- * deleteMovieByID()
- * deleteActorByID()
- * deleteGenreByID()
- * deleteDirectorByID()
- * deleteItem() <-- helper function?
- */
-
-=======
->>>>>>> 0658efdb3c76f89ba7ca701363182eee0fa18005
 public class Query {
 
-	// isExisting ---------------------------------------------------------------------------------
-	
 	/**
 	 * isExistingActor determines whether the provided actorID references an existing actor in the database.
 	 * @param connection The database connection object
@@ -303,57 +274,6 @@ public class Query {
 		}
 	}
 	
-	/**
-	 * getDirectorByID prints out the details of the director with relevant ID.
-	 * @param connection The database connection object
-	 * @param actorID The actor to search for
-	 * @throws SQLException
-	 */
-	public static void getDirectorByID(Connection connection, int DirectorID) throws SQLException {
-		String query = "SELECT * FROM Directors WHERE DirectorID = " + DirectorID;
-		try {
-			Query_Utils.getDirector(connection, query);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-	}
-	
-	/**
-	 * getDirectorByFirstName prints out the details of the director with relevant first name.
-	 * @param connection The database connection object
-	 * @param firstName The first name of the director to search for
-	 * @throws SQLException
-	 */
-	public static void getDirectorByFirstName(Connection connection, String firstName) throws SQLException {
-		String query = "SELECT * FROM Directors WHERE FirstName = \"" + firstName + "\"";
-		try {
-			Query_Utils.getDirector(connection, query);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-	}
-	
-	/**
-<<<<<<< HEAD
-	 * getActorByFirstName prints out the details of the actor with relevant first name
-=======
-	 * getDirectorByLastName prints out the details of the director with relevant last name.
->>>>>>> 0658efdb3c76f89ba7ca701363182eee0fa18005
-	 * @param connection The database connection object
-	 * @param lastName The last name of the director to search for
-	 * @throws SQLException
-	 */
-	public static void getDirectorByLastName(Connection connection, String lastName) throws SQLException {
-		String query = "SELECT * FROM Directors WHERE LastName = \"" + lastName + "\"";
-		try {
-			Query_Utils.getDirector(connection, query);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-	}
 	
 	/**
 	 * getDirectorsByMovie prints out the details of all directors who directed the relevant movie.
@@ -426,7 +346,7 @@ public class Query {
 	public static void getDirectorByID(Connection connection, int directorID)throws SQLException {
 		String query = "SELECT * FROM Directors WHERE DirectorID = " + directorID;
 		try {
-			getDirector(connection, query);
+			Query_Utils.getDirector(connection, query);
 		}
 		catch(SQLException error) {
 			throw error;
@@ -444,7 +364,7 @@ public class Query {
 	public static void getDirectorByFirstName(Connection connection, String firstName)throws SQLException {
 		String query = "SELECT * FROM Directors WHERE FirstName = \"" + firstName + "\"";
 		try {
-			getDirector(connection, query);
+			Query_Utils.getDirector(connection, query);
 		}
 		catch(SQLException error) {
 			throw error;
@@ -461,51 +381,16 @@ public class Query {
 	public static void getDirectorByLastName(Connection connection, String lastName)throws SQLException {
 		String query = "SELECT * FROM Directors WHERE LastName = \"" + lastName + "\"";
 		try {
-			getDirector(connection, query);
+			Query_Utils.getDirector(connection, query);
 		}
 		catch(SQLException error) {
 			throw error;
 		}
 	}
+
 	
 	/**
-	 * A helper function to be used by various getDirectorByX() functions which accepts a query to search for
-	 * a director by a particular value, and prints out ALL details of the relevant director.
-	 * @param connection The database connection object
-	 * @param query Must be of the form SELECT * FROM Directors BY {value}
-	 * @throws SQLException
-	 */
-	private static void getDirector(Connection connection, String query) throws SQLException{
-		Statement statement = null;
-		ResultSet result = null;
-		
-		try {
-			statement = connection.createStatement();
-			result = statement.executeQuery(query);
-			
-			while(result.next()) {
-				System.out.println("{");
-				System.out.println("    DirectorID: " + result.getInt("DirectorID") + ",");
-				System.out.println("    FirstName: " + result.getString("FirstName") + ",");
-				System.out.println("    LastName: " + result.getString("LastName") + ",");
-				System.out.println("}");
-			}
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		finally {
-			result.close();
-			statement.close();
-		}
-	}
-	
-	/**
-	 * A helper function to be used by various getActorByX() functions which accepts a query to search for an
-	 * actor by a particular value, and prints out ALL details of the relevant actor.
-=======
-	 * getGenresByMovie prints out the details of all genres the relevant movie is classified as.
->>>>>>> 0658efdb3c76f89ba7ca701363182eee0fa18005
+	 * getGenreByMovie prints out the genre following the given movieID
 	 * @param connection The database connection object
 	 * @param movieID The movie with genres to print
 	 * @throws SQLException
@@ -597,16 +482,15 @@ public class Query {
 			statement = connection.createStatement();
 			result = statement.executeQuery(query);
 			
-<<<<<<< HEAD
 			while(result.next()) {
 				System.out.println("{");
 				System.out.println("    GenreID: " + result.getInt("GenreID") + ",");
 				System.out.println("    GenreType: " + result.getString("GenreType") + ",");
 				System.out.println("}");
-=======
-			while (result.next()) {
+				
+				while (result.next()) {
 				Query.getMovieByID(connection, result.getInt("MovieID"));
->>>>>>> 0658efdb3c76f89ba7ca701363182eee0fa18005
+				}
 			}
 		}
 		catch (SQLException error) {
