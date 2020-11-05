@@ -1314,6 +1314,12 @@ public class Main {
 	
 	// Employee - Link ----------------------------------------------------------------------------
 	
+	/**
+	 * Complete and untested.
+	 * diplsayEmployeeLinkMenu is a sub-menu of the employee dashboard.
+	 * It exists to allow an employee to create a relationship between
+	 * an actor, director, or genre with a movie.
+	 */
 	private static void displayEmployeeLinkMenu() {
 		do {
 			int movieID;
