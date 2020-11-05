@@ -263,6 +263,22 @@ public class Main {
 					break;
 				case 4:
 					displayEmployeeLinkMenu();
+					break;
+				case 5:
+					System.out.print("Customer ID: ");
+					int customerID = Utils.getUserSelection(scanner);
+					
+					try {
+						if (!Query.isExistingCustomer(dbConnection, customerID)) {
+							System.out.println("Customer ID " + customerID + " does not reference an existing customer.");
+							break;
+						}
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+					}
+					displayEmployeeCustomerManagement(customerID);
+					break;
 				case 7:
 					return; // back to the root menu
 			}
@@ -1315,7 +1331,7 @@ public class Main {
 	// Employee - Link ----------------------------------------------------------------------------
 	
 	/**
-	 * Complete and untested.
+	 * Complete and tested.
 	 * diplsayEmployeeLinkMenu is a sub-menu of the employee dashboard.
 	 * It exists to allow an employee to create a relationship between
 	 * an actor, director, or genre with a movie.
@@ -1336,10 +1352,10 @@ public class Main {
 			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
 			case 1: // 1. Add an actor to a movie
-				System.out.print("Movie ID:");
+				System.out.print("Movie ID: ");
 				movieID = Utils.getUserSelection(scanner);
 				
-				System.out.print("Actor ID:");
+				System.out.print("Actor ID: ");
 				int actorID = Utils.getUserSelection(scanner);
 				
 				try {
@@ -1368,10 +1384,10 @@ public class Main {
 				
 				break;
 			case 2: // 2. Add a director to a movie
-				System.out.print("Movie ID:");
+				System.out.print("Movie ID: ");
 				movieID = Utils.getUserSelection(scanner);
 				
-				System.out.print("Director ID:");
+				System.out.print("Director ID: ");
 				int directorID = Utils.getUserSelection(scanner);
 				
 				try {
@@ -1400,10 +1416,10 @@ public class Main {
 				
 				break;
 			case 3: // 3. Add a genre to a movie
-				System.out.print("Movie ID:");
+				System.out.print("Movie ID: ");
 				movieID = Utils.getUserSelection(scanner);
 				
-				System.out.print("Genre ID:");
+				System.out.print("Genre ID: ");
 				int genreID = Utils.getUserSelection(scanner);
 				
 				try {
@@ -1433,6 +1449,45 @@ public class Main {
 				break;
 			case 4:
 				return; // back to employee dashboard
+			}
+		} while(true);
+	}
+	
+	// Employee - Customer Management -------------------------------------------------------------
+	
+	private static void displayEmployeeCustomerManagement(int customerID) {
+		do {
+			try {
+				Query.getCustomerByID(dbConnection, customerID);
+			}
+			catch (SQLException error) {
+				Utils.printDatabaseError(error);
+				return; // back to the employee dashboard
+			}
+			
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Customer Management");
+			System.out.println("How would you like to manage this customer?");
+			System.out.println("----------");
+			System.out.println("1. Check balance");
+			System.out.println("2. Apply late fee");
+			System.out.println("3. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+			case 1: // 1. Check Balance
+				try {
+					System.out.println("Customer balance: " + Query.getCustomerBalance(dbConnection, customerID));
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				break;
+			case 2: // 2. Apply late fees
+				// TO DO
+				break;
+			case 3:
+				return; // back to the employee dashboard
 			}
 		} while(true);
 	}

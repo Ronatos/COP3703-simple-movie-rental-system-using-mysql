@@ -137,6 +137,46 @@ public class Query_Utils {
 	}
 	
 	/**
+	 * Should only be used by Query.getCustomerBalance
+	 * @param connection The database connection object
+	 * @param getRentalQuery "SELECT * FROM Rentals WHERE TransactionID = " + transactionQueryResult.getInt("TransactionID")
+	 * @return
+	 * @throws SQLException
+	 */
+	public static double getCustomerBalanceFromRental(Connection connection, String getRentalQuery) throws SQLException {
+		Statement statement = null;
+		ResultSet rentalQueryResult = null;
+		
+		try {
+			statement = connection.createStatement();
+			rentalQueryResult = statement.executeQuery(getRentalQuery);
+			rentalQueryResult.next();
+			
+			System.out.println("Rental {");
+			System.out.println("    TransactionID: " + rentalQueryResult.getInt("TransactionID") + ",");
+			System.out.println("    ExpirationDate: " + rentalQueryResult.getString("ExpirationDate") + ",");
+			System.out.println("    ReturnDate: " + rentalQueryResult.getString("ReturnDate") + ",");
+			System.out.println("    LateFee: " + rentalQueryResult.getDouble("LateFee") + ", ");
+			System.out.println("    LateFeePaid: " + rentalQueryResult.getBoolean("LateFeePaid"));
+			System.out.println("}");
+			
+			if (!rentalQueryResult.getBoolean("LateFeePaid")) {
+				return rentalQueryResult.getDouble("LateFee");
+			}
+			else {
+				return 0.00;
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			rentalQueryResult.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * A helper function to be used by various getDirectorByX() functions which accepts a query to search for a
 	 * Director by a particular value, and prints out ALL details of the relevant Director.
 	 * @param connection The database connection object

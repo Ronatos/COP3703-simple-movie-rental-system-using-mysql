@@ -37,6 +37,24 @@ public class Query {
 	}
 	
 	/**
+	 * isExistingCustomer determines whether the provided customerID references an existing Customer in the database.
+	 * @param connection The connection to the database
+	 * @param customerID The customer
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean isExistingCustomer(Connection connection, int customerID) throws SQLException {
+		String query = "SELECT CustomerID FROM Customers";
+		
+		try {
+			return Query_Utils.isExisting(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
 	 * isExistingDirector determines whether the provided director references an existing director in the database
 	 * @param connection The database connection object
 	 * @param directorID The director to search for
@@ -274,6 +292,48 @@ public class Query {
 		}
 	}
 	
+	/**
+	 * Retrieves transaction data, rental data, prints them, and returns the customer's total owed
+	 * from unpaid late fees 
+	 * @param connection The database connection object
+	 * @param customerID The customer to search for
+	 * @return
+	 * @throws SQLException
+	 */
+	public static double getCustomerBalance(Connection connection, int customerID) throws SQLException {
+		double customerBalance = 0.00;
+		String getTransactionsQuery = "SELECT * FROM Transactions WHERE CustomerID = " + customerID;
+		Statement statement = null;
+		ResultSet transactionQueryResult = null;
+		
+		try {
+			statement = connection.createStatement();
+			transactionQueryResult = statement.executeQuery(getTransactionsQuery);
+			while (transactionQueryResult.next()) {
+				if (transactionQueryResult.getBoolean("isRental")) {
+					System.out.println("Transaction {");
+					System.out.println("    TransactionID: " + transactionQueryResult.getInt("TransactionID") + ",");
+					System.out.println("    CustomerID: " + transactionQueryResult.getInt("CustomerID") + ",");
+					System.out.println("    MovieID: " + transactionQueryResult.getString("MovieID") + ",");
+					System.out.println("    TransactionDate: " + transactionQueryResult.getString("TransactionDate") + ", ");
+					System.out.println("    isRental: " + transactionQueryResult.getBoolean("isRental"));
+					System.out.println("}");
+					
+					String getRentalQuery = "SELECT * FROM Rentals WHERE TransactionID = " + transactionQueryResult.getInt("TransactionID");
+					
+					customerBalance += Query_Utils.getCustomerBalanceFromRental(connection, getRentalQuery);
+				}
+			}
+			return customerBalance;
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			transactionQueryResult.close();
+			statement.close();
+		}
+	}
 	
 	/**
 	 * getDirectorsByMovie prints out the details of all directors who directed the relevant movie.
