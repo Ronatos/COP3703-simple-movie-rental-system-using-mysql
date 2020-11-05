@@ -246,9 +246,9 @@ public class Main {
 			System.out.println("2. Add");
 			System.out.println("3. Update");
 			System.out.println("4. Link");
-			System.out.println("4. Customer Management");
-			System.out.println("5. Reports");
-			System.out.println("6. Log out");
+			System.out.println("5. Customer Management");
+			System.out.println("6. Reports");
+			System.out.println("7. Log out");
 			
 			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -261,7 +261,9 @@ public class Main {
 				case 3: // 3. Update
 					displayEmployeeUpdateMenu();
 					break;
-				case 6:
+				case 4:
+					displayEmployeeLinkMenu();
+				case 7:
 					return; // back to the root menu
 			}
 		} while (true);
@@ -553,7 +555,7 @@ public class Main {
 					System.out.print("Genre ID: ");
 					
 					try {
-						int genreID = Utils.getUserSelection(scanner);;
+						int genreID = Utils.getUserSelection(scanner);
 						Query.getGenreByID(dbConnection, genreID);
 						Query.getMoviesByGenre(dbConnection, genreID);
 					}
@@ -617,7 +619,7 @@ public class Main {
 					System.out.print("Movie ID: ");
 					
 					try {
-						int movieID = Utils.getUserSelection(scanner);;
+						int movieID = Utils.getUserSelection(scanner);
 						Query.getMovieByID(dbConnection, movieID);
 						Query.getActorsByMovie(dbConnection, movieID);
 						Query.getDirectorsByMovie(dbConnection, movieID);
@@ -710,7 +712,7 @@ public class Main {
 					System.out.print("Review ID: ");
 					
 					try {
-						int reviewID = Utils.getUserSelection(scanner);;
+						int reviewID = Utils.getUserSelection(scanner);
 						Query.getReviewByID(dbConnection, reviewID);
 						Query.getCustomerByReview(dbConnection, reviewID);
 						Query.getMovieByReview(dbConnection, reviewID);
@@ -762,7 +764,7 @@ public class Main {
 					System.out.print("Transaction ID: ");
 					
 					try {
-						int transactionID = Utils.getUserSelection(scanner);;
+						int transactionID = Utils.getUserSelection(scanner);
 						Query.getCustomerByTransaction(dbConnection, transactionID);
 						Query.getTransactionByID(dbConnection, transactionID);
 						Query.getMovieByTransaction(dbConnection, transactionID);
@@ -1102,9 +1104,7 @@ public class Main {
 						Query.setDirectorFirstName(dbConnection, newDirectorFirstName, directorID);
 					}
 					catch (SQLException error) {
-						error.printStackTrace();
-						System.out.println("A database error was encountered. " +
-							"Please try again or contact your system administrator.");
+						Utils.printDatabaseError(error);
 						break; // take me back to the displayUpdateDirectorMenu
 					}
 					break; // take me back to the displayUpdateDirectorMenu
@@ -1310,5 +1310,124 @@ public class Main {
 					return; // take me back to the displayUpdateItemMenu
 			}
 		} while (true);
+	}
+	
+	// Employee - Link ----------------------------------------------------------------------------
+	
+	private static void displayEmployeeLinkMenu() {
+		do {
+			int movieID;
+			
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Link");
+			System.out.println("What would you like to link together?");
+			System.out.println("----------");
+			System.out.println("1. Add an actor to a movie");
+			System.out.println("2. Add a director to a movie");
+			System.out.println("3. Add a genre to a movie");
+			System.out.println("4. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+			case 1: // 1. Add an actor to a movie
+				System.out.print("Movie ID:");
+				movieID = Utils.getUserSelection(scanner);
+				
+				System.out.print("Actor ID:");
+				int actorID = Utils.getUserSelection(scanner);
+				
+				try {
+					if (!Query.isExistingMovie(dbConnection, movieID)) {
+						System.out.println("Movie with ID " + movieID + " does not exist.");
+						break;
+					}
+					if (!Query.isExistingActor(dbConnection, actorID)) {
+						System.out.println("Actor with ID " + actorID + " does not exist.");
+						break;
+					}
+					
+					Query.getMovieByID(dbConnection, movieID);
+					Query.getActorByID(dbConnection, actorID);
+					
+					System.out.print("Are you sure you want to add this actor to this movie? (y/n):");
+					String response = scanner.nextLine();
+					
+					if (response.equals("y")) {
+						Query.insertMovieActor(dbConnection, movieID, actorID);
+					}
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				
+				break;
+			case 2: // 2. Add a director to a movie
+				System.out.print("Movie ID:");
+				movieID = Utils.getUserSelection(scanner);
+				
+				System.out.print("Director ID:");
+				int directorID = Utils.getUserSelection(scanner);
+				
+				try {
+					if (!Query.isExistingMovie(dbConnection, movieID)) {
+						System.out.println("Movie with ID " + movieID + " does not exist.");
+						break;
+					}
+					if (!Query.isExistingDirector(dbConnection, directorID)) {
+						System.out.println("Director with ID " + directorID + " does not exist.");
+						break;
+					}
+					
+					Query.getMovieByID(dbConnection, movieID);
+					Query.getDirectorByID(dbConnection, directorID);
+					
+					System.out.print("Are you sure you want to add this director to this movie? (y/n):");
+					String response = scanner.nextLine();
+					
+					if (response.equals("y")) {
+						Query.insertMovieDirector(dbConnection, movieID, directorID);
+					}
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				
+				break;
+			case 3: // 3. Add a genre to a movie
+				System.out.print("Movie ID:");
+				movieID = Utils.getUserSelection(scanner);
+				
+				System.out.print("Genre ID:");
+				int genreID = Utils.getUserSelection(scanner);
+				
+				try {
+					if (!Query.isExistingMovie(dbConnection, movieID)) {
+						System.out.println("Movie with ID " + movieID + " does not exist.");
+						break;
+					}
+					if (!Query.isExistingGenre(dbConnection, genreID)) {
+						System.out.println("Genre with ID " + genreID + " does not exist.");
+						break;
+					}
+					
+					Query.getMovieByID(dbConnection, movieID);
+					Query.getGenreByID(dbConnection, genreID);
+					
+					System.out.print("Are you sure you want to add this genre to this movie? (y/n):");
+					String response = scanner.nextLine();
+					
+					if (response.equals("y")) {
+						Query.insertMovieGenre(dbConnection, movieID, genreID);
+					}
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				
+				break;
+			case 4:
+				return; // back to employee dashboard
+			}
+		} while(true);
 	}
 }
