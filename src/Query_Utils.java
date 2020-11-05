@@ -377,6 +377,29 @@ public class Query_Utils {
 			statement.close();
 		}
 	}
+	
+	/**
+	 * A helper function to be used by various insertX() functions which accepts a query
+	 * to insert any entity.
+	 * @param connection The database connection object
+	 * @param query Must be of the form INSERT INTO {table} ({values}) VALUES ({values})
+	 * @throws SQLException
+	 */
+	public static void insertEntity(Connection connection, String query) throws SQLException {
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+
+			statement.executeUpdate(query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
 
 	/**
 	 * A helper function by be used by various setter functions

@@ -1083,6 +1083,57 @@ public class Query {
 		}
 	}
 	
+	/**
+	 * Links a movie with an actor
+	 * @param connection The database connection object
+	 * @param movieID The movie to link with the actor
+	 * @param actorID The actor to link with the movie
+	 * @throws SQLException
+	 */
+	public static void insertMovieActor(Connection connection, int movieID, int actorID) throws SQLException {
+		String query = "INSERT INTO movie_actors (movieID, actorID) VALUES (" + movieID +" , " + actorID+")";
+		try {
+			Query_Utils.insertEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * Links a movie with a director
+	 * @param connection The database connection object
+	 * @param movieID The movie to link with the director
+	 * @param directorID The director to link with the movie
+	 * @throws SQLException
+	 */
+	public static void insertMovieDirector(Connection connection, int movieID, int directorID) throws SQLException {
+		String query = "INSERT INTO movie_directors (movieID, directorID) VALUES (" + movieID +" , " + directorID+")";
+		try {
+			Query_Utils.insertEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	/**
+	 * Links a movie with a genre
+	 * @param connection The database connection object
+	 * @param movieID The movie to link with the genre
+	 * @param actorID The genre to link with the movie
+	 * @throws SQLException
+	 */
+	public static void insertMovieGenre(Connection connection, int movieID, int genreID) throws SQLException {
+		String query = "INSERT INTO movie_genres (movieID, genreID) VALUES (" + movieID +" , " + genreID+")";
+		try {
+			Query_Utils.insertEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
 	// Miscellaneous (for now) --------------------------------------------------------------------
 	
 	/**
@@ -1140,57 +1191,6 @@ public class Query {
 			throw error;
 		}
 		catch (LogicException error) {
-			throw error;
-		}
-		finally {
-			statement.close();
-		}
-	}
-	
-	public void insertMovieActor(Connection connection, int movieID, int actorID) throws SQLException {
-		String query = "INSERT INTO movie_actors (movieID, actorID) VALUES (" + movieID +" , " + actorID+")";
-		Statement statement = null;
-		
-		try {
-			statement = connection.createStatement();
-
-			statement.executeUpdate(query);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		finally {
-			statement.close();
-		}
-	}
-	
-	public void insertMovieDirector(Connection connection, int movieID, int directorID) throws SQLException {
-		String query = "INSERT INTO movie_directors (movieID, directorID) VALUES (" + movieID +" , " + directorID+")";
-		Statement statement = null;
-		
-		try {
-			statement = connection.createStatement();
-
-			statement.executeUpdate(query);
-		}
-		catch (SQLException error) {
-			throw error;
-		}
-		finally {
-			statement.close();
-		}
-	}
-	
-	public void insertMovieGenre(Connection connection, int movieID, int genreID) throws SQLException {
-		String query = "INSERT INTO movie_genres (movieID, genreID) VALUES (" + movieID +" , " + genreID+")";
-		Statement statement = null;
-		
-		try {
-			statement = connection.createStatement();
-
-			statement.executeUpdate(query);
-		}
-		catch (SQLException error) {
 			throw error;
 		}
 		finally {
