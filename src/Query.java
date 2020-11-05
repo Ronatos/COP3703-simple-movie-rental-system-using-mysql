@@ -1146,4 +1146,55 @@ public class Query {
 			statement.close();
 		}
 	}
+	
+	public void insertMovieActor(Connection connection, int movieID, int actorID) throws SQLException {
+		String query = "INSERT INTO movie_actors (movieID, actorID) VALUES (" + movieID +" , " + actorID+")";
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+
+			statement.executeUpdate(query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	public void insertMovieDirector(Connection connection, int movieID, int directorID) throws SQLException {
+		String query = "INSERT INTO movie_directors (movieID, directorID) VALUES (" + movieID +" , " + directorID+")";
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+
+			statement.executeUpdate(query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
+	
+	public void insertMovieGenre(Connection connection, int movieID, int genreID) throws SQLException {
+		String query = "INSERT INTO movie_genres (movieID, genreID) VALUES (" + movieID +" , " + genreID+")";
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+
+			statement.executeUpdate(query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+		}
+	}
 }
