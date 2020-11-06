@@ -1484,7 +1484,21 @@ public class Main {
 				}
 				break;
 			case 2: // 2. Apply late fees
-				// TO DO
+				System.out.print("Transaction ID: ");
+				int transactionID = Utils.getUserSelection(scanner);
+				
+				System.out.print("Addition to current customer balance: ");
+				try {
+					double customerBalanceAddition = Double.parseDouble(scanner.nextLine());
+					Query.applyLateFee(dbConnection, transactionID, customerBalanceAddition);
+					System.out.println("Late fee successfully applied.");
+				}
+				catch (NumberFormatException error) {
+					System.out.println("Invalid selection. Please try again.");
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
 				break;
 			case 3:
 				return; // back to the employee dashboard

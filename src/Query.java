@@ -1196,6 +1196,16 @@ public class Query {
 	
 	// Miscellaneous (for now) --------------------------------------------------------------------
 	
+	public static void applyLateFee(Connection connection, int transactionID, double customerBalanceAddition) throws SQLException {
+		String query = "UPDATE Rentals SET LateFee = LateFee + " + customerBalanceAddition + " WHERE TransactionID = " + transactionID;
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
 	/**
 	 * Attempts to add a new customer to the database with provided customer information
 	 * only after verifying that the provided username is unique, and that the provided
