@@ -266,7 +266,8 @@ public class Query_Utils {
 				System.out.println("    MovieValue: " + result.getDouble("MovieValue") + ",");
 				System.out.println("    Stock: " + result.getInt("Stock") + ",");
 				System.out.println("    ReleaseDate: " + result.getString("ReleaseDate") + ",");
-				System.out.println("    OverallReviewRating: " + result.getDouble("OverallReviewRating"));
+				System.out.println("    OverallReviewRating: " + result.getDouble("OverallReviewRating") + ",");
+				System.out.println("	Format: " + result.getString("Format"));
 				System.out.println("}");
 			}
 		}
