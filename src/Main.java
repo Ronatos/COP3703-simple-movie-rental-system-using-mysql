@@ -182,11 +182,16 @@ public class Main {
 		} while (true);
 	}
 	
-	// Incomplete (Tyler is working on this)
+	// Customer -----------------------------------------------------------------------------------
+
 	public static void displayCustomerDashboard() {
 		do {
-			System.out.println("1. Find a movie");
-			System.out.println("2. Rental return");
+			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard");
+			System.out.println("What would you like to do?");
+			System.out.println("----------");
+			System.out.println("1. Search");
+			System.out.println("2. My Rentals");
 			System.out.println("3. Account Management");
 			System.out.println("4. Log out");
 			
@@ -194,47 +199,55 @@ public class Main {
 			System.out.println(selection);
 			switch (selection) {
 			case 1: //1. Find a movie
-					System.out.println("1. Recommended Movies");
-					System.out.println("2. Search by Atribute");
-					System.out.println("3. Rent/Buy a movie");
-					System.out.println("4. Back to dashboard");
-					
-						selection = Utils.getUserSelection(scanner);
-						
-						switch (selection) {
-						case 1://1. Recommended Movies
-							break;
-						case 2:
-							displayCustomerSearchMovieMenu();
-						case 3://3. Back to dashboard
-							displayCustomerDashboard();
-							break;
-						}
+				displayCustomerSearchMenu();
 				break;
 			case 2: //2. Rental return
-				//kinda scary right now but will keep working on it	
+				// displayCustomerMyRentalsMenu();
 				break;
 			case 3: //3. Account Management
+				// displayCustomerAccountManagementMenu();
 				break;
-			case 5:
-				break;
-			case 6: //4. Log out
-				System.out.println("Goodbye!");
-				scanner.close();
-				try {
-					dbConnection.close();
-				}
-				catch (SQLException error) {
-					error.printStackTrace();
-				}
-				System.exit(0);		
+			case 4:
+				return;	
 			}
 		} while (true);
 	}
 	
-	private static void displayCustomerSearchMovieMenu() {
+	// Customer - Search --------------------------------------------------------------------------
+	
+	private static void displayCustomerSearchMenu() {
 		do {
 			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search");
+			System.out.println("How would you like to search for a movie?");
+			System.out.println("----------");
+			System.out.println("1. Recommended");
+			System.out.println("2. Custom");
+			System.out.println("3. Back to dashboard");
+			
+			int selection = Utils.getUserSelection(scanner);
+			
+			switch (selection) {
+			case 1:// 1. Recommended
+				// Not sure how we want to go about this - maybe pass in the login username and use it to query potential recommendations?
+				break;
+			case 2: // 2. Custom
+				displayCustomerSearchCustomMenu();
+			case 3://3. Back to dashboard
+				return;
+			}
+		} while (true);
+	}
+	
+	// Customer - Search - Custom -----------------------------------------------------------------
+	
+	// I like this approach. - Alex
+	// if we're going to reuse this, we need to write different query methods.
+	// currently the customer is getting all kinds of business data from this
+	private static void displayCustomerSearchCustomMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search / Custom");
 			System.out.println("How would you like to search for a movie?");
 			System.out.println("----------");
 			System.out.println("1. Movie ID");
@@ -322,6 +335,8 @@ public class Main {
 		} while (true);
 	}
 	
+	// if we're going to reuse this, we need to write different query methods.
+		// currently the customer is getting all kinds of business data from this
 	private static void displayCustomerSearchActorMenu() {
 		do {
 			System.out.println("----------");
@@ -386,6 +401,8 @@ public class Main {
 		} while (true);
 	}
 	
+	// if we're going to reuse this, we need to write different query methods.
+		// currently the customer is getting all kinds of business data from this
 	private static void displayCustomerSearchDirectorMenu() {
 		do {
 			System.out.println("----------");
@@ -450,6 +467,8 @@ public class Main {
 		} while (true);
 	}
 	
+	// if we're going to reuse this, we need to write different query methods.
+		// currently the customer is getting all kinds of business data from this
 	private static void displayCustomerSearchGenreMenu() {
 		do {
 			System.out.println("----------");
