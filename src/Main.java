@@ -1185,8 +1185,8 @@ public class Main {
 					double movieCustomerRentCost = scanner.nextDouble();
 					
 					System.out.print("Is this movie digital or physical? (d/p): ");
-					String response = scanner.nextLine(); // THIS IS AN ERROR. FIX IT YOU DOOFUS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					System.out.println("You entered: " + response);
+					scanner.nextLine();
+					String response = scanner.nextLine();
 					String format;
 					
 					if (response.equals("d")) {
