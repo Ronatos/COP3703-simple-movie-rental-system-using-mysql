@@ -1832,18 +1832,19 @@ public class Main {
 				genreID = Utils.getUserSelection(scanner);
 				
 				try {
+					Query.getGenreByID(dbConnection, genreID);
 					Query.getTransactionsByGenre(dbConnection, genreID);
 				}
 				catch (SQLException error) {
 					Utils.printDatabaseError(error);
 				}
 				break;
-				/*
 			case 3:
 				System.out.print("Genre ID: ");
 				genreID = Utils.getUserSelection(scanner);
 				
 				try {
+					Query.getGenreByID(dbConnection, genreID);
 					Query.printWeeklyGenreRevenueReport(dbConnection, genreID);
 				}
 				catch (SQLException error) {
@@ -1872,7 +1873,6 @@ public class Main {
 					Utils.printDatabaseError(error);
 				}
 				break;
-				*/
 			case 6:
 				return; // back to the employee dashboard
 			}

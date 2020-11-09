@@ -1296,4 +1296,70 @@ public class Query {
 			statement.close();
 		}
 	}
+	
+	public static void printWeeklyGenreRevenueReport(Connection connection, int genreID) throws SQLException {
+		String query = "SELECT Transactions.TransactionID, Movie_Genres.GenreID FROM Transactions, Movie_Genres WHERE GenreID = " + genreID + " AND DATEDIFF(Transactions.TransactionDate, CURDATE()) >= -7";
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				getTransactionByID(connection, result.getInt("TransactionID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void printMonthlyGenreRevenueReport(Connection connection, int genreID) throws SQLException {
+		String query = "SELECT Transactions.TransactionID, Movie_Genres.GenreID FROM Transactions, Movie_Genres WHERE GenreID = " + genreID + " AND DATEDIFF(Transactions.TransactionDate, CURDATE()) >= -31";
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				getTransactionByID(connection, result.getInt("TransactionID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void printYearlyGenreRevenueReport(Connection connection, int genreID) throws SQLException {
+		String query = "SELECT Transactions.TransactionID, Movie_Genres.GenreID FROM Transactions, Movie_Genres WHERE GenreID = " + genreID + " AND DATEDIFF(Transactions.TransactionDate, CURDATE()) >= -365";
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				getTransactionByID(connection, result.getInt("TransactionID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
 }
