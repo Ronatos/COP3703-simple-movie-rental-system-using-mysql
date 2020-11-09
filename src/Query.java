@@ -780,6 +780,35 @@ public class Query {
 	}
 	
 	/**
+	 * getTransactionsByGenre prints out the details of all transactions involving movies of the respective genre ID.
+	 * @param connection The database connection object
+	 * @param genreID The genre to search for
+	 * @throws SQLException
+	 */
+	public static void getTransactionsByGenre(Connection connection, int genreID) throws SQLException {
+		
+		String query = "SELECT Transactions.TransactionID, Movie_Genres.GenreID FROM Transactions, Movie_Genres WHERE GenreID = " + genreID;
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				getTransactionByID(connection, result.getInt("TransactionID"));
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	/**
 	 * getTransactionsByMovie prints out the details of all transactions containing the relevant movie.
 	 * @param connection The database connection object
 	 * @param movieID The movie with transactions to print

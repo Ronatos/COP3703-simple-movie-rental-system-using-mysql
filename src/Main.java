@@ -231,7 +231,7 @@ public class Main {
 	// Employee -----------------------------------------------------------------------------------
 	
 	/**
-	 * Incomplete and untested.
+	 * Complete and untested.
 	 * displayEmployeeDashboard is a sub-menu of displayUserLoginMenu.
 	 * This menu provides options to search, update existing inventory,
 	 * manage a customer's account, generate a report, or log out of the application.
@@ -278,6 +278,9 @@ public class Main {
 						Utils.printDatabaseError(error);
 					}
 					displayEmployeeCustomerManagement(customerID);
+					break;
+				case 6:
+					displayEmployeeReportsMenu();
 					break;
 				case 7:
 					return; // back to the root menu
@@ -908,6 +911,22 @@ public class Main {
 					System.out.print("Movie customer rent cost: ");
 					double movieCustomerRentCost = scanner.nextDouble();
 					
+					System.out.print("Is this movie digital or physical? (d/p): ");
+					String response = scanner.nextLine(); // THIS IS AN ERROR. FIX IT YOU DOOFUS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+					System.out.println("You entered: " + response);
+					String format;
+					
+					if (response.equals("d")) {
+						format = "Digital";
+					}
+					else if (response.equals("p")) {
+						format = "Physical";
+					}
+					else {
+						System.out.println("Please enter the requested value.");
+						break;
+					}
+					
 					try {
 						Query.insertMovie(
 								dbConnection,
@@ -916,7 +935,8 @@ public class Main {
 								movieCertificateRating,
 								movieBusinessCost,
 								movieCustomerPurchaseCost,
-								movieCustomerRentCost);
+								movieCustomerRentCost,
+								format);
 					}
 					catch (SQLException error) {
 						Utils.printDatabaseError(error);
@@ -1504,5 +1524,85 @@ public class Main {
 				return; // back to the employee dashboard
 			}
 		} while(true);
+	}
+	
+	private static void displayEmployeeReportsMenu() {
+		do {
+			int genreID;
+			
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Reports");
+			System.out.println("Which report would you like to run?");
+			System.out.println("----------");
+			System.out.println("1. Generate revenue report by movie for sales and rentals");
+			System.out.println("2. Generate revenue report by genre for sales and rentals");
+			System.out.println("3. Generate weekly revenue report by genre for sales and rentals");
+			System.out.println("4. Generate monthly revenue report by genre for sales and rentals");
+			System.out.println("5. Generate yearly revenue report by genre for sales and rentals");
+			System.out.println("6. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+			case 1:
+				System.out.print("Movie ID: ");
+				int movieID = Utils.getUserSelection(scanner);
+				
+				try {
+					Query.getTransactionsByMovie(dbConnection, movieID);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				break;
+			case 2:
+				System.out.print("Genre ID: ");
+				genreID = Utils.getUserSelection(scanner);
+				
+				try {
+					Query.getTransactionsByGenre(dbConnection, genreID);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				break;
+				/*
+			case 3:
+				System.out.print("Genre ID: ");
+				genreID = Utils.getUserSelection(scanner);
+				
+				try {
+					Query.printWeeklyGenreRevenueReport(dbConnection, genreID);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				break;
+			case 4:
+				System.out.print("Genre ID: ");
+				genreID = Utils.getUserSelection(scanner);
+				
+				try {
+					Query.printMonthlyGenreRevenueReport(dbConnection, genreID);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				break;
+			case 5:
+				System.out.print("Genre ID: ");
+				genreID = Utils.getUserSelection(scanner);
+				
+				try {
+					Query.printYearlyGenreRevenueReport(dbConnection, genreID);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				break;
+				*/
+			case 6:
+				return; // back to the employee dashboard
+			}
+		} while (true);
 	}
 }
