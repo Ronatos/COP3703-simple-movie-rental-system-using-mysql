@@ -191,21 +191,23 @@ public class Main {
 			System.out.println("4. Log out");
 			
 			int selection = Utils.getUserSelection(scanner);
-			
+			System.out.println(selection);
 			switch (selection) {
 			case 1: //1. Find a movie
 					System.out.println("1. Recommended Movies");
 					System.out.println("2. Search by Atribute");
-					System.out.println("3. Back to dashboard");
+					System.out.println("3. Rent/Buy a movie");
+					System.out.println("4. Back to dashboard");
 					
 						selection = Utils.getUserSelection(scanner);
 						
 						switch (selection) {
 						case 1://1. Recommended Movies
 							break;
-						case 2://2. Search by Attribute
-							break;
-						case 3://3. back to dashboard
+						case 2:
+							displayCustomerSearchMovieMenu();
+						case 3://3. Back to dashboard
+							displayCustomerDashboard();
 							break;
 						}
 				break;
@@ -214,7 +216,9 @@ public class Main {
 				break;
 			case 3: //3. Account Management
 				break;
-			case 4: //4. Log out
+			case 5:
+				break;
+			case 6: //4. Log out
 				System.out.println("Goodbye!");
 				scanner.close();
 				try {
@@ -224,6 +228,275 @@ public class Main {
 					error.printStackTrace();
 				}
 				System.exit(0);		
+			}
+		} while (true);
+	}
+	
+	private static void displayCustomerSearchMovieMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("How would you like to search for a movie?");
+			System.out.println("----------");
+			System.out.println("1. Movie ID");
+			System.out.println("   Searching for a movie by ID provides data about\n" +
+				"   the movie, all actors that played in it, all directors that directed it,\n" +
+				"   all genres it is classified as, and all transactions including the movie.");
+			System.out.println("2. Actor");
+			System.out.println("3. Director");
+			System.out.println("4. Genre");
+			System.out.println("5. Movie Title");
+			System.out.println("6. Certificate Rating");
+			System.out.println("7. Release Date");
+			System.out.println("8. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Movie ID
+					System.out.print("Movie ID: ");
+					
+					try {
+						int movieID = Utils.getUserSelection(scanner);
+						Query.getMovieByID(dbConnection, movieID);
+						Query.getActorsByMovie(dbConnection, movieID);
+						Query.getDirectorsByMovie(dbConnection, movieID);
+						Query.getGenresByMovie(dbConnection, movieID);
+						Query.getTransactionsByMovie(dbConnection, movieID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Actor
+					displayCustomerSearchActorMenu();
+					break;
+				case 3: // 3. Director
+					displayCustomerSearchDirectorMenu();
+					break;
+				case 4: // 4. Genre
+					displayCustomerSearchGenreMenu();
+					break;
+				case 5: // 5. Movie Title
+					System.out.print("Movie Title: ");
+					
+					String movieTitle = scanner.nextLine();
+					try {
+						Query.getMovieByTitle(dbConnection, movieTitle);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 6: // 6. Certificate Rating
+					System.out.print("Certificate Rating: ");
+					
+					String certificateRating = scanner.nextLine();
+					try {
+						Query.getMovieByCertificateRating(dbConnection, certificateRating);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 7: // 7. Release Date
+					System.out.print("Release Date: ");
+					
+					String releaseDate = scanner.nextLine();
+					try {
+						Query.getMovieByReleaseDate(dbConnection, releaseDate);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 8: // 8. Back
+					displayCustomerDashboard();
+					return;
+			}
+		} while (true);
+	}
+	
+	private static void displayCustomerSearchActorMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("How would you like to search for an actor?");
+			System.out.println("----------");
+			System.out.println("1. Actor ID");
+			System.out.println("   Searching for an actor by ID provides data\n" +
+				"   about the actor and all movies they have played in.");
+			System.out.println("2. Movie");
+			System.out.println("3. First name");
+			System.out.println("4. Last name");
+			System.out.println("5. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Actor ID
+					System.out.print("Actor ID: ");
+					
+					try {
+						int actorID = Utils.getUserSelection(scanner);
+						Query.getActorByID(dbConnection, actorID);
+						Query.getMoviesByActor(dbConnection, actorID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayCustomerSearchMovieMenu();
+					break;
+				case 3: // 3. First Name
+					System.out.print("First name: ");
+					
+					String firstName = scanner.nextLine();
+					try {
+						Query.getActorByFirstName(dbConnection, firstName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Last Name
+					System.out.print("Last name: ");
+					
+					String lastName = scanner.nextLine();
+					try {
+						Query.getActorByLastName(dbConnection, lastName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	private static void displayCustomerSearchDirectorMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("How would you like to search for a director?");
+			System.out.println("----------");
+			System.out.println("1. Director ID");
+			System.out.println("   Searching for a director by ID provides data about\n" +
+				"   the director and all movies they have directed.");
+			System.out.println("2. Movie");
+			System.out.println("3. First Name");
+			System.out.println("4. Last Name");
+			System.out.println("5. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Director ID
+					System.out.print("Director ID: ");
+					
+					try {
+						int directorID = Utils.getUserSelection(scanner);
+						Query.getDirectorByID(dbConnection, directorID);
+						Query.getMoviesByDirector(dbConnection, directorID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayCustomerSearchMovieMenu();
+					break;
+				case 3: // 3. First Name
+					System.out.print("First Name: ");
+					
+					String firstName = scanner.nextLine();
+					try {
+						Query.getDirectorByFirstName(dbConnection, firstName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Last Name
+					System.out.print("Last Name: ");
+					
+					String lastName = scanner.nextLine();
+					try {
+						Query.getDirectorByLastName(dbConnection, lastName);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 5: // 5. Back
+					return;
+			}
+		} while (true);
+	}
+	
+	private static void displayCustomerSearchGenreMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("How would you like to search for a genre?");
+			System.out.println("----------");
+			System.out.println("1. Genre ID");
+			System.out.println("   Searching for a genre by ID provides data about\n" +
+				"   the genre and all movies in the genre.");
+			System.out.println("2. Movie");
+			System.out.println("3. Genre Type");
+			System.out.println("4. Back");
+			
+			int	selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+				case 1: // 1. Genre ID
+					System.out.print("Genre ID: ");
+					
+					try {
+						int genreID = Utils.getUserSelection(scanner);
+						Query.getGenreByID(dbConnection, genreID);
+						Query.getMoviesByGenre(dbConnection, genreID);
+					}
+					catch (InputMismatchException error) {
+						System.out.println("Not a valid ID. Please try again.");
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 2: // 2. Movie
+					displayCustomerSearchMovieMenu();
+					break;
+				case 3: // 3. Genre Type
+					System.out.print("Genre: ");
+					
+					String genre = scanner.nextLine();
+					try {
+						Query.getGenreByType(dbConnection, genre);
+					}
+					catch (SQLException error) {
+						Utils.printDatabaseError(error);
+						break;
+					}
+					break;
+				case 4: // 4. Back
+					return;
 			}
 		} while (true);
 	}
