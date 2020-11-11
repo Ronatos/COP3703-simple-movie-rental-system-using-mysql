@@ -192,7 +192,7 @@ public class Main {
 			System.out.println("----------");
 			System.out.println("1. Search");
 			System.out.println("2. My Rentals");
-			System.out.println("3. Account Management");
+			System.out.println("3. Account Management"); // don't forget to add a way to return purchases. see #10 for details
 			System.out.println("4. Log out");
 			
 			int selection = Utils.getUserSelection(scanner);
@@ -244,8 +244,8 @@ public class Main {
 	// > send them to the purchase/rent menus, which ask for the MovieID
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
-			Query.getMoviesOfTheMonth();
-			Query.getHighestRatedMovies();
+			Query.getMoviesOfTheMonth(); // BJ
+			Query.getHighestRatedMovies(); // Derrick
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -264,7 +264,7 @@ public class Main {
 		case 1:
 			displayCustomerPurchaseMenu(username);
 		case 2:
-			displayCustomerRentMenu(username);
+			displayCustomerRentalMenu(username);
 		case 3:
 			return; // back to customer search
 		}
@@ -278,7 +278,25 @@ public class Main {
 		System.out.print("Movie ID: ");
 		
 		int selection = Utils.getUserSelection(scanner);
+		// check if movie exists
+		// check if the customer has the balance required for the transaction
+		// subtract the balance and add an entry to the transaction table
+	}
+	
+	private static void displayCustomerRentalMenu(String username) {
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Rent");
+		System.out.println("Please enter the ID of the movie you would like to rent.");
+		System.out.println("----------");
+		System.out.print("Movie ID: ");
 		
+		int selection = Utils.getUserSelection(scanner);
+		// check if movie exists
+		// check if the customer
+		// 1. has the balance required for the transaction
+		// 2. will not surpass 2 current rentals
+		// 3. 
+		// subtract the balance and add an entry to the transaction table and rental table
 	}
 	
 	// Customer - Search - Custom -----------------------------------------------------------------
