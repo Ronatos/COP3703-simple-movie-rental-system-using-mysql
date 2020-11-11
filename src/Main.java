@@ -93,10 +93,10 @@ public class Main {
 					}
 						
 					if (userIsCustomer && userIsEmployee) {
-						displayDashboardDecisionMenu();
+						displayDashboardDecisionMenu(username);
 					}
 					else if (userIsCustomer) {
-						displayCustomerDashboard();
+						displayCustomerDashboard(username);
 					}
 					else if (userIsEmployee) {
 						displayEmployeeDashboard();
@@ -161,7 +161,7 @@ public class Main {
 	 * displayDashboardDecisionMenu is displayed after logging in to the application
 	 * if the user exists in both the Employees and Customers tables.
 	 */
-	private static void displayDashboardDecisionMenu() {
+	private static void displayDashboardDecisionMenu(String username) {
 		do {
 			System.out.println("----------");
 			System.out.println("Home / Login");
@@ -176,7 +176,7 @@ public class Main {
 					displayEmployeeDashboard();
 					return; // back to the root menu
 				case 2:
-					displayCustomerDashboard();
+					displayCustomerDashboard(username);
 					return; // back to the root menu
 			}
 		} while (true);
@@ -184,11 +184,11 @@ public class Main {
 	
 	// Customer -----------------------------------------------------------------------------------
 
-	public static void displayCustomerDashboard() {
+	public static void displayCustomerDashboard(String username) {
 		do {
 			System.out.println("----------");
 			System.out.println("Home / Customer Dashboard");
-			System.out.println("What would you like to do?");
+			System.out.println("What would you like to do, " + username + "?");
 			System.out.println("----------");
 			System.out.println("1. Search");
 			System.out.println("2. My Rentals");
@@ -199,7 +199,7 @@ public class Main {
 			System.out.println(selection);
 			switch (selection) {
 			case 1: //1. Find a movie
-				displayCustomerSearchMenu();
+				displayCustomerSearchMenu(username);
 				break;
 			case 2: //2. Rental return
 				// displayCustomerMyRentalsMenu();
@@ -215,7 +215,7 @@ public class Main {
 	
 	// Customer - Search --------------------------------------------------------------------------
 	
-	private static void displayCustomerSearchMenu() {
+	private static void displayCustomerSearchMenu(String username) {
 		do {
 			System.out.println("----------");
 			System.out.println("Home / Customer Dashboard / Search");
@@ -229,7 +229,7 @@ public class Main {
 			
 			switch (selection) {
 			case 1:// 1. Recommended
-				// Not sure how we want to go about this - maybe pass in the login username and use it to query potential recommendations?
+				displayCustomerSearchRecommendedMenu(username);
 				break;
 			case 2: // 2. Custom
 				displayCustomerSearchCustomMenu();
@@ -237,6 +237,48 @@ public class Main {
 				return;
 			}
 		} while (true);
+	}
+	
+	// Recommend movies that came out in the last month or highest rated ones
+	// spit out all recommended movies, and then ask if the customer wanted to purchase or rent one of them
+	// > send them to the purchase/rent menus, which ask for the MovieID
+	private static void displayCustomerSearchRecommendedMenu(String username) {
+		try {
+			Query.getMoviesOfTheMonth();
+			Query.getHighestRatedMovies();
+		}
+		catch (SQLException error) {
+			Utils.printDatabaseError(error);
+		}
+		
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Search / Recommended");
+		System.out.println("Would you like to purchase or rent one of these movies?");
+		System.out.println("----------");
+		System.out.println("1. Purchase");
+		System.out.println("2. Rent");
+		System.out.println("3. Back");
+		
+		int selection = Utils.getUserSelection(scanner);
+		switch (selection) {
+		case 1:
+			displayCustomerPurchaseMenu(username);
+		case 2:
+			displayCustomerRentMenu(username);
+		case 3:
+			return; // back to customer search
+		}
+	}
+	
+	private static void displayCustomerPurchaseMenu(String username) {
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Purchase");
+		System.out.println("Please enter the ID of the movie you would like to purchase.");
+		System.out.println("----------");
+		System.out.print("Movie ID: ");
+		
+		int selection = Utils.getUserSelection(scanner);
+		
 	}
 	
 	// Customer - Search - Custom -----------------------------------------------------------------

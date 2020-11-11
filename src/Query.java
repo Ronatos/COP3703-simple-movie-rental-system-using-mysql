@@ -1362,4 +1362,18 @@ public class Query {
 			statement.close();
 		}
 	}
+	
+	/* SELECT * FROM Movies WHERE xyz */
+	
+	// BJ
+	// This should print out any movies with a ReleaseDate within the last 31 days
+	public static void getMoviesOfTheMonth(Connection connection) throws SQLException {
+		
+	}
+
+	// Derrick
+	// This should print out the top IDK 5 or 10 movies (?) ranked by (I think) descending OverallReviewRating
+	public static void getHighestRatedMovies(Connection connection) throws SQLException {
+		
+	}
 }
