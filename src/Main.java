@@ -245,7 +245,7 @@ public class Main {
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
 			Query.getMoviesOfTheMonth(); // BJ
-			Query.getHighestRatedMovies(); // Derrick
+			Query.getHighestRatedMovies(dbConnection, 0);
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -598,9 +598,10 @@ public class Main {
 			System.out.println("2. Add");
 			System.out.println("3. Update");
 			System.out.println("4. Link");
-			System.out.println("5. Customer Management");
-			System.out.println("6. Reports");
-			System.out.println("7. Log out");
+			System.out.println("5. Business Management");
+			System.out.println("6. Customer Management");
+			System.out.println("7. Reports");
+			System.out.println("8. Log out");
 			
 			int selection = Utils.getUserSelection(scanner);
 			switch (selection) {
@@ -617,6 +618,9 @@ public class Main {
 					displayEmployeeLinkMenu();
 					break;
 				case 5:
+					displayEmployeeBusinessManagementMenu();
+					break;
+				case 6:
 					System.out.print("Customer ID: ");
 					int customerID = Utils.getUserSelection(scanner);
 					
@@ -631,10 +635,10 @@ public class Main {
 					}
 					displayEmployeeCustomerManagement(customerID);
 					break;
-				case 6:
+				case 7:
 					displayEmployeeReportsMenu();
 					break;
-				case 7:
+				case 8:
 					return; // back to the root menu
 			}
 		} while (true);
@@ -1171,6 +1175,54 @@ public class Main {
 					return;
 			}
 		} while (true);
+	}
+	
+	// Employee - Business Management -------------------------------------------------------------
+	
+	private static void displayEmployeeBusinessManagementMenu() {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Employee Dashboard / Business Management");
+			System.out.println("What would you like to change?");
+			System.out.println("----------");
+			System.out.println("1. New Release Rental Rate");
+			System.out.println("2. Non-New Release Rental Rate");
+			System.out.println("3. New Release Rental Period");
+			System.out.println("4. Non-New Release Rental Period");
+			System.out.println("5. Late Fee Added Per Late Rental Day");
+			System.out.println("6. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+			case 1:
+				try {
+					Query.getConfigNewReleaseRentalRate(dbConnection);
+				}
+				break;
+			case 2:
+				try {
+					Query.getConfigNonNewReleaseRentalRate(dbConnection);
+				}
+				break;
+			case 3:
+				try {
+					Query.getConfigNewReleaseRentalPeriod(dbConnection);
+				}
+				break;
+			case 4:
+				try {
+					Query.getConfigNonNewReleaseRentalPeriod(dbConnection);
+				}
+				break;
+			case 5:
+				try {
+					Query.getConfigLateFeePerDay(dbConnection);
+				}
+				break;
+			case 6:
+				return; // back to employee dashboard
+			}
+		} while(true);
 	}
 	
 	// Employee - Add -----------------------------------------------------------------------------
