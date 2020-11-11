@@ -123,7 +123,7 @@ CREATE TABLE Configurations (
     NonNewReleaseRate Decimal (5,2) NOT NULL DEFAULT 3.00,
     NewReleasePeriod int NOT NULL DEFAULT 3,
     NonNewReleasePeriod int NOT NULL DEFAULT 4,
-    ChangeRate Decimal (5,2),
-    ChangePeriod int NOT NULL 0
+    ChangeRate Decimal (5,2)DEFAULT 0,
+    ChangePeriod int NOT NULL DEFAULT 0
 
 );
