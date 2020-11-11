@@ -117,3 +117,13 @@ CREATE TABLE Rentals (
     FOREIGN KEY (TransactionID) REFERENCES Transactions(TransactionID)
         ON DELETE CASCADE
 );
+
+CREATE TABLE Configurations (
+    NewReleaseRate Decimal (5,2) NOT NULL DEFAULT 4.50,
+    NonNewReleaseRate Decimal (5,2) NOT NULL DEFAULT 3.00,
+    NewReleasePeriod int NOT NULL DEFAULT 3,
+    NonNewReleasePeriod int NOT NULL DEFAULT 4,
+    ChangeRate Decimal (5,2),
+    ChangePeriod int NOT NULL 0
+
+);
