@@ -1372,8 +1372,26 @@ public class Query {
 	}
 
 	// Derrick
-	// This should print out the top IDK 5 or 10 movies (?) ranked by (I think) descending OverallReviewRating
-	public static void getHighestRatedMovies(Connection connection) throws SQLException {
+	// Not to sure if i did this correct, lets review.
+	public static void getHighestRatedMovies(Connection connection, double OverallReviewRating) throws SQLException {
+		String query = "SELECT OverallReviewRating FROM Movies WHERE OverallReviewRating = " + OverallReviewRating + " ORDER BY OverallReviewRating DESC";
+		Statement statement = null;
+		ResultSet result = null;
 		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				Query_Utils.getMovie(connection, query);
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 }
