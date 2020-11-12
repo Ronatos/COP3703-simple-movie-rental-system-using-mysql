@@ -215,6 +215,7 @@ public class Main {
 	
 	// Customer - Search --------------------------------------------------------------------------
 	
+	// Complete
 	private static void displayCustomerSearchMenu(String username) {
 		do {
 			System.out.println("----------");
@@ -238,6 +239,8 @@ public class Main {
 			}
 		} while (true);
 	}
+	
+	// Customer - Search - Recommended ------------------------------------------------------------
 	
 	// Recommend movies that came out in the last month or highest rated ones
 	// spit out all recommended movies, and then ask if the customer wanted to purchase or rent one of them

@@ -1428,8 +1428,13 @@ public class Query {
 
 	// Derrick
 	// Not to sure if i did this correct, lets review.
+	//
+	// You set it so we would only pull the OverallReviewRating column, which wouldn't print out all the movie details 
+	// also, you had it so we would pass in the rating needed to qualify as "highest". I switched it to pull
+	// every movie and order them by the best rating. I don't think we'll ever have enough movies in here
+	// that it matters, so we may as well get them all. - Alex
 	public static void getHighestRatedMovies(Connection connection, double OverallReviewRating) throws SQLException {
-		String query = "SELECT OverallReviewRating FROM Movies WHERE OverallReviewRating = " + OverallReviewRating + " ORDER BY OverallReviewRating DESC";
+		String query = "SELECT * FROM Movies ORDER BY OverallReviewRating DESC";
 		Statement statement = null;
 		ResultSet result = null;
 		
