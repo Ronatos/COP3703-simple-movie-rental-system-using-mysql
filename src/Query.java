@@ -1455,53 +1455,113 @@ public class Query {
 		}
 	}
 
-	public static void getConfigNewReleaseRentalRate(Connection dbConnection) throws SQLException {
-		String query = "SELECT NewReleaseRentalRate FROM Configurations";
+	public static void getConfigNewReleaseRentalRate(Connection connection) throws SQLException {
+		String query = "SELECT NewReleaseRate FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("New Release Rental Rate: " + result.getDouble("NewReleaseRate"));
 		}
 		catch(SQLException error){
 			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
 		}
 	}		
 		
-	public static void getConfigNonNewReleaseRentalRate(Connection dbConnection) throws SQLException {
-		String query = "SELECT NonNewReleaseRentalRate FROM Configurations";
+	public static void getConfigNonNewReleaseRentalRate(Connection connection) throws SQLException {
+		String query = "SELECT NonNewReleaseRate FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("Non-New Release Rental Rate: " + result.getDouble("NonNewReleaseRate"));
 		}
 		catch(SQLException error){
 			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
 		}
 	}		
 
-	public static void getConfigNewReleaseRentalPeriod(Connection dbConnection) throws SQLException {		
-		String query = "SELECT NewReleaseRentalPeriod FROM Configurations";
+	public static void getConfigNewReleaseRentalPeriod(Connection connection) throws SQLException {		
+		String query = "SELECT NewReleasePeriod FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("New Release Rental Period: " + result.getDouble("NewReleasePeriod"));
 		}
 		catch(SQLException error){
 			throw error;
 		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
-	public static void getConfigNonNewReleaseRentalPeriod(Connection dbConnection) throws SQLException {
-		String query = "SELECT NonNewReleaseRentalPeriod FROM Configurations";
+	public static void getConfigNonNewReleaseRentalPeriod(Connection connection) throws SQLException {
+		String query = "SELECT NonNewReleasePeriod FROM Configurations";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("Non-New Release Rental Period: " + result.getDouble("NonNewReleasePeriod"));
 		}
 		catch(SQLException error){
 			throw error;
 		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
-	public static void getConfigLateFeePerDay(Connection dbConnection) throws SQLException {
+	public static void getConfigLateFeePerDay(Connection connection) throws SQLException {
 		String query = "SELECT LateFeePerDay FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("Late Fee Added Per Day Rental is Late: " + result.getDouble("LateFeePerDay"));
 		}
 		catch(SQLException error){
 			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
 		}
 	}
 	
