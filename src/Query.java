@@ -1394,4 +1394,55 @@ public class Query {
 			statement.close();
 		}
 	}
+
+	public static void getConfigNewReleaseRentalRate(Connection dbConnection) throws SQLException {
+		String query = "SELECT NewReleaseRentalRate FROM Configurations";
+		try {
+			Query_Utils.getConfig(dbConnection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}		
+		
+	public static void getConfigNonNewReleaseRentalRate(Connection dbConnection) throws SQLException {
+		String query = "SELECT NonNewReleaseRentalRate FROM Configurations";
+		try {
+			Query_Utils.getConfig(dbConnection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}		
+
+	public static void getConfigNewReleaseRentalPeriod(Connection dbConnection) throws SQLException {		
+		String query = "SELECT NewReleaseRentalPeriod FROM Configurations";
+		try {
+			Query_Utils.getConfig(dbConnection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	public static void getConfigNonNewReleaseRentalPeriod(Connection dbConnection) throws SQLException {
+		String query = "SELECT NonNewReleaseRentalPeriod FROM Configurations";
+		try {
+			Query_Utils.getConfig(dbConnection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
+	public static void getConfigLateFeePerDay(Connection dbConnection) throws SQLException {
+		String query = "SELECT LateFeePerDay FROM Configurations";
+		try {
+			Query_Utils.getConfig(dbConnection, query);
+		}
+		catch(SQLException error){
+			throw error;
+		}
+	}
+	
 }

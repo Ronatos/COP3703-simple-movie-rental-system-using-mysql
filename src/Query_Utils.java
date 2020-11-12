@@ -279,6 +279,31 @@ public class Query_Utils {
 			statement.close();
 		}
 	}
+	public static void getConfig(Connection connection, String Query) throws SQLException{
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			
+		
+		while (result.next()) {
+			System.out.println("Config {");
+			System.out.println("	NewReleaseRate: " + result.getDouble("NewReleaseRate") + ",");
+			System.out.println("	NonNewReleaseRate: " + result.getDouble("NonNewReleaseRate") + ",");
+			System.out.println("	NewReleasePeriod: " + result.getInt("NewReleasePeriod") + ",");
+			System.out.println("	NonNewReleasePeriod: " + result.getInt("NonNewReleasePeriod") + ",");
+			System.out.println("	LateFeePerDay: " + result.getDouble("LateFeePerDay") + ",");
+			System.out.println("}");
+		}
+		}catch(SQLException error){
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
 	
 	/**
 	 * A helper function to be used by various getRentalByX() functions which accepts a query to search for a
