@@ -1197,26 +1197,71 @@ public class Main {
 			case 1:
 				try {
 					Query.getConfigNewReleaseRentalRate(dbConnection);
+					System.out.print("New Value: ");
+					double newReleaseRentalRate = Double.parseDouble(scanner.nextLine());
+					Query.setConfigNewReleaseRentalRate(dbConnection, newReleaseRentalRate);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				catch (NumberFormatException error) {
+					System.out.println("Invalid selection. Please try again.");
 				}
 				break;
 			case 2:
 				try {
 					Query.getConfigNonNewReleaseRentalRate(dbConnection);
+					System.out.print("New Value: ");
+					double nonNewReleaseRentalRate = Double.parseDouble(scanner.nextLine());
+					Query.setConfigNonNewReleaseRentalRate(dbConnection, nonNewReleaseRentalRate);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				catch (NumberFormatException error) {
+					System.out.println("Invalid selection. Please try again.");
 				}
 				break;
 			case 3:
 				try {
 					Query.getConfigNewReleaseRentalPeriod(dbConnection);
+					System.out.print("New Value: ");
+					int newReleaseRentalPeriod = Integer.parseInt(scanner.nextLine());
+					Query.setConfigNewReleaseRentalPeriod(dbConnection, newReleaseRentalPeriod);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				catch (NumberFormatException error) {
+					System.out.println("Invalid selection. Please try again.");
 				}
 				break;
 			case 4:
 				try {
 					Query.getConfigNonNewReleaseRentalPeriod(dbConnection);
+					System.out.print("New Value: ");
+					int nonNewReleaseRentalPeriod = Integer.parseInt(scanner.nextLine());
+					Query.setConfigNonNewReleaseRentalPeriod(dbConnection, nonNewReleaseRentalPeriod);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				catch (NumberFormatException error) {
+					System.out.println("Invalid selection. Please try again.");
 				}
 				break;
 			case 5:
 				try {
 					Query.getConfigLateFeePerDay(dbConnection);
+					System.out.print("New Value: ");
+					double newLateFeePerDay = Double.parseDouble(scanner.nextLine());
+					Query.setConfigLateFeePerDay(dbConnection, newLateFeePerDay);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				catch (NumberFormatException error) {
+					System.out.println("Invalid selection. Please try again.");
 				}
 				break;
 			case 6:
