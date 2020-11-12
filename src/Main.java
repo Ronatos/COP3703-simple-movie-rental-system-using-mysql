@@ -222,13 +222,41 @@ public class Main {
 		System.out.println("----------");
 		System.out.print("Movie ID: ");
 		
-		int selection = Utils.getUserSelection(scanner);
-		// check if movie exists
-		// check if the customer has the balance required for the transaction
-		// subtract the balance and add an entry to the transaction table
+		int movieID = Utils.getUserSelection(scanner);
+		try { // customerCanAffordPurchase just returns a boolean if the customer's balance is >= movie purchase cost
+			if (Query.isExistingMovie(dbConnection, movieID) && Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
+				// connection, customerId, movieID, isRental <- these are passed in.
+				// upfrontcost and transactiondate are retrieved from SQL code
+				Query.insertTransaction(dbConnection, username, movieID, false);
+				// all this needs to do is subtract the movie purchase cost from the customer balance
+				Query.purchaseMovie(dbConnection, username, movieID);
+			}
+			else {
+				break;
+			}
+		}
+		catch (SQLException error) {
+			Utils.printDatabaseError(error);
+		}
 	}
 	
 	// Customer - Rental --------------------------------------------------------------------------
+	
+	private static void displayCustomerRentalMenu(String username) {
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Rent");
+		System.out.println("Please enter the ID of the movie you would like to rent.");
+		System.out.println("----------");
+		System.out.print("Movie ID: ");
+		
+		int selection = Utils.getUserSelection(scanner);
+		// check if movie exists
+		// check if the customer
+		// 1. has the balance required for the transaction
+		// 2. will not surpass 2 current rentals
+		// 3. 
+		// subtract the balance and add an entry to the transaction table and rental table
+	}
 	
 	// Customer - Search --------------------------------------------------------------------------
 	
@@ -286,22 +314,6 @@ public class Main {
 		case 3:
 			return; // back to customer search
 		}
-	}
-	
-	private static void displayCustomerRentalMenu(String username) {
-		System.out.println("----------");
-		System.out.println("Home / Customer Dashboard / Rent");
-		System.out.println("Please enter the ID of the movie you would like to rent.");
-		System.out.println("----------");
-		System.out.print("Movie ID: ");
-		
-		int selection = Utils.getUserSelection(scanner);
-		// check if movie exists
-		// check if the customer
-		// 1. has the balance required for the transaction
-		// 2. will not surpass 2 current rentals
-		// 3. 
-		// subtract the balance and add an entry to the transaction table and rental table
 	}
 	
 	// Customer - Search - Custom -----------------------------------------------------------------
