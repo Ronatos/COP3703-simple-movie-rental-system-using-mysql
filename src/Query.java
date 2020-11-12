@@ -1051,6 +1051,61 @@ public class Query {
 		}
 	}
 	
+	public static void setConfigNewReleaseRentalRate(Connection connection, double newReleaseRentalRate) throws SQLException {
+		String query = "UPDATE Configurations SET NewReleaseRate = " + newReleaseRentalRate;
+		
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void setConfigNonNewReleaseRentalRate(Connection connection, double nonNewReleaseRentalRate) throws SQLException {
+		String query = "UPDATE Configurations SET NonNewReleaseRate = " + nonNewReleaseRentalRate;
+		
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void setConfigNewReleaseRentalPeriod(Connection connection, int newReleaseRentalPeriod) throws SQLException {
+		String query = "UPDATE Configurations SET NewReleasePeriod = " + newReleaseRentalPeriod;
+		
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void setConfigNonNewReleaseRentalPeriod(Connection connection, int nonNewReleaseRentalPeriod) throws SQLException {
+		String query = "UPDATE Configurations SET NonNewReleaseRate = " + nonNewReleaseRentalPeriod;
+		
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void setConfigLateFeePerDay(Connection connection, double newLateFeePerDay) throws SQLException {
+		String query = "UPDATE Configurations SET LateFeePerDay = " + newLateFeePerDay;
+		
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
 	// Insert -------------------------------------------------------------------------------------
 	
 	/**
