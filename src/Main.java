@@ -213,6 +213,23 @@ public class Main {
 		} while (true);
 	}
 	
+	// Customer - Purchase ------------------------------------------------------------------------
+	
+	private static void displayCustomerPurchaseMenu(String username) {
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Purchase");
+		System.out.println("Please enter the ID of the movie you would like to purchase.");
+		System.out.println("----------");
+		System.out.print("Movie ID: ");
+		
+		int selection = Utils.getUserSelection(scanner);
+		// check if movie exists
+		// check if the customer has the balance required for the transaction
+		// subtract the balance and add an entry to the transaction table
+	}
+	
+	// Customer - Rental --------------------------------------------------------------------------
+	
 	// Customer - Search --------------------------------------------------------------------------
 	
 	// Complete
@@ -242,13 +259,11 @@ public class Main {
 	
 	// Customer - Search - Recommended ------------------------------------------------------------
 	
-	// Recommend movies that came out in the last month or highest rated ones
-	// spit out all recommended movies, and then ask if the customer wanted to purchase or rent one of them
-	// > send them to the purchase/rent menus, which ask for the MovieID
+	// Complete
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
 			Query.getMoviesOfTheMonth(); // BJ
-			Query.getHighestRatedMovies(dbConnection, 0);
+			Query.getHighestRatedMovies(dbConnection);
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -271,19 +286,6 @@ public class Main {
 		case 3:
 			return; // back to customer search
 		}
-	}
-	
-	private static void displayCustomerPurchaseMenu(String username) {
-		System.out.println("----------");
-		System.out.println("Home / Customer Dashboard / Purchase");
-		System.out.println("Please enter the ID of the movie you would like to purchase.");
-		System.out.println("----------");
-		System.out.print("Movie ID: ");
-		
-		int selection = Utils.getUserSelection(scanner);
-		// check if movie exists
-		// check if the customer has the balance required for the transaction
-		// subtract the balance and add an entry to the transaction table
 	}
 	
 	private static void displayCustomerRentalMenu(String username) {

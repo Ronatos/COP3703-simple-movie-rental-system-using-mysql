@@ -1433,7 +1433,7 @@ public class Query {
 	// also, you had it so we would pass in the rating needed to qualify as "highest". I switched it to pull
 	// every movie and order them by the best rating. I don't think we'll ever have enough movies in here
 	// that it matters, so we may as well get them all. - Alex
-	public static void getHighestRatedMovies(Connection connection, double OverallReviewRating) throws SQLException {
+	public static void getHighestRatedMovies(Connection connection) throws SQLException {
 		String query = "SELECT * FROM Movies ORDER BY OverallReviewRating DESC";
 		Statement statement = null;
 		ResultSet result = null;

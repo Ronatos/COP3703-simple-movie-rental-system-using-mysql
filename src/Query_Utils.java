@@ -284,18 +284,20 @@ public class Query_Utils {
 		ResultSet result = null;
 		
 		try {
-			
+			statement = connection.createStatement();
+			result = statement.executeQuery(Query);
 		
-		while (result.next()) {
-			System.out.println("Config {");
-			System.out.println("	NewReleaseRate: " + result.getDouble("NewReleaseRate") + ",");
-			System.out.println("	NonNewReleaseRate: " + result.getDouble("NonNewReleaseRate") + ",");
-			System.out.println("	NewReleasePeriod: " + result.getInt("NewReleasePeriod") + ",");
-			System.out.println("	NonNewReleasePeriod: " + result.getInt("NonNewReleasePeriod") + ",");
-			System.out.println("	LateFeePerDay: " + result.getDouble("LateFeePerDay") + ",");
-			System.out.println("}");
+			while (result.next()) {
+				System.out.println("Config {");
+				System.out.println("	NewReleaseRate: " + result.getDouble("NewReleaseRate") + ",");
+				System.out.println("	NonNewReleaseRate: " + result.getDouble("NonNewReleaseRate") + ",");
+				System.out.println("	NewReleasePeriod: " + result.getInt("NewReleasePeriod") + ",");
+				System.out.println("	NonNewReleasePeriod: " + result.getInt("NonNewReleasePeriod") + ",");
+				System.out.println("	LateFeePerDay: " + result.getDouble("LateFeePerDay") + ",");
+				System.out.println("}");
+			}
 		}
-		}catch(SQLException error){
+		catch(SQLException error){
 			throw error;
 		}
 		finally {
