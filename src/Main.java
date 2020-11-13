@@ -227,9 +227,9 @@ public class Main {
 			if (Query.isExistingMovie(dbConnection, movieID) && Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
 				// connection, customerId, movieID, isRental <- these are passed in.
 				// upfrontcost and transactiondate are retrieved from SQL code
-				Query.insertTransaction(dbConnection, username, movieID, false); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIE
+				Query.insertTransaction(dbConnection, username, movieID, false); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
 				// all this needs to do is subtract the movie purchase cost from the customer balance
-				Query.purchaseMovie(dbConnection, username, movieID); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIE
+				Query.purchaseMovie(dbConnection, username, movieID); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
 			}
 			else {
 				break;
