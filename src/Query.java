@@ -1564,5 +1564,54 @@ public class Query {
 			statement.close();
 		}
 	}
-	
+
+//This statmenet can not be finished until there is a balance section in the customers table
+	public static boolean customerCanAffordPurchase(Connection connection, String username, int movieID) throws SQLException {
+		// TODO Auto-generated method stub
+		String query = "";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+		return false;
+	}
+
+	public static void insertTransaction(Connection connection, String username, int movieID, boolean b) throws SQLException {
+		// TODO Auto-generated method stub
+				String query = "INSERT INTO Transactions (`MovieID`, `TransactionDate`, `UpFrontTransactionCost`, `isRental`) VALUES ();";
+				
+				Statement statement = null;
+			
+				
+				
+				try {
+					statement = connection.createStatement();
+					statement.executeUpdate(query);
+				
+					
+					
+				}
+				catch(SQLException error) {
+					throw error;
+				}
+				finally {
+				
+					statement.close();
+				}
+	}
 }

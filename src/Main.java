@@ -278,7 +278,7 @@ public class Main {
 				displayCustomerSearchRecommendedMenu(username);
 				break;
 			case 2: // 2. Custom
-				displayCustomerSearchCustomMenu();
+				displayCustomerSearchCustomMenu(username);
 			case 3://3. Back to dashboard
 				return;
 			}
@@ -321,7 +321,7 @@ public class Main {
 	// I like this approach. - Alex
 	// if we're going to reuse this, we need to write different query methods.
 	// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchCustomMenu() {
+	private static void displayCustomerSearchCustomMenu(String username) {
 		do {
 			System.out.println("----------");
 			System.out.println("Home / Customer Dashboard / Search / Custom");
@@ -406,7 +406,7 @@ public class Main {
 					}
 					break;
 				case 8: // 8. Back
-					displayCustomerDashboard();
+					displayCustomerDashboard(username);
 					return;
 			}
 		} while (true);
