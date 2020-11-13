@@ -1565,10 +1565,9 @@ public class Query {
 		}
 	}
 
-//This statmenet can not be finished until there is a balance section in the customers table
 	public static boolean customerCanAffordPurchase(Connection connection, String username, int movieID) throws SQLException {
-		// TODO Auto-generated method stub
-		String query = "";
+		String query = "SELECT Customers.CustomerBalance FROM Customers WHERE Customers.Username = \"" + username + "\"";
+		double custBal = 0;
 		
 		Statement statement = null;
 		ResultSet result = null;
@@ -1579,7 +1578,14 @@ public class Query {
 			result = statement.executeQuery(query);
 			result.next();
 			
+			custBal = result.getDouble("CustomerBalance") - getMovieBuyPriceByID(connection, movieID);
 			
+			if (custBal >= 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		catch(SQLException error) {
 			throw error;
@@ -1588,30 +1594,96 @@ public class Query {
 			result.close();
 			statement.close();
 		}
-		return false;
+	}
+	
+	public static double getMovieBuyPriceByID(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT Movies.BuyPrice FROM Movies WHERE MovieID = " + movieID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getDouble("BuyPrice");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void purchaseMovie(Connection connection, int customerID, int movieID) throws SQLException {
+		String query = 
 	}
 
 	public static void insertTransaction(Connection connection, String username, int movieID, boolean b) throws SQLException {
 		// TODO Auto-generated method stub
-				String query = "INSERT INTO Transactions (`MovieID`, `TransactionDate`, `UpFrontTransactionCost`, `isRental`) VALUES ();";
-				
-				Statement statement = null;
+		int customerID = getCustomerIDFromUsername(connection, username);
+		double movieBuyPrice = getMovieBuyPriceByID(connection, movieID);
+		String query = "INSERT INTO Transactions ('CustomerID', `MovieID`, `TransactionDate`, `UpFrontTransactionCost`, `isRental`) VALUES ('" + customerID +"', '" + movieID + "', CURDATE(), " + movieBuyPrice + ", " + b + ")";
+		try {
+			Query_Utils.insertEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		
+		if (b) {
+			insertRental(connection, getLatestTransactionID(connection));
+		}
+	}
+	
+	public static void insertRental(Connection connection, int transactionID) throws SQLException {
+		String query = "INSERT INTO Rentals (TransactionID, ExpirationDate) VALUES (" + transactionID + ", CURDATE() + )";
+	}
+	
+	public static void getLatestTransactionID(Connection connection) {
+		String query = "SELECT Transactions.TransactionID FROM Transactions ORDER BY ASC";
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
 			
-				
-				
-				try {
-					statement = connection.createStatement();
-					statement.executeUpdate(query);
-				
-					
-					
-				}
-				catch(SQLException error) {
-					throw error;
-				}
-				finally {
-				
-					statement.close();
-				}
+			return result.getINT("TransactionID");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static int getCustomerIDFromUsername(Connection connection, String username) throws SQLException {
+		String query = "SELECT CustomerID FROM Customers WHERE Customers.Username = '" + username + "'";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getInt("CustomerID");
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 }
