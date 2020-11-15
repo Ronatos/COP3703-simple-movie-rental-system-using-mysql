@@ -290,7 +290,7 @@ public class Main {
 	// Complete
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
-			Query.getMoviesOfTheMonth(); // BJ
+			Query.getMoviesOfTheMonth();
 			Query.getHighestRatedMovies(dbConnection);
 		}
 		catch (SQLException error) {
@@ -351,6 +351,7 @@ public class Main {
 						Query.getActorsByMovie(dbConnection, movieID);
 						Query.getDirectorsByMovie(dbConnection, movieID);
 						Query.getGenresByMovie(dbConnection, movieID);
+						
 					}
 					catch (InputMismatchException error) {
 						System.out.println("Not a valid ID. Please try again.");
