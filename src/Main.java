@@ -278,7 +278,7 @@ public class Main {
 				displayCustomerSearchRecommendedMenu(username);
 				break;
 			case 2: // 2. Custom
-				displayCustomerSearchCustomMenu(username);
+				displayCustomerSearchCustomMovieMenu(username);
 			case 3://3. Back to dashboard
 				return;
 			}
@@ -318,19 +318,20 @@ public class Main {
 	
 	// Customer - Search - Custom -----------------------------------------------------------------
 	
-	// I like this approach. - Alex
-	// if we're going to reuse this, we need to write different query methods.
-	// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchCustomMenu(String username) {
+	// TO DO: This needs to transition from a search to a purchase via another menu
+	
+	// Query.getMovieByID should be replaced by something that doesn't display business data like getMovieByIDRestricted
+	// getMovieByTitle, getMovieByCertificateRating, and getMovieByReleaseDate are the same deal
+	private static void displayCustomerSearchCustomMovieMenu(String username) {
 		do {
 			System.out.println("----------");
-			System.out.println("Home / Customer Dashboard / Search / Custom");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Movie");
 			System.out.println("How would you like to search for a movie?");
 			System.out.println("----------");
 			System.out.println("1. Movie ID");
 			System.out.println("   Searching for a movie by ID provides data about\n" +
 				"   the movie, all actors that played in it, all directors that directed it,\n" +
-				"   all genres it is classified as, and all transactions including the movie.");
+				"   and all genres it is classified as.");
 			System.out.println("2. Actor");
 			System.out.println("3. Director");
 			System.out.println("4. Genre");
@@ -350,7 +351,6 @@ public class Main {
 						Query.getActorsByMovie(dbConnection, movieID);
 						Query.getDirectorsByMovie(dbConnection, movieID);
 						Query.getGenresByMovie(dbConnection, movieID);
-						Query.getTransactionsByMovie(dbConnection, movieID);
 					}
 					catch (InputMismatchException error) {
 						System.out.println("Not a valid ID. Please try again.");
@@ -361,13 +361,13 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Actor
-					displayCustomerSearchActorMenu();
+					displayCustomerSearchCustomActorMenu(username);
 					break;
 				case 3: // 3. Director
-					displayCustomerSearchDirectorMenu();
+					displayCustomerSearchCustomDirectorMenu(username);
 					break;
 				case 4: // 4. Genre
-					displayCustomerSearchGenreMenu();
+					displayCustomerSearchCustomGenreMenu(username);
 					break;
 				case 5: // 5. Movie Title
 					System.out.print("Movie Title: ");
@@ -406,17 +406,16 @@ public class Main {
 					}
 					break;
 				case 8: // 8. Back
-					displayCustomerDashboard(username);
 					return;
 			}
 		} while (true);
 	}
 	
-	// if we're going to reuse this, we need to write different query methods.
-		// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchActorMenu() {
+	// getMoviesByActor pritns business movie data
+	private static void displayCustomerSearchCustomActorMenu(String username) {
 		do {
 			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Actor");
 			System.out.println("How would you like to search for an actor?");
 			System.out.println("----------");
 			System.out.println("1. Actor ID");
@@ -446,7 +445,7 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Movie
-					displayCustomerSearchMovieMenu();
+					displayCustomerSearchCustomMovieMenu(username);
 					break;
 				case 3: // 3. First Name
 					System.out.print("First name: ");
@@ -478,11 +477,11 @@ public class Main {
 		} while (true);
 	}
 	
-	// if we're going to reuse this, we need to write different query methods.
-		// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchDirectorMenu() {
+	// getMoviesByDirector prints business movie data
+	private static void displayCustomerSearchCustomDirectorMenu(String username) {
 		do {
 			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Director");
 			System.out.println("How would you like to search for a director?");
 			System.out.println("----------");
 			System.out.println("1. Director ID");
@@ -512,7 +511,7 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Movie
-					displayCustomerSearchMovieMenu();
+					displayCustomerSearchCustomMovieMenu(username);
 					break;
 				case 3: // 3. First Name
 					System.out.print("First Name: ");
@@ -544,11 +543,11 @@ public class Main {
 		} while (true);
 	}
 	
-	// if we're going to reuse this, we need to write different query methods.
-		// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchGenreMenu() {
+	// getMoviesByGenre provides too much business data
+	private static void displayCustomerSearchCustomGenreMenu(String username) {
 		do {
 			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Genre");
 			System.out.println("How would you like to search for a genre?");
 			System.out.println("----------");
 			System.out.println("1. Genre ID");
@@ -577,7 +576,7 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Movie
-					displayCustomerSearchMovieMenu();
+					displayCustomerSearchCustomMovieMenu(username);
 					break;
 				case 3: // 3. Genre Type
 					System.out.print("Genre: ");
