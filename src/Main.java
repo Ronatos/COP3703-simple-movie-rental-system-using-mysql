@@ -213,6 +213,51 @@ public class Main {
 		} while (true);
 	}
 	
+	// Customer - Purchase ------------------------------------------------------------------------
+	
+	private static void displayCustomerPurchaseMenu(String username) {
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Purchase");
+		System.out.println("Please enter the ID of the movie you would like to purchase.");
+		System.out.println("----------");
+		System.out.print("Movie ID: ");
+		
+		int movieID = Utils.getUserSelection(scanner);
+		try { // customerCanAffordPurchase just returns a boolean if the customer's balance is >= movie purchase cost
+			if (Query.isExistingMovie(dbConnection, movieID) && Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
+				// connection, customerId, movieID, isRental <- these are passed in.
+				// upfrontcost and transactiondate are retrieved from SQL code
+				Query.insertTransaction(dbConnection, username, movieID, false); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
+				// all this needs to do is subtract the movie purchase cost from the customer balance
+				Query.purchaseMovie(dbConnection, username, movieID); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
+			}
+			else {
+				break;
+			}
+		}
+		catch (SQLException error) {
+			Utils.printDatabaseError(error);
+		}
+	}
+	
+	// Customer - Rental --------------------------------------------------------------------------
+	
+	private static void displayCustomerRentalMenu(String username) {
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Rent");
+		System.out.println("Please enter the ID of the movie you would like to rent.");
+		System.out.println("----------");
+		System.out.print("Movie ID: ");
+		
+		int selection = Utils.getUserSelection(scanner);
+		// check if movie exists
+		// check if the customer
+		// 1. has the balance required for the transaction
+		// 2. will not surpass 2 current rentals
+		// 3. 
+		// subtract the balance and add an entry to the transaction table and rental table
+	}
+	
 	// Customer - Search --------------------------------------------------------------------------
 	
 	// Complete
@@ -233,7 +278,7 @@ public class Main {
 				displayCustomerSearchRecommendedMenu(username);
 				break;
 			case 2: // 2. Custom
-				displayCustomerSearchCustomMenu();
+				displayCustomerSearchCustomMovieMenu(username);
 			case 3://3. Back to dashboard
 				return;
 			}
@@ -242,13 +287,16 @@ public class Main {
 	
 	// Customer - Search - Recommended ------------------------------------------------------------
 	
-	// Recommend movies that came out in the last month or highest rated ones
-	// spit out all recommended movies, and then ask if the customer wanted to purchase or rent one of them
-	// > send them to the purchase/rent menus, which ask for the MovieID
+	// Complete
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
+<<<<<<< HEAD
 			Query.getMoviesOfTheMonth(dbConnection);
 			Query.getHighestRatedMovies(dbConnection, 0);
+=======
+			Query.getMoviesOfTheMonth();
+			Query.getHighestRatedMovies(dbConnection);
+>>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -273,50 +321,22 @@ public class Main {
 		}
 	}
 	
-	private static void displayCustomerPurchaseMenu(String username) {
-		System.out.println("----------");
-		System.out.println("Home / Customer Dashboard / Purchase");
-		System.out.println("Please enter the ID of the movie you would like to purchase.");
-		System.out.println("----------");
-		System.out.print("Movie ID: ");
-		
-		int selection = Utils.getUserSelection(scanner);
-		// check if movie exists
-		// check if the customer has the balance required for the transaction
-		// subtract the balance and add an entry to the transaction table
-	}
-	
-	private static void displayCustomerRentalMenu(String username) {
-		System.out.println("----------");
-		System.out.println("Home / Customer Dashboard / Rent");
-		System.out.println("Please enter the ID of the movie you would like to rent.");
-		System.out.println("----------");
-		System.out.print("Movie ID: ");
-		
-		int selection = Utils.getUserSelection(scanner);
-		// check if movie exists
-		// check if the customer
-		// 1. has the balance required for the transaction
-		// 2. will not surpass 2 current rentals
-		// 3. 
-		// subtract the balance and add an entry to the transaction table and rental table
-	}
-	
 	// Customer - Search - Custom -----------------------------------------------------------------
 	
-	// I like this approach. - Alex
-	// if we're going to reuse this, we need to write different query methods.
-	// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchCustomMenu() {
+	// TO DO: This needs to transition from a search to a purchase via another menu
+	
+	// Query.getMovieByID should be replaced by something that doesn't display business data like getMovieByIDRestricted
+	// getMovieByTitle, getMovieByCertificateRating, and getMovieByReleaseDate are the same deal
+	private static void displayCustomerSearchCustomMovieMenu(String username) {
 		do {
 			System.out.println("----------");
-			System.out.println("Home / Customer Dashboard / Search / Custom");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Movie");
 			System.out.println("How would you like to search for a movie?");
 			System.out.println("----------");
 			System.out.println("1. Movie ID");
 			System.out.println("   Searching for a movie by ID provides data about\n" +
 				"   the movie, all actors that played in it, all directors that directed it,\n" +
-				"   all genres it is classified as, and all transactions including the movie.");
+				"   and all genres it is classified as.");
 			System.out.println("2. Actor");
 			System.out.println("3. Director");
 			System.out.println("4. Genre");
@@ -336,7 +356,7 @@ public class Main {
 						Query.getActorsByMovie(dbConnection, movieID);
 						Query.getDirectorsByMovie(dbConnection, movieID);
 						Query.getGenresByMovie(dbConnection, movieID);
-						Query.getTransactionsByMovie(dbConnection, movieID);
+						
 					}
 					catch (InputMismatchException error) {
 						System.out.println("Not a valid ID. Please try again.");
@@ -347,13 +367,13 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Actor
-					displayCustomerSearchActorMenu();
+					displayCustomerSearchCustomActorMenu(username);
 					break;
 				case 3: // 3. Director
-					displayCustomerSearchDirectorMenu();
+					displayCustomerSearchCustomDirectorMenu(username);
 					break;
 				case 4: // 4. Genre
-					displayCustomerSearchGenreMenu();
+					displayCustomerSearchCustomGenreMenu(username);
 					break;
 				case 5: // 5. Movie Title
 					System.out.print("Movie Title: ");
@@ -392,17 +412,16 @@ public class Main {
 					}
 					break;
 				case 8: // 8. Back
-					displayCustomerDashboard();
 					return;
 			}
 		} while (true);
 	}
 	
-	// if we're going to reuse this, we need to write different query methods.
-		// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchActorMenu() {
+	// getMoviesByActor pritns business movie data
+	private static void displayCustomerSearchCustomActorMenu(String username) {
 		do {
 			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Actor");
 			System.out.println("How would you like to search for an actor?");
 			System.out.println("----------");
 			System.out.println("1. Actor ID");
@@ -432,7 +451,7 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Movie
-					displayCustomerSearchMovieMenu();
+					displayCustomerSearchCustomMovieMenu(username);
 					break;
 				case 3: // 3. First Name
 					System.out.print("First name: ");
@@ -464,11 +483,11 @@ public class Main {
 		} while (true);
 	}
 	
-	// if we're going to reuse this, we need to write different query methods.
-		// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchDirectorMenu() {
+	// getMoviesByDirector prints business movie data
+	private static void displayCustomerSearchCustomDirectorMenu(String username) {
 		do {
 			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Director");
 			System.out.println("How would you like to search for a director?");
 			System.out.println("----------");
 			System.out.println("1. Director ID");
@@ -498,7 +517,7 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Movie
-					displayCustomerSearchMovieMenu();
+					displayCustomerSearchCustomMovieMenu(username);
 					break;
 				case 3: // 3. First Name
 					System.out.print("First Name: ");
@@ -530,11 +549,11 @@ public class Main {
 		} while (true);
 	}
 	
-	// if we're going to reuse this, we need to write different query methods.
-		// currently the customer is getting all kinds of business data from this
-	private static void displayCustomerSearchGenreMenu() {
+	// getMoviesByGenre provides too much business data
+	private static void displayCustomerSearchCustomGenreMenu(String username) {
 		do {
 			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Search / Custom / Genre");
 			System.out.println("How would you like to search for a genre?");
 			System.out.println("----------");
 			System.out.println("1. Genre ID");
@@ -563,7 +582,7 @@ public class Main {
 					}
 					break;
 				case 2: // 2. Movie
-					displayCustomerSearchMovieMenu();
+					displayCustomerSearchCustomMovieMenu(username);
 					break;
 				case 3: // 3. Genre Type
 					System.out.print("Genre: ");

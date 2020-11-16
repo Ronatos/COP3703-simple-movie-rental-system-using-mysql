@@ -75,6 +75,7 @@ CREATE TABLE Customers (
     Username VARCHAR (45) NOT NULL DEFAULT ' ',
     Password VARCHAR (45) NOT NULL DEFAULT ' ',  
     ReferredBy VARCHAR (45),
+    CustomerBalance DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     PRIMARY KEY (CustomerID),
     UNIQUE KEY Username_UNIQUE (Username),
     FOREIGN KEY (ReferredBy) REFERENCES Customers(Username)

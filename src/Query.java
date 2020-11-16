@@ -1441,6 +1441,7 @@ public class Query {
 		}	
 	}
 
+<<<<<<< HEAD
 	
 	/**
 	 * Finds and returns the highest rated movies
@@ -1449,6 +1450,16 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void getHighestRatedMovies(Connection connection, double OverallReviewRating) throws SQLException {
+=======
+	// Derrick
+	// Not to sure if i did this correct, lets review.
+	//
+	// You set it so we would only pull the OverallReviewRating column, which wouldn't print out all the movie details 
+	// also, you had it so we would pass in the rating needed to qualify as "highest". I switched it to pull
+	// every movie and order them by the best rating. I don't think we'll ever have enough movies in here
+	// that it matters, so we may as well get them all. - Alex
+	public static void getHighestRatedMovies(Connection connection) throws SQLException {
+>>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 		String query = "SELECT * FROM Movies ORDER BY OverallReviewRating DESC";
 		Statement statement = null;
 		ResultSet result = null;
@@ -1469,57 +1480,224 @@ public class Query {
 			statement.close();
 		}
 	}
+<<<<<<< HEAD
 	
 	public static void getConfigNewReleaseRentalRate(Connection dbConnection) throws SQLException {
 		String query = "SELECT NewReleaseRentalRate FROM Configurations";
+=======
+
+	public static void getConfigNewReleaseRentalRate(Connection connection) throws SQLException {
+		String query = "SELECT NewReleaseRate FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
+>>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("New Release Rental Rate: " + result.getDouble("NewReleaseRate"));
 		}
 		catch(SQLException error){
 			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
 		}
 	}		
 		
-	public static void getConfigNonNewReleaseRentalRate(Connection dbConnection) throws SQLException {
-		String query = "SELECT NonNewReleaseRentalRate FROM Configurations";
+	public static void getConfigNonNewReleaseRentalRate(Connection connection) throws SQLException {
+		String query = "SELECT NonNewReleaseRate FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("Non-New Release Rental Rate: " + result.getDouble("NonNewReleaseRate"));
 		}
 		catch(SQLException error){
 			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
 		}
 	}		
 
-	public static void getConfigNewReleaseRentalPeriod(Connection dbConnection) throws SQLException {		
-		String query = "SELECT NewReleaseRentalPeriod FROM Configurations";
+	public static void getConfigNewReleaseRentalPeriod(Connection connection) throws SQLException {		
+		String query = "SELECT NewReleasePeriod FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("New Release Rental Period: " + result.getDouble("NewReleasePeriod"));
 		}
 		catch(SQLException error){
 			throw error;
 		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
-	public static void getConfigNonNewReleaseRentalPeriod(Connection dbConnection) throws SQLException {
-		String query = "SELECT NonNewReleaseRentalPeriod FROM Configurations";
+	public static void getConfigNonNewReleaseRentalPeriod(Connection connection) throws SQLException {
+		String query = "SELECT NonNewReleasePeriod FROM Configurations";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("Non-New Release Rental Period: " + result.getDouble("NonNewReleasePeriod"));
 		}
 		catch(SQLException error){
 			throw error;
 		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
-	public static void getConfigLateFeePerDay(Connection dbConnection) throws SQLException {
+	public static void getConfigLateFeePerDay(Connection connection) throws SQLException {
 		String query = "SELECT LateFeePerDay FROM Configurations";
+
+		Statement statement = null;
+		ResultSet result = null;
+		
 		try {
-			Query_Utils.getConfig(dbConnection, query);
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+		
+			System.out.println("Late Fee Added Per Day Rental is Late: " + result.getDouble("LateFeePerDay"));
 		}
 		catch(SQLException error){
 			throw error;
 		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+
+	public static boolean customerCanAffordPurchase(Connection connection, String username, int movieID) throws SQLException {
+		String query = "SELECT Customers.CustomerBalance FROM Customers WHERE Customers.Username = \"" + username + "\"";
+		double custBal = 0;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			custBal = result.getDouble("CustomerBalance") - getMovieBuyPriceByID(connection, movieID);
+			
+			if (custBal >= 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
+	public static double getMovieBuyPriceByID(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT Movies.BuyPrice FROM Movies WHERE MovieID = " + movieID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getDouble("BuyPrice");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void purchaseMovie(Connection connection, int customerID, int movieID) throws SQLException {
+		String query = 
+	}
+
+	public static void insertTransaction(Connection connection, String username, int movieID, boolean b) throws SQLException {
+		// TODO Auto-generated method stub
+		int customerID = getCustomerIDFromUsername(connection, username);
+		double movieBuyPrice = getMovieBuyPriceByID(connection, movieID);
+		String query = "INSERT INTO Transactions ('CustomerID', `MovieID`, `TransactionDate`, `UpFrontTransactionCost`, `isRental`) VALUES ('" + customerID +"', '" + movieID + "', CURDATE(), " + movieBuyPrice + ", " + b + ")";
+		try {
+			Query_Utils.insertEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		
+		if (b) {
+			insertRental(connection, getLatestTransactionID(connection));
+		}
+	}
+	
+	public static void insertRental(Connection connection, int transactionID) throws SQLException {
+		String query = "INSERT INTO Rentals (TransactionID, ExpirationDate) VALUES (" + transactionID + ", CURDATE() + )";
+	}
+	
+	public static void getLatestTransactionID(Connection connection) {
+		String query = "SELECT Transactions.TransactionID FROM Transactions ORDER BY ASC";
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getINT("TransactionID");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+<<<<<<< HEAD
 	
 	
 	
@@ -1528,4 +1706,27 @@ public class Query {
 	
 	
 	
+=======
+	public static int getCustomerIDFromUsername(Connection connection, String username) throws SQLException {
+		String query = "SELECT CustomerID FROM Customers WHERE Customers.Username = '" + username + "'";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getInt("CustomerID");
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+>>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 }
