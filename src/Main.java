@@ -290,13 +290,9 @@ public class Main {
 	// Complete
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
-<<<<<<< HEAD
+
 			Query.getMoviesOfTheMonth(dbConnection);
 			Query.getHighestRatedMovies(dbConnection, 0);
-=======
-			Query.getMoviesOfTheMonth();
-			Query.getHighestRatedMovies(dbConnection);
->>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -417,7 +413,7 @@ public class Main {
 		} while (true);
 	}
 	
-	// getMoviesByActor pritns business movie data
+	// getMoviesByActor prints business movie data
 	private static void displayCustomerSearchCustomActorMenu(String username) {
 		do {
 			System.out.println("----------");

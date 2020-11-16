@@ -1441,7 +1441,7 @@ public class Query {
 		}	
 	}
 
-<<<<<<< HEAD
+
 	
 	/**
 	 * Finds and returns the highest rated movies
@@ -1450,16 +1450,6 @@ public class Query {
 	 * @throws SQLException
 	 */
 	public static void getHighestRatedMovies(Connection connection, double OverallReviewRating) throws SQLException {
-=======
-	// Derrick
-	// Not to sure if i did this correct, lets review.
-	//
-	// You set it so we would only pull the OverallReviewRating column, which wouldn't print out all the movie details 
-	// also, you had it so we would pass in the rating needed to qualify as "highest". I switched it to pull
-	// every movie and order them by the best rating. I don't think we'll ever have enough movies in here
-	// that it matters, so we may as well get them all. - Alex
-	public static void getHighestRatedMovies(Connection connection) throws SQLException {
->>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 		String query = "SELECT * FROM Movies ORDER BY OverallReviewRating DESC";
 		Statement statement = null;
 		ResultSet result = null;
@@ -1480,11 +1470,6 @@ public class Query {
 			statement.close();
 		}
 	}
-<<<<<<< HEAD
-	
-	public static void getConfigNewReleaseRentalRate(Connection dbConnection) throws SQLException {
-		String query = "SELECT NewReleaseRentalRate FROM Configurations";
-=======
 
 	public static void getConfigNewReleaseRentalRate(Connection connection) throws SQLException {
 		String query = "SELECT NewReleaseRate FROM Configurations";
@@ -1492,7 +1477,6 @@ public class Query {
 		Statement statement = null;
 		ResultSet result = null;
 		
->>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 		try {
 			statement = connection.createStatement();
 			result = statement.executeQuery(query);
@@ -1686,7 +1670,7 @@ public class Query {
 			result = statement.executeQuery(query);
 			result.next();
 			
-			return result.getINT("TransactionID");
+			return result.getInt("TransactionID");
 		}
 		catch(SQLException error) {
 			throw error;
@@ -1697,16 +1681,7 @@ public class Query {
 		}
 	}
 	
-<<<<<<< HEAD
-	
-	
-	
-	
-	
-	
-	
-	
-=======
+
 	public static int getCustomerIDFromUsername(Connection connection, String username) throws SQLException {
 		String query = "SELECT CustomerID FROM Customers WHERE Customers.Username = '" + username + "'";
 		
@@ -1728,5 +1703,4 @@ public class Query {
 			statement.close();
 		}
 	}
->>>>>>> 75c42871fe4d331388296e7a84cbf7d4c374af42
 }
