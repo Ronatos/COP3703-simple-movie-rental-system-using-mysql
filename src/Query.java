@@ -1418,21 +1418,36 @@ public class Query {
 		}
 	}
 	
-	/* SELECT * FROM Movies WHERE xyz */
-	
-	// BJ
-	// This should print out any movies with a ReleaseDate within the last 31 days
+	//lets review
 	public static void getMoviesOfTheMonth(Connection connection) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE ReleaseData = MONTH(getData())";
+		Statement statement = null;
+		ResultSet result = null;
 		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while(result.next()) {
+				Query_Utils.getMovie(connection, query);
+			}
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			statement.close();
+			result.close();
+		}	
 	}
 
-	// Derrick
-	// Not to sure if i did this correct, lets review.
-	//
-	// You set it so we would only pull the OverallReviewRating column, which wouldn't print out all the movie details 
-	// also, you had it so we would pass in the rating needed to qualify as "highest". I switched it to pull
-	// every movie and order them by the best rating. I don't think we'll ever have enough movies in here
-	// that it matters, so we may as well get them all. - Alex
+	
+	/**
+	 * Finds and returns the highest rated movies
+	 * @param connection the connection to the database
+	 * @param OverallReviewRating a movie's review rating
+	 * @throws SQLException
+	 */
 	public static void getHighestRatedMovies(Connection connection, double OverallReviewRating) throws SQLException {
 		String query = "SELECT * FROM Movies ORDER BY OverallReviewRating DESC";
 		Statement statement = null;
@@ -1454,7 +1469,7 @@ public class Query {
 			statement.close();
 		}
 	}
-
+	
 	public static void getConfigNewReleaseRentalRate(Connection dbConnection) throws SQLException {
 		String query = "SELECT NewReleaseRentalRate FROM Configurations";
 		try {
@@ -1504,5 +1519,13 @@ public class Query {
 			throw error;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

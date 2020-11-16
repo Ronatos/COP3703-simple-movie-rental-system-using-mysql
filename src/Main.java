@@ -247,7 +247,7 @@ public class Main {
 	// > send them to the purchase/rent menus, which ask for the MovieID
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
-			Query.getMoviesOfTheMonth(); // BJ
+			Query.getMoviesOfTheMonth(dbConnection);
 			Query.getHighestRatedMovies(dbConnection, 0);
 		}
 		catch (SQLException error) {

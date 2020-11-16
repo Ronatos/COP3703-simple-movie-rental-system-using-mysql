@@ -279,6 +279,42 @@ public class Query_Utils {
 			statement.close();
 		}
 	}
+	
+	public static void getMovieRestricted(Connection connection, String query) throws SQLException{
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			while (result.next()) {
+				System.out.println("Movie {");
+				System.out.println("    MovieID: " + result.getInt("MovieID") + ",");
+				System.out.println("    MovieTitle: " + result.getString("MovieTitle") + ",");
+				System.out.println("    MovieYear: " + result.getString("MovieYear") + ",");
+				System.out.println("    CertificateRating: " + result.getString("CertificateRating") + ",");
+				System.out.println("    RentPrice: " + result.getDouble("RentPrice") + ",");
+				System.out.println("    BuyPrice: " + result.getDouble("BuyPrice") + ",");
+				System.out.println("    ReleaseDate: " + result.getString("ReleaseDate") + ",");
+				System.out.println("    OverallReviewRating: " + result.getDouble("OverallReviewRating") + ",");
+				System.out.println("	Format: " + result.getString("Format"));
+				System.out.println("}");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+		
+	
+	
+	
+	
 	public static void getConfig(Connection connection, String Query) throws SQLException{
 		Statement statement = null;
 		ResultSet result = null;
