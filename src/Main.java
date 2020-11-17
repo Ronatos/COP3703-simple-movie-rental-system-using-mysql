@@ -191,9 +191,10 @@ public class Main {
 			System.out.println("What would you like to do, " + username + "?");
 			System.out.println("----------");
 			System.out.println("1. Search");
-			System.out.println("2. My Rentals");
-			System.out.println("3. Account Management"); // don't forget to add a way to return purchases. see #10 for details
-			System.out.println("4. Log out");
+			System.out.println("2. Buy or Rent");
+			System.out.println("3. My Rentals");
+			System.out.println("4. Account Management"); // don't forget to add a way to return purchases. see #10 for details
+			System.out.println("5. Log out");
 			
 			int selection = Utils.getUserSelection(scanner);
 			System.out.println(selection);
@@ -201,16 +202,43 @@ public class Main {
 			case 1: //1. Find a movie
 				displayCustomerSearchMenu(username);
 				break;
-			case 2: //2. Rental return
+			case 2: // 2. Buy or Rent
+				displayCustomerTransactionDecisionMenu(username);
+				break;
+			case 3: // 3. Rental return
 				// displayCustomerMyRentalsMenu();
 				break;
-			case 3: //3. Account Management
+			case 4: // 4. Account Management
 				// displayCustomerAccountManagementMenu();
 				break;
-			case 4:
+			case 5:
 				return;	
 			}
 		} while (true);
+	}
+	
+	private static void displayCustomerTransactionDecisionMenu(String username) {
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Transaction");
+			System.out.println("Would you like to make a purchase or rent a movie?");
+			System.out.println("----------");
+			System.out.println("1. Buy");
+			System.out.println("2. Rent");
+			System.out.println("3. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+			case 1:
+				displayCustomerPurchaseMenu(username);
+				break;
+			case 2:
+				displayCustomerRentalMenu(username);
+				break;
+			case 3:
+				return; // back to customer dashboard
+			}
+		} while(true);
 	}
 	
 	// Customer - Purchase ------------------------------------------------------------------------
@@ -223,17 +251,18 @@ public class Main {
 		System.out.print("Movie ID: ");
 		
 		int movieID = Utils.getUserSelection(scanner);
-		try { // customerCanAffordPurchase just returns a boolean if the customer's balance is >= movie purchase cost
-			if (Query.isExistingMovie(dbConnection, movieID) && Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
-				// connection, customerId, movieID, isRental <- these are passed in.
-				// upfrontcost and transactiondate are retrieved from SQL code
-				Query.insertTransaction(dbConnection, username, movieID, false); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
-				// all this needs to do is subtract the movie purchase cost from the customer balance
-				Query.purchaseMovie(dbConnection, username, movieID); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
-			}
-			else {
+		try {
+			if (!Query.isExistingMovie(dbConnection, movieID)) {
+				System.out.println("Movie with ID " + movieID + " does not exist. Please try again.");
 				break;
 			}
+			if (!Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
+				System.out.println("Insufficient funds.");
+				break;
+			}
+			Query.insertTransaction(dbConnection, username, movieID, false); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
+			// all this needs to do is subtract the movie purchase cost from the customer balance
+			Query.purchaseMovie(dbConnection, username, movieID); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -291,8 +320,7 @@ public class Main {
 	private static void displayCustomerSearchRecommendedMenu(String username) {
 		try {
 
-			Query.getMoviesOfTheMonth(dbConnection);
-			Query.getHighestRatedMovies(dbConnection, 0);
+			Query.getRecommendedMovies(dbConnection);
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -318,8 +346,6 @@ public class Main {
 	}
 	
 	// Customer - Search - Custom -----------------------------------------------------------------
-	
-	// TO DO: This needs to transition from a search to a purchase via another menu
 	
 	// Query.getMovieByID should be replaced by something that doesn't display business data like getMovieByIDRestricted
 	// getMovieByTitle, getMovieByCertificateRating, and getMovieByReleaseDate are the same deal

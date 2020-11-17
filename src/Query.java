@@ -1417,40 +1417,9 @@ public class Query {
 			statement.close();
 		}
 	}
-	
-	//lets review
-	public static void getMoviesOfTheMonth(Connection connection) throws SQLException {
-		String query = "SELECT * FROM Movies WHERE ReleaseData = MONTH(getData())";
-		Statement statement = null;
-		ResultSet result = null;
-		
-		try {
-			statement = connection.createStatement();
-			result = statement.executeQuery(query);
-			
-			while(result.next()) {
-				Query_Utils.getMovie(connection, query);
-			}
-		}
-		catch(SQLException error) {
-			throw error;
-		}
-		finally {
-			statement.close();
-			result.close();
-		}	
-	}
 
-
-	
-	/**
-	 * Finds and returns the highest rated movies
-	 * @param connection the connection to the database
-	 * @param OverallReviewRating a movie's review rating
-	 * @throws SQLException
-	 */
-	public static void getHighestRatedMovies(Connection connection, double OverallReviewRating) throws SQLException {
-		String query = "SELECT * FROM Movies ORDER BY OverallReviewRating DESC";
+	public static void getRecommendedMovies(Connection connection) throws SQLException {
+		String query = "SELECT * FROM Movies WHERE MovieYear = EXTRACT(YEAR FROM CURDATE()) UNION SELECT * FROM Movies ORDER BY OverallReviewRating DESC";
 		Statement statement = null;
 		ResultSet result = null;
 		
@@ -1636,14 +1605,13 @@ public class Query {
 	}
 	
 	public static void purchaseMovie(Connection connection, int customerID, int movieID) throws SQLException {
-		String query = 
+		String query;
 	}
 
 	public static void insertTransaction(Connection connection, String username, int movieID, boolean b) throws SQLException {
-		// TODO Auto-generated method stub
 		int customerID = getCustomerIDFromUsername(connection, username);
 		double movieBuyPrice = getMovieBuyPriceByID(connection, movieID);
-		String query = "INSERT INTO Transactions ('CustomerID', `MovieID`, `TransactionDate`, `UpFrontTransactionCost`, `isRental`) VALUES ('" + customerID +"', '" + movieID + "', CURDATE(), " + movieBuyPrice + ", " + b + ")";
+		String query = "INSERT INTO Transactions (CustomerID, MovieID, TransactionDate, UpFrontTransactionCost, isRental) VALUES (\"" + customerID +"\", \"" + movieID + "\", CURDATE(), " + movieBuyPrice + ", " + b + ")";
 		try {
 			Query_Utils.insertEntity(connection, query);
 		}
@@ -1657,10 +1625,44 @@ public class Query {
 	}
 	
 	public static void insertRental(Connection connection, int transactionID) throws SQLException {
-		String query = "INSERT INTO Rentals (TransactionID, ExpirationDate) VALUES (" + transactionID + ", CURDATE() + )";
+		String query;
+		if (isNewRelease(connection, transactionID)) {
+			query = "INSERT INTO Rentals (TransactionID, ExpirationDate) VALUES (" + transactionID + ", CURDATE() + Configurations.NewReleasePeriod)";
+		}
+		else {
+			query = "INSERT INTO Rentals (TransactionID, ExpirationDate) VALUES (" + transactionID + ", CURDATE() + Configurations.NonNewReleasePeriod)";
+		}
+		
+		try {
+			Query_Utils.insertEntity(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
 	}
 	
-	public static void getLatestTransactionID(Connection connection) {
+	public static boolean isNewRelease(Connection connection, int transactionID) throws SQLException {
+		String query = "SELECT Movies.ReleaseDate, FROM Transactions WHERE Transactions.TransactionID = " + transactionID;
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getInt("TransactionID");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static int getLatestTransactionID(Connection connection) throws SQLException {
 		String query = "SELECT Transactions.TransactionID FROM Transactions ORDER BY ASC";
 		Statement statement = null;
 		ResultSet result = null;
