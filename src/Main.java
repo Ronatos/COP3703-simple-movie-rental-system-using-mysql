@@ -304,7 +304,7 @@ public class Main {
 				return;
 			}
 			Query.insertTransaction(dbConnection, username, movieID, true);
-			Query.rentMovie(dbConnection, username, movieID); // also print invoice
+			Query.rentMovie(dbConnection, username, movieID);
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);

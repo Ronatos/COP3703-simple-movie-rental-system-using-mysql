@@ -1654,16 +1654,129 @@ public class Query {
 	}
 	
 	public static boolean customerHasReachedMaxRentals(Connection connection, String username) throws SQLException {
+		int customerID = getCustomerIDFromUsername(connection, username);
+		String query = "SELECT COUNT(Rentals.TransactionID) AS NumRentals FROM Customers INNER JOIN Transactions ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Customers.CustomerID = " + customerID;
 		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return (result.getInt("NumRentals") == 2) ? true : false;
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
 	public static boolean customerHasLateFees(Connection connection, String username) throws SQLException {
+		int customerID = getCustomerIDFromUsername(connection, username);
+		String query = "SELECT Rentals.LateFeePaid FROM Customers INNER JOIN Transactions ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Customers.CustomerID = " + customerID;
 		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			
+			int numLateFeesDue = 0;
+			
+			while (result.next()) {
+				if (result.getBoolean("LateFeePaid") == true) {
+					numLateFeesDue++;
+				}
+			}
+			
+			return (numLateFeesDue > 0) ? true : false;
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
-	// still need to print invoice
-	public static void rentMovie(Connection connection, String username, int movieID) throws SQLException {
+	public static double getMovieRentPriceByID(Connection connection, int movieID) throws SQLException {
+		String query = "SELECT Movies.RentPrice FROM Movies WHERE MovieID = " + movieID;
 		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getDouble("RentPrice");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void rentMovie(Connection connection, String username, int movieID) throws SQLException {
+		int customerID = getCustomerIDFromUsername(connection, username);
+		double rentPrice = getMovieRentPriceByID(connection, movieID);
+		int transactionID;
+		
+		String query = "UPDATE Customers SET CustomerBalance = CustomerBalance + " + rentPrice + " WHERE Customers.CustomerID = " + customerID;
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		
+		try {
+			transactionID = getLatestTransactionID(connection);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		
+		query = "SELECT Customers.Username, Movies.MovieTitle, Transactions.TransactionDate, Rentals.ExpirationDate, Movies.RentPrice FROM Transactions INNER JOIN Customers ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Movies ON Transactions.MovieID = Movies.MovieID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Transactions.TransactionID = " + transactionID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			System.out.println("==========");
+			System.out.println("INVOICE");
+			System.out.println("----------");
+			System.out.println("User: " + result.getString("Username"));
+			System.out.println("Item Rented: " + result.getString("MovieTitle"));
+			System.out.println("Date: " + result.getString("TransactionDate"));
+			System.out.println("Due: " + result.getString("ExpirationDate"));
+			System.out.println("Subtotal: " + result.getDouble("RentPrice"));
+			System.out.println("==========");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 
 	public static void insertTransaction(Connection connection, String username, int movieID, boolean b) throws SQLException {
@@ -1682,14 +1795,60 @@ public class Query {
 		}
 	}
 	
+	public static int getConfigNewReleasePeriod(Connection connection) throws SQLException {
+		String query = "SELECT Configurations.NewReleasePeriod FROM Configurations";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getInt("NewReleasePeriod");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static int getConfigNonNewReleasePeriod(Connection connection) throws SQLException {
+		String query = "SELECT Configurations.NonNewReleasePeriod FROM Configurations";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getInt("NonNewReleasePeriod");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
 	public static void insertRental(Connection connection, int transactionID) throws SQLException {
-		String query;
+		int releasePeriod;
 		if (isNewRelease(connection, transactionID)) {
-			query = "INSERT INTO Rentals (TransactionID, ExpirationDate) VALUES (" + transactionID + ", CURDATE() + Configurations.NewReleasePeriod)";
+			releasePeriod = getConfigNewReleasePeriod(connection);
 		}
 		else {
-			query = "INSERT INTO Rentals (TransactionID, ExpirationDate) VALUES (" + transactionID + ", CURDATE() + Configurations.NonNewReleasePeriod)";
+			releasePeriod = getConfigNonNewReleasePeriod(connection);
 		}
+		
+		String query = "INSERT INTO Rentals (TransactionID, ExpirationDate, LateFee, LateFeePaid) VALUES (" + transactionID + ", CURDATE() + " + releasePeriod + ", 0.00, 0)";
 		
 		try {
 			Query_Utils.insertEntity(connection, query);
