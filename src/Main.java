@@ -209,7 +209,7 @@ public class Main {
 				// displayCustomerMyRentalsMenu();
 				break;
 			case 4: // 4. Account Management
-				displayCustomerAccountManagementMenu(username);
+				//displayCustomerAccountManagementMenu(username);
 				break;
 			case 5:
 				return;	
@@ -254,15 +254,16 @@ public class Main {
 		try {
 			if (!Query.isExistingMovie(dbConnection, movieID)) {
 				System.out.println("Movie with ID " + movieID + " does not exist. Please try again.");
-				break;
+				return;
 			}
 			if (!Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
 				System.out.println("Insufficient funds.");
-				break;
+				return;
 			}
-			Query.insertTransaction(dbConnection, username, movieID, false); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
+			Query.insertTransaction(dbConnection, username, movieID, false);
 			// all this needs to do is subtract the movie purchase cost from the customer balance
-			Query.purchaseMovie(dbConnection, username, movieID); // GO BACK AND ACCOUNT FOR NEW OR NON-NEW MOVIES
+			Query.purchaseMovie(dbConnection, username, movieID);
+			System.out.println("Transaction complete. Enjoy your movie!");
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);

@@ -1604,8 +1604,17 @@ public class Query {
 		}
 	}
 	
-	public static void purchaseMovie(Connection connection, int customerID, int movieID) throws SQLException {
-		String query;
+	public static void purchaseMovie(Connection connection, String username, int movieID) throws SQLException {
+		int customerID = getCustomerIDFromUsername(connection, username);
+		double buyPrice = getMovieBuyPriceByID(connection, movieID);
+		
+		String query = "INSERT INTO Customers (CustomerBalance) VALUES (Customers.CustomerBalance + " + buyPrice + ") WHERE Customers.CustomerID = " + customerID;
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
 	}
 
 	public static void insertTransaction(Connection connection, String username, int movieID, boolean b) throws SQLException {
@@ -1642,7 +1651,7 @@ public class Query {
 	}
 	
 	public static boolean isNewRelease(Connection connection, int transactionID) throws SQLException {
-		String query = "SELECT Movies.ReleaseDate, FROM Transactions WHERE Transactions.TransactionID = " + transactionID;
+		String query = "SELECT CURDATE() < DATE_ADD(Movies.ReleaseDate, INTERVAL 60 DAY) AS \"isNewRelease\" FROM Transactions INNER JOIN Movies ON Transactions.MovieID = Movies.MovieID WHERE Transactions.TransactionID = " + transactionID;
 		Statement statement = null;
 		ResultSet result = null;
 		
@@ -1651,7 +1660,7 @@ public class Query {
 			result = statement.executeQuery(query);
 			result.next();
 			
-			return result.getInt("TransactionID");
+			return result.getBoolean("isNewRelease");
 		}
 		catch(SQLException error) {
 			throw error;
