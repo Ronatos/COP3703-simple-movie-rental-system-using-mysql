@@ -1705,6 +1705,7 @@ public class Query {
 			statement.close();
 		}
 	}
+	
 //Needs to check if a customer already is renting 
 	public static boolean twoRentals(Connection dbConnection, String username, int movieID) {
 		// TODO Auto-generated method stub
@@ -1715,10 +1716,24 @@ public class Query {
 		// TODO Auto-generated method stub
 		
 	}
-//needs to remove password from client table form the client table so we can keep the same relationships with other tables but they can not sign in.
-	public static void deleteAccount(Connection dbConnection, String username) {
-		// TODO Auto-generated method stub
-		
-	}
 	
+	// needs to remove password from client table form the client table so we can keep the same relationships with other tables but they can not sign in.
+	public static void deleteAccount(Connection dbConnection, String username) throws SQLException {
+		int customerID;
+		try {
+			customerID = getCustomerIDFromUsername(dbConnection, username);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		
+		String query = "DELETE FROM Customers WHERE CustomerID = " + customerID;
+		
+		try {
+			Query_Utils.updateTable(dbConnection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
 }
