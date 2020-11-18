@@ -209,7 +209,7 @@ public class Main {
 				// displayCustomerMyRentalsMenu();
 				break;
 			case 4: // 4. Account Management
-				// displayCustomerAccountManagementMenu();
+				displayCustomerAccountManagementMenu(username);
 				break;
 			case 5:
 				return;	
@@ -278,13 +278,32 @@ public class Main {
 		System.out.println("----------");
 		System.out.print("Movie ID: ");
 		
-		int selection = Utils.getUserSelection(scanner);
+		int movieID = Utils.getUserSelection(scanner);
 		// check if movie exists
 		// check if the customer
 		// 1. has the balance required for the transaction
 		// 2. will not surpass 2 current rentals
 		// 3. 
 		// subtract the balance and add an entry to the transaction table and rental table
+		try {
+			if (!Query.isExistingMovie(dbConnection, movieID)) {
+				System.out.println("Movie with ID " + movieID + " does not exist. Please try again.");
+				break;
+			}
+			if (!Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
+				System.out.println("Insufficient funds.");
+				break;
+			}
+			if (!Query.twoRentals (dbConnection, username, movieID)) {
+				System.out.println("You can not rent more than two movies at one time");
+				break;
+			}
+			Query.insertTransaction(dbConnection,  username, movieID, true);
+			Query.purchaseMovie(dbConnection,  username, movieID);
+		}
+		catch (SQLException error) {
+			Utils.printDatabaseError(error);
+		}
 	}
 	
 	// Customer - Search --------------------------------------------------------------------------
@@ -622,6 +641,39 @@ public class Main {
 					return;
 			}
 		} while (true);
+	}
+	
+	private static void displayCustomerAccountManagementMenu (String username) {
+		System.out.println("-----------");
+		System.out.println("Home / Customer Dashboard / Account Management");
+		System.out.println("What woudl you like to do?");
+		System.out.println("-----------");
+		System.out.println("1. Add balance");
+		System.out.println("2. Delete account");
+		
+		int selection = Utils.getUserSelection(scanner);
+		
+		switch (selection) {
+		case 1: //1. Add balance
+			System.out.println("Please input how muc you would like to add to your account:");
+			int input = Utils.getUserSelection(scanner);
+			Query.addBalance(dbConnection, username, input);//still needs to be created
+			break;
+		case 2: //2. Delete account
+			System.out.println("Are you sure you would like to delete your account?");
+			System.out.println("1. Yes");
+			System.out.println("2. No");
+			int choice = Utils.getUserSelection(scanner);
+			switch (choice) {
+			case 1:
+					Query.deleteAccount(dbConnection, username);
+					break;
+			case 2:
+				System.out.println("returning you to accoutn management menu");
+				break;	
+			}
+			break;
+		}
 	}
 	
 	// Employee -----------------------------------------------------------------------------------

@@ -1705,4 +1705,20 @@ public class Query {
 			statement.close();
 		}
 	}
+//Needs to check if a customer already is renting 
+	public static boolean twoRentals(Connection dbConnection, String username, int movieID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+//needs to add a balance to the customer given the username and amount.
+	public static void addBalance(Connection dbConnection, String username, int input) {
+		// TODO Auto-generated method stub
+		
+	}
+//needs to remove password from client table form the client table so we can keep the same relationships with other tables but they can not sign in.
+	public static void deleteAccount(Connection dbConnection, String username) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
