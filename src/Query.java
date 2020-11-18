@@ -1839,6 +1839,108 @@ public class Query {
 		}
 	}
 	
+	public static void printAllCustomerMovies(Connection connection, String username) throws SQLException {
+		int customerID = getCustomerIDFromUsername(connection, username);
+		String query = "SELECT Movies.MovieID, Movies.MovieTitle, Movies.MovieYear, Movies.CertificateRating, Movies.Format FROM Transactions INNER JOIN Movies ON Transactions.MovieID = Movies.MovieID WHERE Transactions.CustomerID = " + customerID;
+		try {
+			Query_Utils.getMovieSlim(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
+	public static void streamMovie(Connection connection, int movieID, String username) throws SQLException {
+		// TODO there are conditions which need to be met here
+		// Customer can't return digital movies they watched or downloaded, so that value needs to be updated at watch time
+		// Digital movies can't be streamed after rental time.
+		// 1. Set watched value to true
+		// 2. print "Now playing {movie title}..."
+		String query = "SELECT Movies.MovieTitle FROM Movies WHERE Movies.MovieID = " + movieID;
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			System.out.println("Now playing " + result.getString("MovieTitle") + "...");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+		
+		setWatched(connection, movieID, username);
+	}
+	
+	public static boolean isExpiredRentalDigitalMovie(Connection connection, int movieID, String username) throws SQLException {
+		int customerID = getCustomerIDFromUsername(connection, username);
+		String query = "SELECT Transactions.TransactionID, Movies.Format, Transactions.isRental FROM Transactions INNER JOIN Movies ON Transactions.MovieID = Movies.MovieID WHERE Transactions.MovieID = " + movieID + " AND Transactions.CustomerID = " + customerID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			if (result.getString("Format").equals("Digital") && result.getBoolean("isRental") == true) {
+				return isExpiredRental(connection, result.getInt("TransactionID"));
+			}
+			else {
+				return false;
+			}
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static boolean isExpiredRental(Connection connection, int transactionID) throws SQLException {
+		String query = "SELECT CURDATE() > Rentals.ExpirationDate AS ExpiredRental FROM Rentals WHERE Rentals.TransactionID = " + transactionID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			return result.getBoolean("ExpiredRental");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static void setWatched(Connection connection, int movieID, String username) throws SQLException {
+		int customerID = getCustomerIDFromUsername(connection, username);
+		
+		String query = "UPDATE Transactions SET Transactions.Watched = TRUE WHERE Transactions.MovieID = " + movieID + " AND Transactions.CustomerID = " + customerID;
+		
+		try {
+			Query_Utils.updateTable(connection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
+	
 	public static void insertRental(Connection connection, int transactionID) throws SQLException {
 		int releasePeriod;
 		if (isNewRelease(connection, transactionID)) {

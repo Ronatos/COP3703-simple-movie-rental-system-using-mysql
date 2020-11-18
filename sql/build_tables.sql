@@ -102,6 +102,7 @@ CREATE TABLE Transactions (
     TransactionDate DATE NOT NULL DEFAULT '2000-01-01',
     UpFrontTransactionCost Decimal(5,2) NOT NULL DEFAULT 0.00,
     isRental BOOLEAN NOT NULL DEFAULT false,
+    Watched BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (TransactionID),
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
         ON DELETE CASCADE,

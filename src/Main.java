@@ -214,7 +214,7 @@ public class Main {
 				//displayCustomerAccountManagementMenu(username);
 				break;
 			case 5: // 5. Watch a Movie
-				// displayCustomerMovie(username);
+				displayCustomerMovie(username);
 				break;
 			case 6:
 				return;	
@@ -223,7 +223,40 @@ public class Main {
 	}
 	
 	private static void displayCustomerMovie(String username) {
-		
+		do {
+			System.out.println("----------");
+			System.out.println("Home / Customer Dashboard / Watch");
+			try {
+				Query.printAllCustomerMovies(dbConnection, username);
+			}
+			catch (SQLException error) {
+				Utils.printDatabaseError(error);
+			}
+			System.out.println("----------");
+			System.out.println("1. Select a movie");
+			System.out.println("2. Back");
+			
+			int selection = Utils.getUserSelection(scanner);
+			switch (selection) {
+			case 1:
+				System.out.print("Movie ID: ");
+				
+				int movieID = Utils.getUserSelection(scanner);
+				try {
+					if (Query.isExpiredRentalDigitalMovie(dbConnection, movieID, username)) {
+						System.out.println("The rental for this movie is expired. Please renew the rental and try again.");
+						return;
+					}
+					Query.streamMovie(dbConnection, movieID, username);
+				}
+				catch (SQLException error) {
+					Utils.printDatabaseError(error);
+				}
+				break;
+			case 2:
+				return;
+			}
+		} while (true);
 	}
 	
 	private static void displayCustomerTransactionDecisionMenu(String username) {
