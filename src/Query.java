@@ -1607,6 +1607,7 @@ public class Query {
 	public static void purchaseMovie(Connection connection, String username, int movieID) throws SQLException {
 		int customerID = getCustomerIDFromUsername(connection, username);
 		double buyPrice = getMovieBuyPriceByID(connection, movieID);
+		int transactionID;
 		
 		String query = "UPDATE Customers SET CustomerBalance = CustomerBalance + " + buyPrice + " WHERE Customers.CustomerID = " + customerID;
 		try {
@@ -1615,6 +1616,54 @@ public class Query {
 		catch (SQLException error) {
 			throw error;
 		}
+		
+		try {
+			transactionID = getLatestTransactionID(connection);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		
+		query = "SELECT Customers.Username, Movies.MovieTitle, Transactions.TransactionDate, Movies.BuyPrice FROM Transactions INNER JOIN Customers ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Movies ON Transactions.MovieID = Movies.MovieID WHERE Transactions.TransactionID = " + transactionID;
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next();
+			
+			System.out.println("==========");
+			System.out.println("INVOICE");
+			System.out.println("----------");
+			System.out.println("User: " + result.getString("Username"));
+			System.out.println("Item Purchased: " + result.getString("MovieTitle"));
+			System.out.println("Date: " + result.getString("TransactionDate"));
+			System.out.println("Subtotal: " + result.getDouble("BuyPrice"));
+			System.out.println("==========");
+		}
+		catch(SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+	
+	public static boolean customerHasReachedMaxRentals(Connection connection, String username) throws SQLException {
+		
+	}
+	
+	public static boolean customerHasLateFees(Connection connection, String username) throws SQLException {
+		
+	}
+	
+	// still need to print invoice
+	public static void rentMovie(Connection connection, String username, int movieID) throws SQLException {
+		
 	}
 
 	public static void insertTransaction(Connection connection, String username, int movieID, boolean b) throws SQLException {
@@ -1672,7 +1721,7 @@ public class Query {
 	}
 	
 	public static int getLatestTransactionID(Connection connection) throws SQLException {
-		String query = "SELECT Transactions.TransactionID FROM Transactions ORDER BY ASC";
+		String query = "SELECT Transactions.TransactionID FROM Transactions ORDER BY TransactionID DESC";
 		Statement statement = null;
 		ResultSet result = null;
 		

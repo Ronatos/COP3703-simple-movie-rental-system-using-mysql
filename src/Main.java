@@ -10,7 +10,7 @@ import java.util.Scanner;
  * 	  navigate through the tree.
  * 3. Add a way for employees to look up the ID of an item, since updating them requires the employee to know the ID
  * 4. Add user friendly way of knowing where they are in the tree (home/employee dashboard/add new item/) for example
- * 5. Add a way for the customer to actually watch one of their movies!
+ * 5. Add a way for the customer to actually watch one of their movies! (read all specifications before writing)
  */
 
 public class Main {
@@ -262,9 +262,7 @@ public class Main {
 				return;
 			}
 			Query.insertTransaction(dbConnection, username, movieID, false);
-			// all this needs to do is subtract the movie purchase cost from the customer balance
-			Query.purchaseMovie(dbConnection, username, movieID);
-			System.out.println("Transaction complete. Enjoy your movie!");
+			Query.purchaseMovie(dbConnection, username, movieID); // also print invoice
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
@@ -285,23 +283,28 @@ public class Main {
 		// check if the customer
 		// 1. has the balance required for the transaction
 		// 2. will not surpass 2 current rentals
-		// 3. 
+		// 3. does not have any late fees
 		// subtract the balance and add an entry to the transaction table and rental table
+		// print invoice
 		try {
 			if (!Query.isExistingMovie(dbConnection, movieID)) {
 				System.out.println("Movie with ID " + movieID + " does not exist. Please try again.");
-				break;
+				return;
 			}
 			if (!Query.customerCanAffordPurchase(dbConnection, username, movieID)) {
 				System.out.println("Insufficient funds.");
-				break;
+				return;
 			}
-			if (!Query.twoRentals (dbConnection, username, movieID)) {
-				System.out.println("You can not rent more than two movies at one time");
-				break;
+			if (Query.customerHasReachedMaxRentals(dbConnection, username)) {
+				System.out.println("You may not rent any more movies until existing rentals are returned.");
+				return;
 			}
-			Query.insertTransaction(dbConnection,  username, movieID, true);
-			Query.purchaseMovie(dbConnection,  username, movieID);
+			if (Query.customerHasLateFees(dbConnection, username)) {
+				System.out.println("You may not rent any more movies until existing late fees are paid.");
+				return;
+			}
+			Query.insertTransaction(dbConnection, username, movieID, true);
+			Query.rentMovie(dbConnection, username, movieID); // also print invoice
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
