@@ -1608,7 +1608,7 @@ public class Query {
 		int customerID = getCustomerIDFromUsername(connection, username);
 		double buyPrice = getMovieBuyPriceByID(connection, movieID);
 		
-		String query = "INSERT INTO Customers (CustomerBalance) VALUES (Customers.CustomerBalance + " + buyPrice + ") WHERE Customers.CustomerID = " + customerID;
+		String query = "UPDATE Customers SET CustomerBalance = CustomerBalance + " + buyPrice + " WHERE Customers.CustomerID = " + customerID;
 		try {
 			Query_Utils.updateTable(connection, query);
 		}

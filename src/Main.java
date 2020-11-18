@@ -10,6 +10,7 @@ import java.util.Scanner;
  * 	  navigate through the tree.
  * 3. Add a way for employees to look up the ID of an item, since updating them requires the employee to know the ID
  * 4. Add user friendly way of knowing where they are in the tree (home/employee dashboard/add new item/) for example
+ * 5. Add a way for the customer to actually watch one of their movies!
  */
 
 public class Main {
