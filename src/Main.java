@@ -643,7 +643,7 @@ public class Main {
 		} while (true);
 	}
 	
-	private static void displayCustomerAccountManagementMenu (String username) {
+	private static void displayCustomerAccountManagementMenu (String username) throws SQLException {
 		System.out.println("-----------");
 		System.out.println("Home / Customer Dashboard / Account Management");
 		System.out.println("What woudl you like to do?");
@@ -667,6 +667,7 @@ public class Main {
 			switch (choice) {
 			case 1:
 					Query.deleteAccount(dbConnection, username);
+					displayRootMenu();
 					break;
 			case 2:
 				System.out.println("returning you to accoutn management menu");
