@@ -195,7 +195,8 @@ public class Main {
 			System.out.println("2. Buy or Rent");
 			System.out.println("3. My Rentals");
 			System.out.println("4. Account Management"); // don't forget to add a way to return purchases. see #10 for details
-			System.out.println("5. Log out");
+			System.out.println("5. Watch a movie");
+			System.out.println("6. Log out");
 			
 			int selection = Utils.getUserSelection(scanner);
 			System.out.println(selection);
@@ -212,10 +213,17 @@ public class Main {
 			case 4: // 4. Account Management
 				//displayCustomerAccountManagementMenu(username);
 				break;
-			case 5:
+			case 5: // 5. Watch a Movie
+				// displayCustomerMovie(username);
+				break;
+			case 6:
 				return;	
 			}
 		} while (true);
+	}
+	
+	private static void displayCustomerMovie(String username) {
+		
 	}
 	
 	private static void displayCustomerTransactionDecisionMenu(String username) {
@@ -279,13 +287,6 @@ public class Main {
 		System.out.print("Movie ID: ");
 		
 		int movieID = Utils.getUserSelection(scanner);
-		// check if movie exists
-		// check if the customer
-		// 1. has the balance required for the transaction
-		// 2. will not surpass 2 current rentals
-		// 3. does not have any late fees
-		// subtract the balance and add an entry to the transaction table and rental table
-		// print invoice
 		try {
 			if (!Query.isExistingMovie(dbConnection, movieID)) {
 				System.out.println("Movie with ID " + movieID + " does not exist. Please try again.");
