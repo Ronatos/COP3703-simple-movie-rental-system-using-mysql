@@ -18,7 +18,7 @@ public class Main {
 	static Scanner scanner = new Scanner(System.in);
 	static Connection dbConnection = null;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		dbConnection = getDatabaseConnection();
 		displayRootMenu();
 	}
@@ -56,8 +56,9 @@ public class Main {
 	 * Complete and tested.
 	 * displayRootMenu is the root of the UI. This menu provides options to log in,
 	 * create a new account, or exit the application gracefully.
+	 * @throws SQLException 
 	 */
-	private static void displayRootMenu() {
+	private static void displayRootMenu() throws SQLException {
 		do {
 			String username;
 			String password;
@@ -161,8 +162,9 @@ public class Main {
 	 * Complete and tested.
 	 * displayDashboardDecisionMenu is displayed after logging in to the application
 	 * if the user exists in both the Employees and Customers tables.
+	 * @throws SQLException 
 	 */
-	private static void displayDashboardDecisionMenu(String username) {
+	private static void displayDashboardDecisionMenu(String username) throws SQLException {
 		do {
 			System.out.println("----------");
 			System.out.println("Home / Login");
@@ -185,7 +187,7 @@ public class Main {
 	
 	// Customer -----------------------------------------------------------------------------------
 
-	public static void displayCustomerDashboard(String username) {
+	public static void displayCustomerDashboard(String username) throws SQLException {
 		do {
 			System.out.println("----------");
 			System.out.println("Home / Customer Dashboard");
@@ -211,10 +213,7 @@ public class Main {
 				// displayCustomerMyRentalsMenu();
 				break;
 			case 4: // 4. Account Management
-				
-				//Not sure why i couldnt get this to work
-				
-				//displayCustomerAccountManagementMenu(username);
+				displayCustomerAccountManagementMenu(username);
 				break;
 			case 5: // 5. Watch a Movie
 				displayCustomerMovie(username);
@@ -688,7 +687,7 @@ public class Main {
 	private static void displayCustomerAccountManagementMenu (String username) throws SQLException {
 		System.out.println("-----------");
 		System.out.println("Home / Customer Dashboard / Account Management");
-		System.out.println("What woudl you like to do?");
+		System.out.println("What would you like to do?");
 		System.out.println("-----------");
 		System.out.println("1. Add balance");
 		System.out.println("2. Delete account");
@@ -697,7 +696,7 @@ public class Main {
 		
 		switch (selection) {
 		case 1: //1. Add balance
-			System.out.println("Please input how muc you would like to add to your account:");
+			System.out.println("Please enter how much money you would like to add to your account:");
 			int input = Utils.getUserSelection(scanner);
 			Query.addBalance(dbConnection, username, input);//still needs to be created
 			break;
@@ -712,7 +711,7 @@ public class Main {
 					displayRootMenu();
 					break;
 			case 2:
-				System.out.println("returning you to accoutn management menu");
+				System.out.println("Returning you to account management menu");
 				break;	
 			}
 			break;
@@ -749,6 +748,7 @@ public class Main {
 	
 	// Employee -----------------------------------------------------------------------------------
 	
+
 	/**
 	 * Complete and untested.
 	 * displayEmployeeDashboard is a sub-menu of displayUserLoginMenu.
