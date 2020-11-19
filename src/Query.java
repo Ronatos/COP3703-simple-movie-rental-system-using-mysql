@@ -2031,11 +2031,12 @@ public class Query {
 		return false;
 	}
 	
-//needs to add a balance to the customer given the username and amount.
+
+	//needs to add a balance to the customer given the username and amount.
 	public static void addBalance(Connection dbConnection, String username, int input) throws SQLException {
 		
-		String query = "UPDATE Customers.CustomerBalance SET Customers.CustomerBalance = (Customers.CustomerBalance" + input + ") WHERE Customers.Username = '" + username + "'" ;
-		
+		//String query = "UPDATE Customers SET Customers.CustomerBalance = " + input + " WHERE Customers.Username = '" + username + "'" ;
+		String query = "UPDATE SUM(Customers.CustomerBalance + "  + input + ") WHERE Customers.Username = '" + username + "'" ;
 		try {
 			Query_Utils.updateTable(dbConnection, query);
 		}
@@ -2043,7 +2044,6 @@ public class Query {
 			throw error;
 		}
 	}
-	
 	
 	// needs to remove password from client table form the client table so we can keep the same relationships with other tables but they can not sign in.
 	public static void deleteAccount(Connection dbConnection, String username) throws SQLException {
