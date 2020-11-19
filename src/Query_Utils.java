@@ -296,6 +296,7 @@ public class Query_Utils {
 				System.out.println("    CertificateRating: " + result.getString("CertificateRating") + ",");
 				System.out.println("    RentPrice: " + result.getDouble("RentPrice") + ",");
 				System.out.println("    BuyPrice: " + result.getDouble("BuyPrice") + ",");
+				System.out.println("    Stock: " + result.getInt("Stock") + ",");
 				System.out.println("    ReleaseDate: " + result.getString("ReleaseDate") + ",");
 				System.out.println("    OverallReviewRating: " + result.getDouble("OverallReviewRating") + ",");
 				System.out.println("	Format: " + result.getString("Format"));

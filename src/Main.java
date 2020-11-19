@@ -211,6 +211,9 @@ public class Main {
 				// displayCustomerMyRentalsMenu();
 				break;
 			case 4: // 4. Account Management
+				
+				//Not sure why i couldnt get this to work
+				
 				//displayCustomerAccountManagementMenu(username);
 				break;
 			case 5: // 5. Watch a Movie
@@ -715,6 +718,34 @@ public class Main {
 			break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	// Employee -----------------------------------------------------------------------------------
 	

@@ -2030,11 +2030,20 @@ public class Query {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
 //needs to add a balance to the customer given the username and amount.
-	public static void addBalance(Connection dbConnection, String username, int input) {
-		// TODO Auto-generated method stub
+	public static void addBalance(Connection dbConnection, String username, int input) throws SQLException {
 		
+		String query = "UPDATE Customers.CustomerBalance SET Customers.CustomerBalance = (Customers.CustomerBalance)" + input + "WHERE Customers.Username = '" + username + "'" ;
+		
+		try {
+			Query_Utils.updateTable(dbConnection, query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
 	}
+	
 	
 	// needs to remove password from client table form the client table so we can keep the same relationships with other tables but they can not sign in.
 	public static void deleteAccount(Connection dbConnection, String username) throws SQLException {
@@ -2055,4 +2064,5 @@ public class Query {
 			throw error;
 		}
 	}
+		
 }
