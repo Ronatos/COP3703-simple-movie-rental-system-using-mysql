@@ -210,7 +210,7 @@ public class Main {
 				displayCustomerTransactionDecisionMenu(username);
 				break;
 			case 3: // 3. Rental return
-				// displayCustomerMyRentalsMenu();
+				displayCustomerMyRentalsMenu(username);
 				break;
 			case 4: // 4. Account Management
 				displayCustomerAccountManagementMenu(username);
@@ -718,7 +718,27 @@ public class Main {
 		}
 	}
 	
-	private static 
+	private static void displayCustomerMyRentalsMenu(String username) {
+		System.out.println("----------");
+		System.out.println("Home / Customer Dashboard / Return");
+		System.out.println("Please enter the ID of the movie you would like to return.");
+		System.out.println("----------");
+		System.out.print("Movie ID: ");
+		
+		int movieID = Utils.getUserSelection(scanner);
+		try {
+			if (!Query.isExistingMovie(dbConnection, movieID)) {
+				System.out.println("Movie with ID " + movieID + " does not exist. Please try again.");
+				return;
+			}
+			Query.returnMovie(dbConnection, username, movieID); // <- put updateReturnDate in this query? 
+			//Query.updateReturnDate()
+		}
+		catch (SQLException error) {
+			Utils.printDatabaseError(error);
+		}
+	}
+	
 	
 	
 	

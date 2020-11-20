@@ -2064,5 +2064,20 @@ public class Query {
 			throw error;
 		}
 	}
+
+	public static void returnMovie(Connection dbConnection, String username, int movieID) throws SQLException {
+	
+		int customerID = getCustomerIDFromUsername(dbConnection, username);
 		
+		
+		//Query does not work
+		String query = "UPDATE Rentals SET rentals.ReturnDate = GETDATE() WHERE rentals.transactionID = transactions.transactionID";
+		
+		try {
+			Query_Utils.updateTable(dbConnection,query);
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+	}
 }
