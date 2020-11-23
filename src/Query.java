@@ -1120,7 +1120,7 @@ public class Query {
 	
 		Statement statement = null;
 		ResultSet result = null;
-		String verificationQuery = "SELECT First Name, Last Name FROM Actors";
+		String verificationQuery = "SELECT FirstName, LastName FROM Actors";
 		String addNewActor = "INSERT INTO Actors (FirstName, LastName) VALUE (\"" + firstName + "\", \"" + lastName + "\")";
 		
 		String exsistingActor = null;
@@ -2151,10 +2151,23 @@ public class Query {
 		}
 	}
 
-	public static boolean rentalExpired(Connection dbConnection, String username, int movieID) {
-		// TODO Auto-generated method stub
+	/*public static boolean rentalExpired(Connection dbConnection, String username, int movieID) throws SQLException {
+		int customerID = getCustomerIDFromUsername(dbConnection, username);
+		String query = "SELECT COUNT(Rentals.TransactionID) FROM Transactions INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Transactions.CustomerID = " + customerID + " AND Rentals.LateFeePaid = false AND DATEDIFF(Rentals.ExpirationDate, CURDATE()) >=15";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = dbConnection.createStatement();
+			result = statement.executeQuery(query);
+			
+		}
+		catch (SQLException error){
+			throw error;			
+		}
 		return false;
-	}
+	}*/
 	}
 
 		

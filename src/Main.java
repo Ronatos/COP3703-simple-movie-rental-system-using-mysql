@@ -745,9 +745,10 @@ public class Main {
 				return;
 			}
 			//Check if it is 15 days after, late fee = movie buy price and update transactions to is rental to false
-			if (Query.rentalExpired(dbConnection, username, movieID)==true) {
-				
-			}
+			/*if (Query.rentalExpired(dbConnection, username, movieID)==true) {
+				Query.purchaseMovie(dbConnection, username, movieID);
+				System.out.println("You have purchased the movie.");
+			}*/
 			Query.returnMovie(dbConnection, username, movieID);
 			System.out.println("you have returned the movie with id: " + movieID);
 		}
