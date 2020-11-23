@@ -245,10 +245,6 @@ public class Main {
 				
 				int movieID = Utils.getUserSelection(scanner);
 				try {
-					if (Query.isExpiredRentalDigitalMovie(dbConnection, movieID, username)) {
-						System.out.println("The rental for this movie is expired. Please renew the rental and try again.");
-						return;
-					}
 					Query.streamMovie(dbConnection, movieID, username);
 				}
 				catch (SQLException error) {
@@ -691,12 +687,13 @@ public class Main {
 		System.out.println("-----------");
 		System.out.println("1. Add balance");
 		System.out.println("2. Delete account");
+		System.out.println("3. Back");
 		
 		int selection = Utils.getUserSelection(scanner);
 		
 		switch (selection) {
 		case 1: //1. Add balance
-			System.out.println("Please enter how much money you would like to add to your account:");
+			System.out.print("Please enter how much money you would like to add to your account:");
 			int input = Utils.getUserSelection(scanner);
 			Query.addBalance(dbConnection, username, input);//still needs to be created
 			break;
@@ -715,6 +712,8 @@ public class Main {
 				break;	
 			}
 			break;
+		case 3:
+			return; // back to the customer dashboard
 		}
 	}
 	

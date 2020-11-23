@@ -1856,16 +1856,32 @@ public class Query {
 		// Digital movies can't be streamed after rental time.
 		// 1. Set watched value to true
 		// 2. print "Now playing {movie title}..."
-		String query = "SELECT Movies.MovieTitle FROM Movies WHERE Movies.MovieID = " + movieID;
+		int customerID = getCustomerIDFromUsername(connection, username);
+		String query = "SELECT Transactions.TransactionID, Transactions.MovieID, Movies.MovieTitle, Transactions.isRental, Rentals.ExpirationDate FROM Transactions INNER JOIN Movies ON Transactions.MovieID = Movies.MovieID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Transactions.CustomerID = " + customerID;
 		Statement statement = null;
 		ResultSet result = null;
 		
 		try {
 			statement = connection.createStatement();
 			result = statement.executeQuery(query);
-			result.next();
 			
-			System.out.println("Now playing " + result.getString("MovieTitle") + "...");
+			boolean movieFound = false;
+			
+			while (result.next()) {
+				boolean isExpiredRental = isExpiredRental(connection, result.getInt("TransactionID"));
+				
+				if (result.getInt("MovieID") == movieID) {
+					if (result.getBoolean("isRental") == true && isExpiredRental == true) {
+						System.out.println("This movie's rental period is expired. Please renew this rental if you wish to watch this movie.");
+					}
+					else {
+						movieFound = true;
+						System.out.println("Now playing " + result.getString("MovieTitle") + "...");
+					}
+				}
+			}
+			
+			System.out.println((movieFound == true) ? "Enjoy your movie!" : "Selected movie not found in owned or rented movies.");			
 		}
 		catch(SQLException error) {
 			throw error;
@@ -2034,9 +2050,10 @@ public class Query {
 
 	//needs to add a balance to the customer given the username and amount.
 	public static void addBalance(Connection dbConnection, String username, int input) throws SQLException {
+		int customerID = getCustomerIDFromUsername(dbConnection, username);
 		
 		//String query = "UPDATE Customers SET Customers.CustomerBalance = " + input + " WHERE Customers.Username = '" + username + "'" ;
-		String query = "UPDATE SUM(Customers.CustomerBalance + "  + input + ") WHERE Customers.Username = '" + username + "'" ;
+		String query = "UPDATE Customers SET Customers.CustomerBalance = Customers.CustomerBalance + "  + input + " WHERE Customers.CustomerID = " + customerID;
 		try {
 			Query_Utils.updateTable(dbConnection, query);
 		}
