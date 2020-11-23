@@ -717,6 +717,12 @@ public class Main {
 		}
 	}
 	
+	//TODO
+	// 1. This needs to print out all the customer's current rentals right at the beginning.
+	// 2. It needs to apply any late fees
+	// 3. It needs to process a standard return
+	// 4. If a movie is returned after the latest day to return a rental, the customer is purchasing the movie.
+	//    The trick is to switch Transactions.isRental to false after the client pays the fee.
 	private static void displayCustomerMyRentalsMenu(String username) {
 		System.out.println("----------");
 		System.out.println("Home / Customer Dashboard / Return");
@@ -737,30 +743,6 @@ public class Main {
 			Utils.printDatabaseError(error);
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
