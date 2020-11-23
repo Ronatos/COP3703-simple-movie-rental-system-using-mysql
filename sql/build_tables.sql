@@ -125,5 +125,5 @@ CREATE TABLE Configurations (
     NonNewReleaseRate Decimal (5,2) NOT NULL DEFAULT 3.00,
     NewReleasePeriod int NOT NULL DEFAULT 3,
     NonNewReleasePeriod int NOT NULL DEFAULT 4,
-    LateFeePerDay Decimal(5,2) NOT NULL DEFAULT 0.00
+    LateFeePerDay Decimal(5,2) NOT NULL DEFAULT 2.00
 );
