@@ -1606,7 +1606,7 @@ public class Query {
 	
 	public static void purchaseMovie(Connection connection, String username, int movieID) throws SQLException {
 		int customerID = getCustomerIDFromUsername(connection, username);
-		double buyPrice = getMovieBuyPriceByID(connection, movieID);
+		double buyPrice = -getMovieBuyPriceByID(connection, movieID);
 		int transactionID;
 		
 		String query = "UPDATE Customers SET CustomerBalance = CustomerBalance + " + buyPrice + " WHERE Customers.CustomerID = " + customerID;
@@ -1655,7 +1655,7 @@ public class Query {
 	
 	public static boolean customerHasReachedMaxRentals(Connection connection, String username) throws SQLException {
 		int customerID = getCustomerIDFromUsername(connection, username);
-		String query = "SELECT COUNT(Rentals.TransactionID) AS NumRentals FROM Customers INNER JOIN Transactions ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Customers.CustomerID = " + customerID;
+		String query = "SELECT COUNT(Rentals.LateFeePaid) AS NumRentals FROM Customers INNER JOIN Transactions ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Customers.CustomerID = " + customerID +" AND Rentals.LateFeePaid = false";
 		
 		Statement statement = null;
 		ResultSet result = null;
@@ -1678,7 +1678,7 @@ public class Query {
 	
 	public static boolean customerHasLateFees(Connection connection, String username) throws SQLException {
 		int customerID = getCustomerIDFromUsername(connection, username);
-		String query = "SELECT Rentals.LateFeePaid FROM Customers INNER JOIN Transactions ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Customers.CustomerID = " + customerID;
+		String query = "SELECT Rentals.LateFeePaid FROM Customers INNER JOIN Transactions ON Transactions.CustomerID = Customers.CustomerID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Customers.CustomerID = " + customerID +" AND datediff(Rentals.ExpirationDate, CURDATE()) <0";
 		
 		Statement statement = null;
 		ResultSet result = null;
@@ -1690,7 +1690,7 @@ public class Query {
 			int numLateFeesDue = 0;
 			
 			while (result.next()) {
-				if (result.getBoolean("LateFeePaid") == true) {
+				if (result.getBoolean("LateFeePaid") == false) {
 					numLateFeesDue++;
 				}
 			}
@@ -1731,7 +1731,7 @@ public class Query {
 	
 	public static void rentMovie(Connection connection, String username, int movieID) throws SQLException {
 		int customerID = getCustomerIDFromUsername(connection, username);
-		double rentPrice = getMovieRentPriceByID(connection, movieID);
+		double rentPrice = -getMovieRentPriceByID(connection, movieID);
 		int transactionID;
 		
 		String query = "UPDATE Customers SET CustomerBalance = CustomerBalance + " + rentPrice + " WHERE Customers.CustomerID = " + customerID;
@@ -2041,10 +2041,26 @@ public class Query {
 		}
 	}
 	
-//Needs to check if a customer already is renting 
-	public static boolean twoRentals(Connection dbConnection, String username, int movieID) {
-		// TODO Auto-generated method stub
-		return false;
+	public static int getTransactionIDFromID(Connection connection, int id, int movieID) throws SQLException {
+		String query = "SELECT Rentals.TransactionID FROM Transactions INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Transactions.CustomerID = " + id + " AND Transactions.MovieID = " + movieID +" AND Rentals.LateFeePaid = false";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = connection.createStatement();
+			result = statement.executeQuery(query);
+			result.next( );
+			
+			return result.getInt("TransactionID");
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
 	}
 	
 
@@ -2085,11 +2101,10 @@ public class Query {
 	public static void returnMovie(Connection dbConnection, String username, int movieID) throws SQLException {
 	
 		int customerID = getCustomerIDFromUsername(dbConnection, username);
+		int transID = getTransactionIDFromID(dbConnection, customerID, movieID);
 		
-		
-		//Query does not work
-		String query = "UPDATE Rentals SET rentals.ReturnDate = GETDATE() WHERE rentals.transactionID = transactions.transactionID";
-		
+		String query = "UPDATE Rentals SET Rentals.ReturnDate = CURDATE(), Rentals.LateFeePaid = true WHERE Rentals.TransactionID = " + transID;
+	
 		try {
 			Query_Utils.updateTable(dbConnection,query);
 		}
@@ -2097,4 +2112,54 @@ public class Query {
 			throw error;
 		}
 	}
-}
+	
+
+
+	public static void showRentals(Connection dbConnection, String username) throws SQLException {
+		int customerID = getCustomerIDFromUsername(dbConnection, username);
+		String query = "SELECT Transactions.MovieID, Movies.MovieTitle, Rentals.ExpirationDate, Transactions.Watched, Rentals.LateFee FROM Transactions INNER JOIN Movies ON Transactions.MovieID = Movies.MovieID INNER JOIN Rentals ON Transactions.TransactionID = Rentals.TransactionID WHERE Transactions.CustomerID = " + customerID + " AND Rentals.LateFeePaid = false";
+		
+		Statement statement = null;
+		ResultSet result = null;
+		
+		try {
+			statement = dbConnection.createStatement();
+			result = statement.executeQuery(query);
+			
+			boolean resultsFound = false;
+			
+			while (result.next()) {
+				System.out.println("Rental {");
+				System.out.println("    MovieID: " + result.getInt("MovieID") + ",");
+				System.out.println("    Movie Title: " + result.getString("MovieTitle") + ",");
+				System.out.println("    Expiration Date: " + result.getString("ExpirationDate") + ",");
+				System.out.println("    Late Fee: " + result.getDouble("LateFee") + ", ");
+				System.out.println("    Watched: " + result.getBoolean("Watched"));
+				System.out.println("}");
+				resultsFound = true;
+			}
+			if (resultsFound == false) {
+				System.out.println("You have no rentals to return!");
+			}
+		}
+		catch (SQLException error) {
+			throw error;
+		}
+		finally {
+			result.close();
+			statement.close();
+		}
+	}
+
+	public static boolean rentalExpired(Connection dbConnection, String username, int movieID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	}
+
+		
+	
+	
+
+
+

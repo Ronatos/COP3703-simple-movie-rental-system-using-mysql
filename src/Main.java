@@ -723,9 +723,17 @@ public class Main {
 	// 3. It needs to process a standard return
 	// 4. If a movie is returned after the latest day to return a rental, the customer is purchasing the movie.
 	//    The trick is to switch Transactions.isRental to false after the client pays the fee.
-	private static void displayCustomerMyRentalsMenu(String username) {
+	private static void displayCustomerMyRentalsMenu(String username) throws SQLException {
+		//list current rentals
 		System.out.println("----------");
 		System.out.println("Home / Customer Dashboard / Return");
+		try {
+			Query.showRentals(dbConnection, username);
+		}
+		catch(SQLException error){
+			Utils.printDatabaseError(error);
+		}
+		System.out.println("----------");
 		System.out.println("Please enter the ID of the movie you would like to return.");
 		System.out.println("----------");
 		System.out.print("Movie ID: ");
@@ -736,19 +744,17 @@ public class Main {
 				System.out.println("Movie with ID " + movieID + " does not exist. Please try again.");
 				return;
 			}
-			Query.returnMovie(dbConnection, username, movieID); // <- put updateReturnDate in this query? 
-			//Query.updateReturnDate()
+			//Check if it is 15 days after, late fee = movie buy price and update transactions to is rental to false
+			if (Query.rentalExpired(dbConnection, username, movieID)==true) {
+				
+			}
+			Query.returnMovie(dbConnection, username, movieID);
+			System.out.println("you have returned the movie with id: " + movieID);
 		}
 		catch (SQLException error) {
 			Utils.printDatabaseError(error);
 		}
 	}
-	
-	
-	
-	
-	
-	
 	
 	// Employee -----------------------------------------------------------------------------------
 	
