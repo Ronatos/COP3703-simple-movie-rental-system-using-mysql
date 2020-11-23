@@ -9,6 +9,7 @@ CREATE TABLE Movies (
     Stock INT NOT NULL DEFAULT 0,
     ReleaseDate DATE NOT NULL DEFAULT '2000-01-01',
     OverallReviewRating Decimal(3,1) NOT NULL DEFAULT 0.0,
+    Format VARCHAR(45) NULL,
     PRIMARY KEY(MovieID)
 );
 
@@ -126,4 +127,12 @@ CREATE TABLE Configurations (
     NewReleasePeriod int NOT NULL DEFAULT 3,
     NonNewReleasePeriod int NOT NULL DEFAULT 4,
     LateFeePerDay Decimal(5,2) NOT NULL DEFAULT 2.00
+);
+
+INSERT INTO Configurations SET
+    NewReleaseRate = 4.50,
+    NonNewReleaseRate = 3.00,
+    NewReleasePeriod = 3,
+    NonNewReleasePeriod = 4,
+    LateFeePerDay = 2.00
 );
