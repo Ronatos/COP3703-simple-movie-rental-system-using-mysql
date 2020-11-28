@@ -1966,7 +1966,7 @@ public class Query {
 			releasePeriod = getConfigNonNewReleasePeriod(connection);
 		}
 		
-		String query = "INSERT INTO Rentals (TransactionID, ExpirationDate, LateFee, LateFeePaid) VALUES (" + transactionID + ", CURDATE() + " + releasePeriod + ", 0.00, 0)";
+		String query = "INSERT INTO Rentals (TransactionID, ExpirationDate, LateFee, LateFeePaid) VALUES (" + transactionID + ", ADDDATE(CURDATE(), INTERVAL " + releasePeriod + " DAY), 0.00, 0)";
 		
 		try {
 			Query_Utils.insertEntity(connection, query);

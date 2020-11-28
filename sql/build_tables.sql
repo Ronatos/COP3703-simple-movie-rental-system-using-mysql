@@ -135,11 +135,11 @@ INSERT INTO Configurations SET
     NewReleasePeriod = 3,
     NonNewReleasePeriod = 4,
     LateFeePerDay = 2.00
-);
+;
 
 INSERT INTO Employees SET
     FirstName = "Alex",
     LastName = "Perez",
     Username = "Ronatos",
     Password = "king"
-);
+;
