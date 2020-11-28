@@ -29,11 +29,13 @@ public class Main {
 		do {
 			System.out.println("Establishing database connection...");
 			
-	        System.out.print("Admin Username: ");
-	        String username = scanner.nextLine();
+	        // System.out.print("Admin Username: ");
+	        // String username = scanner.nextLine();
+			String username = "n01413497";
 	        
-	        System.out.print("Admin Password: ");
-	        String password = scanner.nextLine();
+	        // System.out.print("Admin Password: ");
+	        // String password = scanner.nextLine();
+			String password = "roosevelt";
 	        
 	        try {
 	        	return DriverManager.getConnection(dbURL, username, password);
